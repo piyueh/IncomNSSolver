@@ -26,3 +26,10 @@
 *.exe
 *.out
 *.app
+
+# Backup files in KDE
+*~
+.*~
+
+# Backup files of VIM
+.*.swp
