@@ -7,6 +7,9 @@ using namespace std;
 using namespace Eigen;
 
 
+# include "LaplaceSolver.h"
+
+
 int main()
 {
 	int Nx, Ny, Nz;
