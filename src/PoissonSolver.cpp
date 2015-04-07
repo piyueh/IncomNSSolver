@@ -10,8 +10,8 @@ int PoissonSolver::InitLinearSys
 
 	err = InitA();
 
-	for(auto it=BC.begin(); it<BC.end(); ++it)
-		err = BCCorrectA(*it);
+	for(auto &it: BC)
+		err = BCCorrectA(it);
 
 	return 0;
 }
@@ -95,18 +95,20 @@ int PoissonSolver::InitA()
 int PoissonSolver::BCCorrectA(Boundary & Surf)
 {
 	int j0;
+	int type = Surf.getType();
+
+	double v = Surf.getBCvalue();
+	double adjValue;
 
 	auto bg = Surf.bgCell();
 	auto ed = Surf.edCell();
 
-	double v = Surf.getBCvalue();
-	double type = (double)Surf.getType();
 
 	switch (Surf.getDirection()[1])
 	{
-		case 'x': j0 = Ny * Nz; break;
-		case 'y': j0 = Nz; break;
-		case 'z': j0 = 1; break;
+		case 'x': j0 = Ny * Nz; adjValue = 1 / (dx * dx); break;
+		case 'y': j0 = Nz; adjValue = 1 / (dy * dy); break;
+		case 'z': j0 = 1; adjValue = 1 / (dz * dz); break;
 		default:
 			throw invalid_argument("The direction of the boundary is wrong!");
 			break;
@@ -122,15 +124,35 @@ int PoissonSolver::BCCorrectA(Boundary & Surf)
 	}
 		
 
-	for(auto it=bg; it<ed; ++it)
+	switch (type)
 	{
-		cout << *it << ", " << j0 << endl;
-		if (*it + j0 > 0 && *it + j0 < A.cols())
-		{
-			A.coeffRef(*it, *it) -= type * A.coeffRef(*it, *it+j0);
-			A.coeffRef(*it, *it+j0) = 0.;
-		}
+		case 0:
+			for(auto it=bg, it2=Surf.bgOppCell(); it<ed; ++it, ++it2){
+				A.coeffRef(*it, *it2) += adjValue;
+				if (*it + j0 >= 0 && *it + j0 < A.cols())
+					A.coeffRef(*it, *it+j0) -= adjValue;
+			}
+			break;
+		case 1:
+			for(auto it=bg; it<ed; ++it){
+				A.coeffRef(*it, *it) -= adjValue;
+				if (*it + j0 >= 0 && *it + j0 < A.cols())
+					A.coeffRef(*it, *it+j0) -= adjValue;
+			}
+			break;
+		case -1:
+			for(auto it=bg; it<ed; ++it){
+				A.coeffRef(*it, *it) += adjValue;
+				if (*it + j0 >= 0 && *it + j0 < A.cols())
+					A.coeffRef(*it, *it+j0) -= adjValue;
+			}
+			break;
+		default:
+			throw invalid_argument("The sign of the boundary is wrong!");
+			break;
 	}
+
+
 	return 0;
 }
 

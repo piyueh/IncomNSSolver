@@ -30,7 +30,7 @@ int main()
 			for(int k=0; k<Nz; ++k)
 				temp.push_back(i*Ny*Nz+j*Nz+k);
 		}
-		BCs.push_back(Boundary(Ny*Nz, "-x", temp, 1, 0.0));
+		BCs.push_back(Boundary(Ny*Nz, "-x", 1, 0.0, temp));
 	}
 
 	{
@@ -41,7 +41,7 @@ int main()
 			for(int k=0; k<Nz; ++k)
 				temp.push_back(i*Ny*Nz+j*Nz+k);
 		}
-		BCs.push_back(Boundary(Ny*Nz, "+x", temp, 1, 0.0));
+		BCs.push_back(Boundary(Ny*Nz, "+x", 1, 0.0, temp));
 	}
 
 	{
@@ -52,7 +52,7 @@ int main()
 			for(int k=0; k<Nz; ++k)
 				temp.push_back(i*Ny*Nz+j*Nz+k);
 		}
-		BCs.push_back(Boundary(Nx*Nz, "-y", temp, 1, 0.0));
+		BCs.push_back(Boundary(Nx*Nz, "-y", 1, 0.0, temp));
 	}
 
 	{
@@ -63,33 +63,37 @@ int main()
 			for(int k=0; k<Nz; ++k)
 				temp.push_back(i*Ny*Nz+j*Nz+k);
 		}
-		BCs.push_back(Boundary(Nx*Nz, "+y", temp, 1, 0.0));
+		BCs.push_back(Boundary(Nx*Nz, "+y", 1, 0.0, temp));
 	}
 
-	/*
 	{
-		vector<int> temp; 	
-		int k = 0;
+		vector<int> temp, temp2; 	
+		int k0 = 0, k1 = Nz - 1;
 		for(int i=0; i<Nx; ++i)
 		{
 			for(int j=0; j<Ny; ++j)
-				temp.push_back(i*Ny*Nz+j*Nz+k);
+			{
+				temp.push_back(i*Ny*Nz+j*Nz+k0);
+				temp2.push_back(i*Ny*Nz+j*Nz+k1);
+			}
 		}
-		BCs.push_back(Boundary(Nx*Ny, "-z", temp, 1, 0.0));
+		BCs.push_back(Boundary(Nx*Ny, "-z", 0, 0.0, temp, temp2));
 	}
 
 
 	{
-		vector<int> temp; 	
-		int k = Nz - 1;
+		vector<int> temp, temp2; 	
+		int k0 = Nz-1, k1 = 0;
 		for(int i=0; i<Nx; ++i)
 		{
 			for(int j=0; j<Ny; ++j)
-				temp.push_back(i*Ny*Nz+j*Nz+k);
+			{
+				temp.push_back(i*Ny*Nz+j*Nz+k0);
+				temp2.push_back(i*Ny*Nz+j*Nz+k1);
+			}
 		}
-		BCs.push_back(Boundary(Nx*Ny, "+z", temp, 1, 0.0));
+		BCs.push_back(Boundary(Nx*Ny, "+z", 0, 0.0, temp, temp2));
 	}
-	*/
 
 
 	test.InitLinearSys(Nx, Ny, Nz, dx, dy, dz, BCs);	

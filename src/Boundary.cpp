@@ -1,13 +1,26 @@
 # include "include/IncomNSSolver.h"
 
 
-Boundary::Boundary(int N, string dir, vector<int> idx, int t, double v)
+Boundary::Boundary(int N, string dir, int t, double v, 
+		vector<int> idx)
 {
 	Ncells = N;
 	direction = dir;
-	Cell = idx;
 	Type = t;
 	value = v;
+	Cell = idx;
+}
+
+
+Boundary::Boundary(int N, string dir, int t, double v, 
+		vector<int> idx, vector<int> idx2)
+{
+	Ncells = N;
+	direction = dir;
+	Type = t;
+	value = v;
+	Cell = idx;
+	OppCell = idx2;
 }
 
 
@@ -22,6 +35,28 @@ void Boundary::print()
 	for(auto it=Cell.cbegin(); it<Cell.cend(); ++it)
 		cout << *it << " ";
 	cout << endl;
+
+	if (getType() == 0)
+	{
+		cout << "This is a periodic BC." 
+			"The corresponding elements on the opposite surface are: " << endl;
+		for(auto it=OppCell.cbegin(); it<OppCell.cend(); ++it)
+			cout << *it << " ";
+		cout << endl;
+	}
+}
+
+
+int Boundary::getCell(int idx)
+{
+	return Cell[idx];
+}
+
+
+
+int Boundary::getOppCell(int idx)
+{
+	return OppCell[idx];
 }
 
 
@@ -34,6 +69,19 @@ vector<int>::const_iterator Boundary::bgCell()
 vector<int>::const_iterator Boundary::edCell()
 {
 	return Cell.cend();
+}
+
+
+
+vector<int>::const_iterator Boundary::bgOppCell()
+{
+	return OppCell.cbegin();
+}
+
+
+vector<int>::const_iterator Boundary::edOppCell()
+{
+	return OppCell.cend();
 }
 
 

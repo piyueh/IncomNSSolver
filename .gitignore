@@ -1,3 +1,6 @@
+# C Tags
+**/tags
+
 # Compiled Object files
 *.slo
 *.lo
@@ -33,3 +36,4 @@
 
 # Backup files of VIM
 .*.swp
+
