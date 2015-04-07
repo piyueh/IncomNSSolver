@@ -22,6 +22,22 @@ int main()
 	Boundary test;
 	test = {N, dir, idxs, type, value};
 	test.print();
+
+	for(auto it=test.bgCell(); it<test.edCell(); ++it)
+		cout << *it << " ";
+	cout << endl;
+
+	switch (test.getDirection()[0])
+	{
+		case '+':
+			cout << "+" << endl;
+			break;
+		case '-':
+			cout << "-" << endl;
+			break;
+		default:
+			break;
+	}
 	
 	return 0;
 }

@@ -10,11 +10,22 @@ using namespace std;
 class Boundary
 {
 	public:
+
 		Boundary() = default;
 		Boundary(int, string, vector<int>, int, double);
+
+		vector<int>::const_iterator bgCell();
+		vector<int>::const_iterator edCell();
+
+		int getNcells();
+		int getType();
+		double getBCvalue();
+		string getDirection();
+
 		void print();
 
 	private:
+
 		int Ncells;
 		string direction;
 		vector<int> Cell;
