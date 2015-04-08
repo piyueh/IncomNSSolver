@@ -1,6 +1,6 @@
 # include "include/IncomNSSolver.h"
 
-int PoissonSolver::InitLinearSys
+int PoissonSolver::InitLHS
 (int N1, int N2, int N3, double d1, double d2, double d3, vector<Boundary> & BC)
 {
 	int err;
@@ -13,9 +13,57 @@ int PoissonSolver::InitLinearSys
 	for(auto &it: BC)
 		err = BCCorrectA(it);
 
+	cgSolver.compute(A);
+
 	return 0;
 }
 
+
+int PoissonSolver::InitRHS(Matrix<double, 1, Dynamic> f)
+{
+	assert(f.cols()==Nx*Ny*Nz);
+
+	b = f;
+	return 0;
+}
+
+
+int PoissonSolver::setRefP(int idx[3], double value)
+{
+	int I = idx[0] * Ny * Nz + idx[1] * Nz + idx[2];
+
+	refIdx[0] = idx[0];
+	refIdx[1] = idx[1];
+	refIdx[2] = idx[2];
+	refP = value;
+
+	b.coeffRef(I) -= value * A.coeffRef(I, I);
+	A.coeffRef(I, I) = 0.;
+	return 0;
+}
+
+
+int PoissonSolver::setRefP(int i, int j, int k, double value)
+{
+	int I = i * Ny * Nz + j * Nz + k;
+
+	refIdx[0] = i;
+	refIdx[1] = j;
+	refIdx[2] = k;
+	refP = value;
+
+	b.coeffRef(I) -= value * A.coeffRef(I, I);
+	A.coeffRef(I, I) = 0.;
+	return 0;
+}
+
+
+int PoissonSolver::Solve(VectorXd &soln)
+{
+	soln = cgSolver.solve(b.matrix());
+
+	return 0;
+}
 
 /*
  * Initialize the matrix A in the linear system Ax=b for the 3D Poisson problems.
@@ -159,5 +207,15 @@ int PoissonSolver::BCCorrectA(Boundary & Surf)
 
 void PoissonSolver::printA()
 {
+	cout << "LHS, Matrix A: " << endl;
 	cout << A << endl;
 }
+
+
+void PoissonSolver::printb()
+{
+	cout << "RHS, Vector b: " << endl;
+	cout << b << endl;
+}
+
+
