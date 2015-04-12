@@ -1,6 +1,4 @@
 # include "include/IncomNSSolver.h"
-
-
 /*
  * Nx, Ny, Nz: numbers of cells in the three directions
  * N: number of cells on this boundary

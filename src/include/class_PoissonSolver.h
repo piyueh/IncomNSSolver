@@ -12,7 +12,7 @@ class PoissonSolver
 		int setRHS(VectorXd);
 
 		int setRefP(int [3], double);
-		int setRefP(int , int, int, double);
+		int setRefP(int, int, int, double);
 
 		int Solve(VectorXd &);
 

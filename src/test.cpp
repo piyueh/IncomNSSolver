@@ -6,7 +6,6 @@
 using namespace std;
 
 # include "include/IncomNSSolver.h"
-# include "include/io.h"
 
 
 

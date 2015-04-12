@@ -46,4 +46,3 @@ class Boundary
 
 };
 
-ostream &operator<<(ostream &, Boundary &);
