@@ -4,9 +4,12 @@ class PoissonSolver
 	public:
 	
 		PoissonSolver() = default;
+		PoissonSolver(int, int, int, double, double, double);
 
-		int InitLHS(int, int, int, double, double, double, vector<Boundary> &);
-		int InitRHS(Matrix<double, 1, Dynamic>);
+		int InitLinSys(int, int, int, double, double, double);
+
+		int setLHS(vector<Boundary> &);
+		int setRHS(VectorXd);
 
 		int setRefP(int [3], double);
 		int setRefP(int , int, int, double);
@@ -19,6 +22,7 @@ class PoissonSolver
 	
 	private:
 
+		int N;
 		int Nx, Ny, Nz;
 		double dx, dy, dz;
 
@@ -34,33 +38,5 @@ class PoissonSolver
 		int InitA();
 		int BCCorrectA(Boundary &);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

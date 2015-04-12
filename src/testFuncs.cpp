@@ -79,10 +79,8 @@ vector<Boundary> genBCs(int Nx, int Ny, int Nz)
 }
 
 
-Array<double, 1, Dynamic> sourceTerm(int Nx, int Ny, int Nz,
-		Array<double, 1, Dynamic> &X, 
-		Array<double, 1, Dynamic> &Y,
-	   	Array<double, 1, Dynamic> &Z, int n)
+ArrayXd sourceTerm(int Nx, int Ny, int Nz,
+		ArrayXd &X, ArrayXd &Y, ArrayXd &Z, int n)
 {
 	int Nyz = Ny * Nz;
 	double M_PI2 = M_PI * M_PI;
@@ -103,10 +101,8 @@ Array<double, 1, Dynamic> sourceTerm(int Nx, int Ny, int Nz,
 }
 
 
-Array<double, 1, Dynamic> exactSoln(int Nx, int Ny, int Nz,
-		Array<double, 1, Dynamic> &X, 
-		Array<double, 1, Dynamic> &Y,
-	   	Array<double, 1, Dynamic> &Z, int n)
+ArrayXd exactSoln(int Nx, int Ny, int Nz,
+		ArrayXd &X, ArrayXd &Y, ArrayXd &Z, int n)
 {
 	int Nyz = Ny * Nz;
 	double M_PI2 = M_PI * M_PI;

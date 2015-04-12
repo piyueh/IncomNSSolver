@@ -1,110 +1,77 @@
 # include "include/IncomNSSolver.h"
 
 
-Boundary::Boundary(int N, string dir, int t, double v, 
-		vector<int> idx)
+/*
+ * Nx, Ny, Nz: numbers of cells in the three directions
+ * N: number of cells on this boundary
+ * dir: normal vector of the boundary, toward outside of the  domain
+ * pt: BC type of pressure
+ * 		 1: Dirichlet
+ * 	 	 0: Periodic
+ * 		-1: Neumann
+ * pv: the value of the boundary condition
+ * vt: BC type of velocity, using 1, 0, -1, like pt
+ * vv: value of velocity BC
+ */
+Boundary::Boundary(int Nx, int Ny, int Nz, 
+		string dir, int pt, double pv, int vt, double vv)
 {
-	Ncells = N;
+
 	direction = dir;
-	Type = t;
-	value = v;
-	Cell = idx;
-}
+	pType = pt;
+	vType = vt;
+	pBCvalue = pv;
+	vBCvalue = vv;
 
-
-Boundary::Boundary(int N, string dir, int t, double v, 
-		vector<int> idx, vector<int> idx2)
-{
-	Ncells = N;
-	direction = dir;
-	Type = t;
-	value = v;
-	Cell = idx;
-	OppCell = idx2;
-}
-
-
-void Boundary::print()
-{
-	cout << "# of cells in this boundary: " << getNcells() << endl;
-	cout << "The normal direction: " << direction << endl;
-	cout << "The type of BC: " << getType() << endl;
-	cout << "The value of BC: " << value << endl;
-
-	cout << "The index of cells in this boundary (in global index): " << endl;
-	for(auto it=Cell.cbegin(); it<Cell.cend(); ++it)
-		cout << *it << " ";
-	cout << endl;
-
-	if (getType() == 0)
+	switch (dir[1])
 	{
-		cout << "This is a periodic BC." 
-			"The corresponding elements on the opposite surface are: " << endl;
-		for(auto it=OppCell.cbegin(); it<OppCell.cend(); ++it)
-			cout << *it << " ";
-		cout << endl;
+		case 'x':
+			Ncells = Ny * Nz;
+			for(int j=0; j<Ny; ++j){
+				for(int k=0; k<Nz; ++k){
+					Cell.push_back(j*Nz+k);
+					OppCell.push_back((Nx-1)*Ny*Nz+j*Nz+k);
+				}
+			}
+			break;
+		
+		case 'y':
+			Ncells = Nx * Nz;
+			for(int i=0; i<Nx; ++i){
+				for(int k=0; k<Nz; ++k){
+					Cell.push_back(i*Ny*Nz+k);
+					OppCell.push_back(i*Ny*Nz+(Ny-1)*Nz+k);
+				}
+			}
+			break;
+
+		case 'z':
+			Ncells = Nx * Ny;
+			for(int i=0; i<Nx; ++i){
+				for(int j=0; j<Ny; ++j){
+					Cell.push_back(i*Ny*Nz+j*Nz);
+					OppCell.push_back(i*Ny*Nz+j*Nz+Nz-1);
+				}
+			}
+			break;
+
+		default:
+			throw invalid_argument("Invalid boundary direction");
+			break;
+	}
+
+	switch (dir[0])
+	{
+
+		case '-': break;
+		case '+':
+			Cell.swap(OppCell);
+			break;
+
+		default:
+			throw invalid_argument("Invalid boundary direction");
+			break;
 	}
 }
 
-
-int Boundary::getCell(int idx)
-{
-	return Cell[idx];
-}
-
-
-
-int Boundary::getOppCell(int idx)
-{
-	return OppCell[idx];
-}
-
-
-vector<int>::const_iterator Boundary::bgCell()
-{
-	return Cell.cbegin();
-}
-
-
-vector<int>::const_iterator Boundary::edCell()
-{
-	return Cell.cend();
-}
-
-
-
-vector<int>::const_iterator Boundary::bgOppCell()
-{
-	return OppCell.cbegin();
-}
-
-
-vector<int>::const_iterator Boundary::edOppCell()
-{
-	return OppCell.cend();
-}
-
-
-double Boundary::getBCvalue()
-{
-	return value;
-}
-
-
-int Boundary::getNcells()
-{
-	return Ncells;
-}
-
-
-string Boundary::getDirection()
-{
-	return direction;
-}
-
-
-int Boundary::getType()
-{
-	return Type;
-}
 

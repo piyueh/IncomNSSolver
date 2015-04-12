@@ -1,12 +1,41 @@
 # include "include/IncomNSSolver.h"
 
-int PoissonSolver::InitLHS
-(int N1, int N2, int N3, double d1, double d2, double d3, vector<Boundary> & BC)
+PoissonSolver::PoissonSolver(int N1, int N2, int N3, double d1, double d2, double d3)
 {
-	int err;
-
 	Nx = N1; Ny = N2; Nz = N3;
 	dx = d1; dy = d2; dz = d3;
+
+	N = Nx * Ny * Nz;
+
+	A.resize(N, N);
+	A.setZero();
+
+	b.resize(N);
+	b.setZero();
+}	
+
+
+int PoissonSolver::InitLinSys(int N1, int N2, int N3, double d1, double d2, double d3)
+{
+	Nx = N1; Ny = N2; Nz = N3;
+	dx = d1; dy = d2; dz = d3;
+
+	N = Nx * Ny * Nz;
+
+	A.resize(N, N);
+	A.setZero();
+
+	b.resize(N);
+	b.setZero();
+
+	return 0;
+}	
+
+
+
+int PoissonSolver::setLHS(vector<Boundary> & BC)
+{
+	int err;
 
 	err = InitA();
 
@@ -19,11 +48,11 @@ int PoissonSolver::InitLHS
 }
 
 
-int PoissonSolver::InitRHS(Matrix<double, 1, Dynamic> f)
+int PoissonSolver::setRHS(VectorXd f)
 {
-	assert(f.cols()==Nx*Ny*Nz);
+	assert(f.size()==Nx*Ny*Nz);
 
-	b = f;
+	b += f;
 	return 0;
 }
 
@@ -130,6 +159,7 @@ int PoissonSolver::InitA()
 
 	// initialize the sparse matrix A
 	A.setFromTriplets(CoeffMatrix.cbegin(), CoeffMatrix.cend());
+	A.makeCompressed();
 
 
 	return 0;

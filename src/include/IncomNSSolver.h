@@ -10,5 +10,7 @@ using namespace std;
 
 using namespace Eigen;
 
+# include "class_Array3D.h"
 # include "class_Boundary.h"
 # include "class_PoissonSolver.h"
+

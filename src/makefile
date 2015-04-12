@@ -5,12 +5,21 @@
 CC = clang
 CXX = clang++
 
-CFLAGS = -std=c++11 -g
 
 BIN = test.out
 OBJS = Boundary.o PoissonSolver.o main.o
 
-.PHONY: clean
+.PHONY: clean debug release
+
+debug: CFLAGS = -std=c++11 -g
+debug:
+	make clean
+	make ${BIN} CFLAGS="${CFLAGS}"
+
+release: CFLAGS = -std=c++11 -O3 -DNDEBUG -DEIGEN_NO_DEBUG
+release:
+	make clean
+	make ${BIN} CFLAGS="${CFLAGS}"
 
 ${BIN}: ${OBJS}
 	${CXX} ${CFLAGS} -o ${BIN} ${OBJS}
