@@ -6,6 +6,11 @@ class Boundary
 	public:
 
 		Boundary() = default;
+
+		/*
+		 * Input:
+		 * Nx, Ny, Nz, Direction, P BC, P BC Value, V BC, V BC Value
+		 */
 		Boundary(int, int, int, string, int, double, int, double);
 
 
@@ -35,14 +40,11 @@ class Boundary
 
 		string direction;
 
-		int pType;
-		int vType;
+		int pType, vType;
 
-		double pBCvalue;
-		double vBCvalue;
+		double pBCvalue, vBCvalue;
 
-		vector<int> Cell;
-		vector<int> OppCell;
+		vector<int> Cell, OppCell;
 
 };
 
