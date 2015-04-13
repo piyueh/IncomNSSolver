@@ -1,3 +1,10 @@
+/*
+ * Class of the Poisson solver.
+ */
+
+
+# pragma once
+
 
 class PoissonSolver
 {

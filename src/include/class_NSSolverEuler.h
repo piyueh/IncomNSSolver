@@ -1,8 +1,14 @@
 /*
  * The Navier-Stoke solver using the basic 1st-order Euler time marching.
  */
+
+
+# pragma once
+
+
 class NSSolverEuler
 {
+	friend ostream &operator<<(ostream &, NSSolverEuler &);
 	public:
 
 		NSSolverEuler(Mesh &m, Fluid &f, double t, double Dt): 
@@ -20,12 +26,23 @@ class NSSolverEuler
 			p.setZeros();
 			u.setZeros(); v.setZeros(); w.setZeros();
 
+			/*
 			pSolver.InitLinSys(mesh.Nx, mesh.Ny, mesh.Nz, 
 					mesh.dx, mesh.dy, mesh.dz);
 			pSolver.setLHS(mesh.BCs);
 			pSolver.setRefP(0, 0, 0, 0);
+			*/
 			
 		}
+
+		int updateGhost();
+		int test();
+
+		int output(string);
+		int output_u();
+		int output_v();
+		int output_w();
+		int output_p();
 
 	private:
 
@@ -36,8 +53,9 @@ class NSSolverEuler
 
 		Fluid & fluid;
 
-		PoissonSolver pSolver;
+		// PoissonSolver pSolver;
 
 		Array3D<double> u, v, w, p;
 		Array3D<double> u_str, v_str, w_str;
+
 };

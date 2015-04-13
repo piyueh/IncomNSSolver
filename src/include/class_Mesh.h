@@ -1,19 +1,12 @@
-# include <iostream>
-# include <vector>
-# include <array>
-# include <map>
-# include <utility>
-
-using namespace std;
-
-# include "class_Boundary.h"
-# include "io.h"
-
-
 /*
  * The class to store the variables of computation 
  * domain, and mesh
  */
+
+
+# pragma once
+
+
 class Mesh
 {
 	friend class NSSolverEuler;

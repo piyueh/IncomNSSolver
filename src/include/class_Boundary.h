@@ -1,16 +1,15 @@
-# include <iostream>
-# include <string>
-# include <stdexcept>
-# include <utility>
-
-using namespace std;
-
 /*
  * The class to store data of each boundary.
  */
+
+
+# pragma once
+
+
 class Boundary
 {
 	friend class Mesh;
+	friend class NSSolverEuler;
 	friend ostream &operator<<(ostream &, Boundary &);
 
 	public:

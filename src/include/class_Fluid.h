@@ -1,6 +1,11 @@
 /*
  * Fluid properties
  */
+
+
+# pragma once
+
+
 class Fluid
 {
 	public:

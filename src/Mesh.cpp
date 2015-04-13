@@ -1,4 +1,4 @@
-# include "include/class_Mesh.h"
+# include "include/IncomNSSolver.h"
 
 int Mesh::InitMesh(array<int, 3> N, array<double, 3> L)
 {
@@ -40,57 +40,3 @@ int Mesh::addBC(unsigned int dir, int sign, pair<int, double> p,
 	return 0;
 }
 
-ostream &operator<<(ostream &os, Mesh &mesh)
-{
-	os << "Numbers of cells: "
-	   << mesh.Nx << " x " << mesh.Ny << " x " << mesh.Nz << endl;
-	os << "Shape of u array: "
-	   << mesh.Nxu << " x " << mesh.Nyu << " x " << mesh.Nzu << endl;
-	os << "Shape of v array: "
-	   << mesh.Nxv << " x " << mesh.Nyv << " x " << mesh.Nzv << endl;
-	os << "Shape of w array: "
-	   << mesh.Nxw << " x " << mesh.Nyw << " x " << mesh.Nzw << endl;
-	os << "Domain size: " 
-	   << mesh.Lx << " x " << mesh.Ly << " x " << mesh.Lz << endl;
-	os << "Cell size: " 
-	   << mesh.dx << " x " << mesh.dy << " x " << mesh.dz << endl;
-	os << endl;
-
-	os << "Location of p point: " << endl;
-	os << "\t x: " << endl;
-	os << "\t\t" << mesh.xp << endl << endl;
-	os << "\t y: " << endl;
-	os << "\t\t" << mesh.yp << endl << endl;
-	os << "\t z: " << endl;
-	os << "\t\t" << mesh.zp << endl << endl;
-
-	os << "Location of u point: " << endl;
-	os << "\t x: " << endl;
-	os << "\t\t" << mesh.xu << endl << endl;
-	os << "\t y: " << endl;
-	os << "\t\t" << mesh.yu << endl << endl;
-	os << "\t z: " << endl;
-	os << "\t\t" << mesh.zu << endl << endl;
-
-	os << "Location of v point: " << endl;
-	os << "\t x: " << endl;
-	os << "\t\t" << mesh.xv << endl << endl;
-	os << "\t y: " << endl;
-	os << "\t\t" << mesh.yv << endl << endl;
-	os << "\t z: " << endl;
-	os << "\t\t" << mesh.zv << endl << endl;
-
-	os << "Location of w point: " << endl;
-	os << "\t x: " << endl;
-	os << "\t\t" << mesh.xw << endl << endl;
-	os << "\t y: " << endl;
-	os << "\t\t" << mesh.yw << endl << endl;
-	os << "\t z: " << endl;
-	os << "\t\t" << mesh.zw << endl << endl;
-
-	os << "Boundary conditions: " << endl;
-	for(auto it=mesh.BCs.begin(); it!=mesh.BCs.end(); ++it)
-		cout << it->second << endl;
-
-	return os;
-}

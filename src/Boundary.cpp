@@ -1,4 +1,4 @@
-# include "include/class_Boundary.h"
+# include "include/IncomNSSolver.h"
 
 
 void set_correspondIdx(int &type, int &corIdx, int v1, int v0);
@@ -24,7 +24,13 @@ Boundary::Boundary(int Nx, int Ny, int Nz, unsigned int Dir, int Sign,
 
 	uType = u.first; vType = v.first; wType = w.first; pType = p.first;
 
-	uBCvalue = u.second; vBCvalue = v.second; wBCvalue = w.second; pBCvalue = p.second;
+	uBCvalue = u.second; vBCvalue = v.second; 
+	wBCvalue = w.second; pBCvalue = p.second;
+
+	if ((uType == -1) && (sign == -1)) uBCvalue *= -1;
+	if ((vType == -1) && (sign == -1)) vBCvalue *= -1;
+	if ((wType == -1) && (sign == -1)) wBCvalue *= -1;
+	if ((pType == -1) && (sign == -1)) pBCvalue *= -1;
 
 	switch (dir)
 	{
@@ -103,34 +109,4 @@ void set_correspondIdx(int &type, int &corIdx, int v1, int v0)
 	}
 }
 
-
-ostream &operator<<(ostream &os, Boundary &BC)
-{
-	os << "Direction: " << BC.dir*BC.sign << endl;
-
-	os << "Type of pressure BC: " << BC.pType << endl;
-	os << "Type of u BC: " << BC.uType << endl;
-	os << "Type of v BC: " << BC.uType << endl;
-	os << "Type of w BC: " << BC.uType << endl;
-
-	os << "Value of pressure BC: " << BC.pBCvalue << endl;
-	os << "Value of u BC: " << BC.uBCvalue << endl;
-	os << "Value of v BC: " << BC.vBCvalue << endl;
-	os << "Value of w BC: " << BC.wBCvalue << endl;
-
-	os << "Index of ghost cell of pressure: " << BC.pBCIdx << endl;
-	os << "Index of ghost cell of u: " << BC.uBCIdx << endl;
-	os << "Index of ghost cell of v: " << BC.vBCIdx << endl;
-	os << "Index of ghost cell of w: " << BC.wBCIdx << endl;
-
-	os << "Index of the corresponding cell of pressure: "
-	   << BC.pBCcorIdx << endl;
-	os << "Index of the corresponding cell of u: "
-	   << BC.uBCcorIdx << endl;
-	os << "Index of the corresponding cell of v: "
-	   << BC.vBCcorIdx << endl;
-	os << "Index of the corresponding cell of w: "
-	   << BC.wBCcorIdx << endl;
-	return os;
-}
 

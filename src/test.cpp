@@ -1,29 +1,30 @@
-# include <iostream>
-# include <string>
-# include <vector>
-# include <array>
-# include <map>
-using namespace std;
-
-# include "include/class_Mesh.h"
-
+# include "include/IncomNSSolver.h"
 
 
 int main()
 {
 
-	Mesh test;
+	Mesh testMesh;
+	Fluid testFluid(1., 1.);
 
-	test.InitMesh({4, 4, 1}, {1, 1, 1});
+	testMesh.InitMesh({4, 4, 1}, {1, 1, 1});
 
-	test.addBC(1, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
-	test.addBC(2, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
-	test.addBC(3, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
-	test.addBC(1, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
-	test.addBC(2, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
-	test.addBC(3, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
+	testMesh.addBC(1, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
+	testMesh.addBC(2, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
+	testMesh.addBC(3, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
+	testMesh.addBC(1, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
+	testMesh.addBC(2, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
+	testMesh.addBC(3, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});	
 
-	cout << test << endl;
+	NSSolverEuler testSolve(testMesh, testFluid, 0., 0.1);
+
+	testSolve.test();
+
+	testSolve.output("A.txt");
+
+	testSolve.updateGhost();
+
+	testSolve.output("B.txt");
 
 	return 0;
 }
