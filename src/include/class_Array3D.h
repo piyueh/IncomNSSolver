@@ -65,3 +65,16 @@ class Array3D: public vector<T>
 };
 
 
+template<typename T>
+ostream & operator<<(ostream &os, Array3D<T> &A)
+{
+	os << "Nx Ny Nz: "
+	   << A.shape() << endl;
+	
+	os << "Values" << endl;
+	for(auto &i: A) cout << i << " ";
+	cout << endl;
+
+
+	return os;
+}

@@ -4,7 +4,8 @@ class PoissonSolver
 	public:
 	
 		PoissonSolver() = default;
-		PoissonSolver(int, int, int, double, double, double);
+		PoissonSolver(int a, int b, int c, double d, double e, double f)
+			{InitLinSys(a, b, c, d, e, f);}
 
 		int InitLinSys(int, int, int, double, double, double);
 

@@ -1,19 +1,5 @@
 # include "include/IncomNSSolver.h"
 
-PoissonSolver::PoissonSolver(int N1, int N2, int N3, double d1, double d2, double d3)
-{
-	Nx = N1; Ny = N2; Nz = N3;
-	dx = d1; dy = d2; dz = d3;
-
-	N = Nx * Ny * Nz;
-
-	A.resize(N, N);
-	A.setZero();
-
-	b.resize(N);
-	b.setZero();
-}	
-
 
 int PoissonSolver::InitLinSys(int N1, int N2, int N3, double d1, double d2, double d3)
 {
@@ -33,14 +19,14 @@ int PoissonSolver::InitLinSys(int N1, int N2, int N3, double d1, double d2, doub
 
 
 
-int PoissonSolver::setLHS(vector<Boundary> & BC)
+int PoissonSolver::setLHS(map<string, Boundary> & BC)
 {
 	int err;
 
 	err = InitA();
 
 	for(auto &it: BC)
-		err = BCCorrectA(it);
+		err = BCCorrectA(it.second);
 
 	cgSolver.compute(A);
 

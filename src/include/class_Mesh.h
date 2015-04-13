@@ -1,17 +1,33 @@
+# include <iostream>
+# include <vector>
+# include <array>
+# include <map>
+# include <utility>
+
+using namespace std;
+
+# include "class_Boundary.h"
+# include "io.h"
+
+
 /*
  * The class to store the variables of computation 
  * domain, and mesh
  */
 class Mesh
 {
+	friend class NSSolverEuler;
+	friend ostream &operator<<(ostream &os, Mesh &mesh);
+
 	public:
 
 		Mesh() = default;
-		Mesh(int N[3], double L[3]){ InitFlowField(N, L); };
+		Mesh(array<int, 3> N, array<double, 3> L){ InitMesh(N, L); };
 
-		int InitMesh(int [3], double [3]);
+		int InitMesh(array<int, 3>, array<double, 3>);
 
-		int addBC(string, int, double, int, double);
+		int addBC(unsigned int dir, int sign, pair<int, double> p, 
+				pair<int, double> u, pair<int, double> v, pair<int, double> w); 
 
 	private:
 
@@ -25,10 +41,10 @@ class Mesh
 		double Lx, Ly, Lz;
 		double dx, dy, dz;
 
-		map<string, Boundary> BCs;	
+		map<int, Boundary> BCs;	
 		
-		Array1D<double> xp, yp, zp;
-		Array1D<double> xu, yu, zu;
-		Array1D<double> xv, yv, zv;
-		Array1D<double> xw, yw, zw;
+		vector<double> xp, yp, zp;
+		vector<double> xu, yu, zu;
+		vector<double> xv, yv, zv;
+		vector<double> xw, yw, zw;
 };
