@@ -37,3 +37,5 @@
 # Backup files of VIM
 .*.swp
 
+# txt file
+*.txt

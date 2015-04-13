@@ -21,7 +21,6 @@ ostream & operator<<(ostream &os, Array3D<T> &A)
 	os << A.shape() << endl;
 	
 	for(auto &i: A) os << i << " ";
-	os << endl;
 
 	return os;
 }

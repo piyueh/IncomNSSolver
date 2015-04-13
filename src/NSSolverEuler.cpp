@@ -165,6 +165,26 @@ int NSSolverEuler::test()
 		}
 	}
 
+	c = 1;	
+	for(int i=0; i<mesh.Nxv; ++i){
+		for(int j=0; j<mesh.Nyv; ++j){
+			for(int k=0; k<mesh.Nzv; ++k){
+				v(i, j, k) = c;
+				++c;
+			}
+		}
+	}
+
+	c = 1;	
+	for(int i=0; i<mesh.Nxw; ++i){
+		for(int j=0; j<mesh.Nyw; ++j){
+			for(int k=0; k<mesh.Nzw; ++k){
+				w(i, j, k) = c;
+				++c;
+			}
+		}
+	}
+
 	return 0;
 }
 
