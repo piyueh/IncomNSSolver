@@ -1,6 +1,6 @@
 # include "include/IncomNSSolver.h"
 
-int FlowField::InitFlowField(int N[3], double L[3])
+int Mesh::InitMesh(int N[3], double L[3])
 {
 	Nx = N[0]; Ny = N[1]; Nz = N[2];
 	NCells = Nz * Ny * Nz;
@@ -28,21 +28,15 @@ int FlowField::InitFlowField(int N[3], double L[3])
 	for(int i=0; i<Nxw; ++i) xw.push_back((i+0.5)*dx);
 	for(int j=0; j<Nyw; ++j) yw.push_back((j+0.5)*dy);
 	for(int k=0; k<Nzw; ++k) yw.push_back(k*dz);
-			
-	p.initShape(-1, Nx, -1, Nx, -1, Nz);
-	u.initShape(-1, Nxu, -1, Nyu, -1, Nzu);
-	v.initShape(-1, Nxv, -1, Nyv, -1, Nzv);
-	w.initShape(-1, Nxw, -1, Nyw, -1, Nzw);
-
-	u.setZeros(); v.setZeros(); w.setZeros();
 
 	return 0;
 }
 
 
-int FlowField::addBC(string dir, int pBCtype, double pValue, 
-		int vBCtype, double vValue)
+int Mesh::addBC(string dir, 
+		int pBCtype, double pValue, int vBCtype, double vValue)
 {
-	BCs[dir] = Boundary(Nx, Ny, Nx, dir, pBCtype, pValue, vBCtype, vValue);
+	BCs[dir] = Boundary(Nx, Ny, Nx, dir, 
+			pBCtype, pValue, vBCtype, vValue);
 	return 0;
 }
