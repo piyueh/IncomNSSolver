@@ -1,6 +1,6 @@
 import numpy
 
-f = open("A.txt", "r")
+f = open("B.txt", "r")
 
 uN = numpy.array([int(x) for x in f.readline().split()])
 u = numpy.array([int(x) for x in f.readline().split()]).reshape(tuple(uN))
