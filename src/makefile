@@ -5,9 +5,8 @@
 CC = clang
 CXX = clang++
 
-
 BIN = test.out
-OBJS = Boundary.o Mesh.o NSSolverEuler.o io.o test.o
+OBJS = Boundary.o Mesh.o PoissonSolver.o NSSolverEuler.o io.o main.o
 
 .PHONY: clean debug release
 
