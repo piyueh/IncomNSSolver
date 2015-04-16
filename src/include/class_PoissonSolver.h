@@ -11,40 +11,38 @@ class PoissonSolver
 	public:
 	
 		PoissonSolver() = default;
-		PoissonSolver(int a, int b, int c, double d, double e, double f)
-			{InitLinSys(a, b, c, d, e, f);}
+		PoissonSolver(const array<int, 3> n, const array<double, 3> d) {InitLinSys(n, d);}
 
-		int InitLinSys(int, int, int, double, double, double);
+		int InitLinSys(const array<int, 3>, const array<double, 3>);
 
-		int setLHS(vector<Boundary> &);
-		int setRHS(VectorXd);
+		int setRefP(const array<int, 3> &, const double &);
 
-		int setRefP(int [3], double);
-		int setRefP(int, int, int, double);
+		int setLHS(const map<int, Boundary> &);
 
-		int Solve(VectorXd &);
+		int Solve(VectorXd &, VectorXd &);
 
 		void printA();
-		void printb();
-		void printx();
 	
 	private:
 
-		int N;
 		int Nx, Ny, Nz;
+		int NCells, Nyz;
+
 		double dx, dy, dz;
 
-		int refIdx[3]={0, 0, 0};
+		int refLoc;
 		double refP=0;
 
-		SparseMatrix<double> A;
-		VectorXd b;
 
+		SparseMatrix<double> A;
 		ConjugateGradient<SparseMatrix<double>> cgSolver;
 
 
 		int InitA();
-		int BCCorrectA(Boundary &);
+		int getIdx(const int & i, const int & j, const int & k); 
+		int getIdx(const array<int, 3> & idx);
+		pair<vector<int>, vector<int>> ObtainCells(const unsigned int &, const int &);
+		int BCCorrectA(const unsigned int &, const int &, const int &, const double &);
 };
 
 

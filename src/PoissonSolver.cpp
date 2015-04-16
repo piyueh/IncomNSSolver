@@ -1,32 +1,29 @@
 # include "include/IncomNSSolver.h"
 
 
-int PoissonSolver::InitLinSys(int N1, int N2, int N3, double d1, double d2, double d3)
+int PoissonSolver::InitLinSys(const array<int, 3> n, const array<double, 3> dl)
 {
-	Nx = N1; Ny = N2; Nz = N3;
-	dx = d1; dy = d2; dz = d3;
+	Nx = n[0]; Ny = n[1]; Nz = n[2]; 
+	dx = dl[0]; dy = dl[1]; dz = dl[2]; 
 
-	N = Nx * Ny * Nz;
+	NCells = Nx * Ny * Nz; Nyz = Ny * Nz;
 
-	A.resize(N, N);
+	A.resize(NCells, NCells);
 	A.setZero();
-
-	b.resize(N);
-	b.setZero();
 
 	return 0;
 }	
 
 
 
-int PoissonSolver::setLHS(map<string, Boundary> & BC)
+int PoissonSolver::setLHS(const map<int, Boundary> & BC)
 {
-	int err;
 
-	err = InitA();
+	InitA();
 
 	for(auto &it: BC)
-		err = BCCorrectA(it.second);
+		BCCorrectA(it.second.get_Dir(), it.second.get_Sign(), 
+				it.second.get_pType(), it.second.get_pBCvalue());
 
 	cgSolver.compute(A);
 
@@ -34,51 +31,28 @@ int PoissonSolver::setLHS(map<string, Boundary> & BC)
 }
 
 
-int PoissonSolver::setRHS(VectorXd f)
+int PoissonSolver::setRefP(const array<int, 3> & Idx, const double & value)
 {
-	assert(f.size()==Nx*Ny*Nz);
+	refLoc = getIdx(Idx);
+	refP = - value * A.coeffRef(refLoc, refLoc);
 
-	b += f;
+	A.coeffRef(refLoc, refLoc) = 0.;
+
 	return 0;
 }
 
 
-int PoissonSolver::setRefP(int idx[3], double value)
+int PoissonSolver::Solve(VectorXd & f, VectorXd & soln)
 {
-	int I = idx[0] * Ny * Nz + idx[1] * Nz + idx[2];
+	assert(f.size() == NCells);
 
-	refIdx[0] = idx[0];
-	refIdx[1] = idx[1];
-	refIdx[2] = idx[2];
-	refP = value;
+	f.coeffRef(refLoc) += refP;
 
-	b.coeffRef(I) -= value * A.coeffRef(I, I);
-	A.coeffRef(I, I) = 0.;
+	soln = cgSolver.solve(f.matrix());
+
 	return 0;
 }
 
-
-int PoissonSolver::setRefP(int i, int j, int k, double value)
-{
-	int I = i * Ny * Nz + j * Nz + k;
-
-	refIdx[0] = i;
-	refIdx[1] = j;
-	refIdx[2] = k;
-	refP = value;
-
-	b.coeffRef(I) -= value * A.coeffRef(I, I);
-	A.coeffRef(I, I) = 0.;
-	return 0;
-}
-
-
-int PoissonSolver::Solve(VectorXd &soln)
-{
-	soln = cgSolver.solve(b.matrix());
-
-	return 0;
-}
 
 /*
  * Initialize the matrix A in the linear system Ax=b for the 3D Poisson problems.
@@ -87,17 +61,16 @@ int PoissonSolver::Solve(VectorXd &soln)
 int PoissonSolver::InitA()
 {
 	// the numbers of diagonal sub-diagonal elements
-	int NDG0 = Nx * Ny * Nz;
+	int & NDG0 = NCells;
 	int NDG1 = NDG0 - 1;
 	int NDG2 = NDG0 - Nz;
-	int NDG3 = NDG0 - Ny * Nz;
+	int NDG3 = NDG0 - Nyz;
 
 	double dxInv2, dyInv2, dzInv2;
 	double dgValue;
 
 	// the container used to initialize the matrix A
 	vector<Triplet<double>> CoeffMatrix;
-
 
 	// values of non-diagonal elements
 	dxInv2 = 1.0 / (dx * dx);
@@ -147,7 +120,6 @@ int PoissonSolver::InitA()
 	A.setFromTriplets(CoeffMatrix.cbegin(), CoeffMatrix.cend());
 	A.makeCompressed();
 
-
 	return 0;
 }
 
@@ -156,76 +128,88 @@ int PoissonSolver::InitA()
  * Create the correction matrix for the matrix A according to the boundary condidtion.
  * The sparse matrix form is used.
  */
-int PoissonSolver::BCCorrectA(Boundary & Surf)
+int PoissonSolver::BCCorrectA(const unsigned int & dir, const int & sign,
+		const int & type, const double & value)
 {
-	int j0;
-	int type = Surf.get_pType();
-
-	double v = Surf.get_pBCvalue();
+	int jTarget;
 	double adjValue;
 
-	auto bg = Surf.bgCell();
-	auto ed = Surf.edCell();
+	const auto Cells = ObtainCells(dir, sign);
+	auto bg_i = Cells.first.cbegin(), ed_i = Cells.first.cend();
+	decltype(bg_i) bg_j;
 
-
-	switch (Surf.get_Direction()[1])
+	switch (dir)
 	{
-		case 'x': j0 = Ny * Nz; adjValue = 1 / (dx * dx); break;
-		case 'y': j0 = Nz; adjValue = 1 / (dy * dy); break;
-		case 'z': j0 = 1; adjValue = 1 / (dz * dz); break;
+		case 1: jTarget = Nyz; adjValue = 1 / (dx * dx); break;
+		case 2: jTarget = Nz; adjValue = 1 / (dy * dy); break;
+		case 3: jTarget = 1; adjValue = 1 / (dz * dz); break;
 		default:
 			throw invalid_argument("The direction of the boundary is wrong!");
 			break;
 	}
 
-	switch (Surf.get_Direction()[0])
-	{
-		case '+': break;
-		case '-': j0 *= (-1); break;
-		default:
-			throw invalid_argument("The sign of the boundary is wrong!");
-			break;
-	}
-		
+	jTarget *= sign;
+
+	if (type == 1) adjValue *= -1;
 
 	switch (type)
 	{
-		case 0:
-
-			for(auto it=bg, it2=Surf.bgOppCell(); it<ed; ++it, ++it2){
-				A.coeffRef(*it, *it2) += adjValue;
-				if (*it + j0 >= 0 && *it + j0 < A.cols())
-					A.coeffRef(*it, *it+j0) -= adjValue;
-			}
-			break;
-
-		case 1:
-
-			for(auto it=bg; it<ed; ++it){
-				A.coeffRef(*it, *it) -= adjValue;
-				if (*it + j0 >= 0 && *it + j0 < A.cols())
-					A.coeffRef(*it, *it+j0) -= adjValue;
-			}
-			break;
-
-		case -1:
-
-			for(auto it=bg; it<ed; ++it){
-				A.coeffRef(*it, *it) += adjValue;
-				if (*it + j0 >= 0 && *it + j0 < A.cols())
-					A.coeffRef(*it, *it+j0) -= adjValue;
-			}
-			break;
-
+		case 0: bg_j = Cells.second.cbegin(); break;
+		case 1: bg_j = Cells.first.cbegin(); adjValue *= -1; break;
+		case -1: bg_j = Cells.first.cbegin(); break;
 		default:
-
 			throw invalid_argument("The sign of the boundary is wrong!");
 			break;
 	}
 
+	for(auto it=bg_i, it2=bg_j; it<ed_i; ++it, ++it2){
+		A.coeffRef(*it, *it2) += adjValue;
+		if (*it + jTarget >= 0 && *it + jTarget < A.cols())
+			A.coeffRef(*it, *it+jTarget) -= adjValue;
+	}
 
 	return 0;
 }
+
+
+inline pair<vector<int>, vector<int>>  
+PoissonSolver::ObtainCells(const unsigned int & dir, const int & sign)
+{
+	int ia = 0, ib = Nx;
+	int ja = 0, jb = Ny;
+	int ka = 0, kb = Nz;
+	int adjIdx, idx;
+
+	pair<vector<int>, vector<int>> Cells;
+
+	switch (dir)
+	{
+		case 1: ib = 1; adjIdx = (Nx - 1) * Nyz; break;
+		case 2: jb = 1; adjIdx = (Ny - 1) * Nz; break;
+		case 3: kb = 1; adjIdx = Nz - 1; break;
+	}
+
+	for(int i=ia; i<ib; ++i) {
+		for(int j=ja; j<jb; ++j) {
+			for(int k=ka; k<kb; ++k) {
+				idx = getIdx(i, j, k);
+				Cells.first.push_back(idx);
+				Cells.second.push_back(idx + adjIdx);
+			}
+		}
+	}
+
+	if (sign == 1) Cells.first.swap(Cells.second);
+
+	return Cells;
+}
+
+
+inline int PoissonSolver::getIdx(const int & i, const int & j, const int & k) 
+{ return i * Nyz + j * Nz + k; }
+
+inline int PoissonSolver::getIdx(const array<int, 3> & idx) 
+{ return idx[0] * Nyz + idx[1] * Nz + idx[2]; }
 
 
 void PoissonSolver::printA()
@@ -234,11 +218,5 @@ void PoissonSolver::printA()
 	cout << A << endl;
 }
 
-
-void PoissonSolver::printb()
-{
-	cout << "RHS, Vector b: " << endl;
-	cout << b << endl;
-}
 
 

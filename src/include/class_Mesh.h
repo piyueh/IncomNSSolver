@@ -22,10 +22,12 @@ class Mesh
 		int addBC(unsigned int dir, int sign, pair<int, double> p, 
 				pair<int, double> u, pair<int, double> v, pair<int, double> w); 
 
+		const map<int, Boundary> & get_BCs() const { return BCs; }
+
 	private:
 
 		int Nx, Ny, Nz;
-		int NCells;
+		int NCells, Nyz;
 
 		int Nxu, Nyu, Nzu;
 		int Nxv, Nyv, Nzv;

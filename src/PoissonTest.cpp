@@ -1,6 +1,5 @@
 # include "include/IncomNSSolver.h"
 # include "testFuncs.cpp"
-# include <cmath>
 
 
 double evalRelErr(VectorXd & x, VectorXd & xe)
@@ -14,53 +13,51 @@ double evalRelErr(VectorXd & x, VectorXd & xe)
 int main()
 {
 	int Nx, Ny, Nz;
-	int NCell;
-
 	double Lx, Ly, Lz;
 	double dx, dy, dz;
 
-	ArrayXd x;
-	ArrayXd y;
-	ArrayXd z;
+	ArrayXd x, y, z;
 
-	VectorXd p;
+	VectorXd p, f;
 	VectorXd p_exact;
 
-	vector<Boundary> BCs;
-	PoissonSolver test;
+	Mesh mesh;
+	PoissonSolver solver;
 
 
 	Lx = 1.0; Ly = 1.0; Lz = 1.0;
-
 	Nx = 100; Ny = 100; Nz = 1;
-	NCell = Nx * Ny * Nz;
+	dx = Lx / Nx; dy = Ly / Ny; dz = Lz / Nz; 
 
-	dx = Lx / Nx; dy = Ly / Ny; dz = Lz / Nz;
 
 	x.setLinSpaced(Nx, dx/2, Lx-dx/2);
 	y.setLinSpaced(Ny, dy/2, Ly-dy/2);
 	z.setLinSpaced(Nz, dz/2, Lz-dz/2);
 
-	p_exact = exactSoln(Nx, Ny, Nz, x, y, z, 7);
+	p_exact = exactSoln(Nx, Ny, Nz, x, y, z, 25);
 
-	BCs = genBCs(Nx, Ny, Nz);
+	f = sourceTerm(Nx, Ny, Nz, x, y, z, 25);
 
-	test.InitLinSys(Nx, Ny, Nz, dx, dy, dz);
+	mesh.InitMesh({Nx, Ny, Nz}, {Lx, Ly, Lz});
 
-	test.setLHS(BCs);	
+	mesh.addBC(1, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
+	mesh.addBC(2, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
+	mesh.addBC(3, 1, {0, 0}, {0, 0}, {0, 0}, {0, 0});
+	mesh.addBC(1, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
+	mesh.addBC(2, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
+	mesh.addBC(3, -1, {0, 0}, {0, 0}, {0, 0}, {0, 0});
 
-	test.setRefP(0, 0, 0, p_exact[0]);
-	test.setRHS(sourceTerm(Nx, Ny, Nz, x, y, z, 7)); 
 
+	
+	solver.InitLinSys({Nx, Ny, Nz}, {dx, dy, dz});
+	solver.setLHS(mesh.get_BCs());
+	solver.setRefP({0, 0, 0}, p_exact[0]);
 
-	test.Solve(p);
-
-	cout << p << endl;
+	solver.Solve(f, p);
 
 	double err = evalRelErr(p, p_exact);
 
 	cout << err << endl;
-	cout << sqrt(err) << endl;
 
 	
 	return 0;

@@ -1,85 +1,4 @@
-
-vector<Boundary> genBCs(int Nx, int Ny, int Nz)
-{
-	vector<Boundary> BCs;
-	{
-		vector<int> temp; 	
-		int i = 0;
-		for(int j=0; j<Ny; ++j)
-		{
-			for(int k=0; k<Nz; ++k)
-				temp.push_back(i*Ny*Nz+j*Nz+k);
-		}
-		BCs.push_back(Boundary(Ny*Nz, "-x", -1, 0.0, temp));
-	}
-
-	{
-		vector<int> temp; 	
-		int i = Nx - 1;
-		for(int j=0; j<Ny; ++j)
-		{
-			for(int k=0; k<Nz; ++k)
-				temp.push_back(i*Ny*Nz+j*Nz+k);
-		}
-		BCs.push_back(Boundary(Ny*Nz, "+x", -1, 0.0, temp));
-	}
-
-	{
-		vector<int> temp; 	
-		int j = 0;
-		for(int i=0; i<Nx; ++i)
-		{
-			for(int k=0; k<Nz; ++k)
-				temp.push_back(i*Ny*Nz+j*Nz+k);
-		}
-		BCs.push_back(Boundary(Nx*Nz, "-y", -1, 0.0, temp));
-	}
-
-	{
-		vector<int> temp; 	
-		int j = Ny - 1;
-		for(int i=0; i<Nx; ++i)
-		{
-			for(int k=0; k<Nz; ++k)
-				temp.push_back(i*Ny*Nz+j*Nz+k);
-		}
-		BCs.push_back(Boundary(Nx*Nz, "+y", -1, 0.0, temp));
-	}
-
-	{
-		vector<int> temp, temp2; 	
-		int k0 = 0, k1 = Nz - 1;
-		for(int i=0; i<Nx; ++i)
-		{
-			for(int j=0; j<Ny; ++j)
-			{
-				temp.push_back(i*Ny*Nz+j*Nz+k0);
-				temp2.push_back(i*Ny*Nz+j*Nz+k1);
-			}
-		}
-		BCs.push_back(Boundary(Nx*Ny, "-z", 0, 0.0, temp, temp2));
-	}
-
-
-	{
-		vector<int> temp, temp2; 	
-		int k0 = Nz-1, k1 = 0;
-		for(int i=0; i<Nx; ++i)
-		{
-			for(int j=0; j<Ny; ++j)
-			{
-				temp.push_back(i*Ny*Nz+j*Nz+k0);
-				temp2.push_back(i*Ny*Nz+j*Nz+k1);
-			}
-		}
-		BCs.push_back(Boundary(Nx*Ny, "+z", 0, 0.0, temp, temp2));
-	}
-
-	return BCs;
-}
-
-
-ArrayXd sourceTerm(int Nx, int Ny, int Nz,
+VectorXd sourceTerm(int Nx, int Ny, int Nz,
 		ArrayXd &X, ArrayXd &Y, ArrayXd &Z, int n)
 {
 	int Nyz = Ny * Nz;
@@ -97,15 +16,14 @@ ArrayXd sourceTerm(int Nx, int Ny, int Nz,
 		}
 	}
 
-	return f;
+	return f.matrix();
 }
 
 
-ArrayXd exactSoln(int Nx, int Ny, int Nz,
+VectorXd exactSoln(int Nx, int Ny, int Nz,
 		ArrayXd &X, ArrayXd &Y, ArrayXd &Z, int n)
 {
 	int Nyz = Ny * Nz;
-	double M_PI2 = M_PI * M_PI;
 
 	auto xcos = (2 * M_PI * n * X).cos();
 	auto ycos = (2 * M_PI * n * Y).cos();
@@ -119,5 +37,5 @@ ArrayXd exactSoln(int Nx, int Ny, int Nz,
 		}
 	}
 
-	return P;
+	return P.matrix();
 }

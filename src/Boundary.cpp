@@ -1,7 +1,7 @@
 # include "include/IncomNSSolver.h"
 
 
-void set_correspondIdx(int &type, int &corIdx, int v1, int v0);
+int set_correspondIdx(int &type, int &corIdx, int v1, int v0);
 
 
 /*
@@ -15,10 +15,11 @@ void set_correspondIdx(int &type, int &corIdx, int v1, int v0);
  * 					-1: Neumann
  * 			   the second element is value
  */
-Boundary::Boundary(int Nx, int Ny, int Nz, unsigned int Dir, int Sign,
-		pair<int, double> p, 
-		pair<int, double> u, pair<int, double> v, pair<int, double> w)
+Boundary::Boundary(const array<int, 3> N, const unsigned int Dir, 
+		const int Sign, const pair<int, double> p, 
+		const pair<int, double> u, const pair<int, double> v, const pair<int, double> w)
 {
+	auto & Nx = N[0], & Ny = N[1], & Nz = N[2];
 
 	dir = Dir; sign = Sign;
 
@@ -95,10 +96,11 @@ Boundary::Boundary(int Nx, int Ny, int Nz, unsigned int Dir, int Sign,
 			throw invalid_argument("Invalid boundary direction");
 			break;
 	}
+
 }
 
 
-void set_correspondIdx(int &type, int &corIdx, int v1, int v0)
+int set_correspondIdx(int &type, int &corIdx, int v1, int v0)
 {
 	switch (type) {
 		case -1: case  1: corIdx = v1; break; // Neumann and Dirichlet
@@ -107,6 +109,7 @@ void set_correspondIdx(int &type, int &corIdx, int v1, int v0)
 			throw invalid_argument("Error in Boundary.cpp");
 			break;
 	}
+	return 0;
 }
 
 

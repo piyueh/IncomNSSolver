@@ -20,32 +20,33 @@ class Boundary
 		 * Input:
 		 * Nx, Ny, Nz, Direction, P BC, P BC Value, V BC, V BC Value
 		 */
-		Boundary(int Nx, int Ny, int Nz, unsigned int Dir, int Sign, 
-				pair<int, double> p, pair<int, double> u, 
-				pair<int, double> v, pair<int, double> w);
+		Boundary(const array<int ,3>, const unsigned int, const int, 
+				const pair<int, double>, const pair<int, double>, 
+				const pair<int, double>, const pair<int, double>);
 
 
-		int get_Direction() { return sign*dir; }
+		const int & get_Dir() const { return dir; }
+		const int & get_Sign() const { return sign; }
 
-		int get_pType() { return pType; }
-		int get_uType() { return uType; }
-		int get_vType() { return vType; }
-		int get_wType() { return wType; }
+		const int & get_pType() const { return pType; }
+		const int & get_uType() const { return uType; }
+		const int & get_vType() const { return vType; }
+		const int & get_wType() const { return wType; }
 
-		double get_pBCvalue() { return pBCvalue; }
-		double get_uBCvalue() { return uBCvalue; }
-		double get_vBCvalue() { return vBCvalue; }
-		double get_wBCvalue() { return wBCvalue; }
+		const double & get_pBCvalue() const { return pBCvalue; }
+		const double & get_uBCvalue() const { return uBCvalue; }
+		const double & get_vBCvalue() const { return vBCvalue; }
+		const double & get_wBCvalue() const { return wBCvalue; }
 
-		int get_pBCIdx() { return pBCIdx; }
-		int get_uBCIdx() { return uBCIdx; }
-		int get_vBCIdx() { return vBCIdx; }
-		int get_wBCIdx() { return wBCIdx; }
+		const int & get_pBCIdx() const { return pBCIdx; }
+		const int & get_uBCIdx() const { return uBCIdx; }
+		const int & get_vBCIdx() const { return vBCIdx; }
+		const int & get_wBCIdx() const { return wBCIdx; }
 
-		int get_pBCcorIdx() { return pBCcorIdx; }
-		int get_uBCcorIdx() { return uBCcorIdx; }
-		int get_vBCcorIdx() { return vBCcorIdx; }
-		int get_wBCcorIdx() { return wBCcorIdx; }
+		const int & get_pBCcorIdx() { return pBCcorIdx; }
+		const int & get_uBCcorIdx() { return uBCcorIdx; }
+		const int & get_vBCcorIdx() { return vBCcorIdx; }
+		const int & get_wBCcorIdx() { return wBCcorIdx; }
 
 	private:
 
