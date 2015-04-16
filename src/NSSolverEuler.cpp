@@ -1,72 +1,35 @@
 # include "include/IncomNSSolver.h"
+# include "NS_updateGhost.cpp"
+# include "NS_Convection.cpp"
+# include "NS_Diffusion.cpp"
 
 
-int updXGhost(Array3D<double> &, int &, int &, 
-		int &, int &, int &, double, double &);
-int updYGhost(Array3D<double> &, int &, int &, 
-		int &, int &, int &, double, double &);
-int updZGhost(Array3D<double> &, int &, int &, 
-		int &, int &, int &, double, double &);
-
-
-int NSSolverEuler::updateGhost()
+int NSSolverEuler::solve(int targetNStep)
 {
-	for(auto &bcPair: mesh.BCs)
+
+	for(int n=0; n<targetNStep; ++n)
 	{
-		auto & bc = bcPair.second;
-		
-		switch (bc.dir) {
-			case 1: // x
+		cout << "n=" << n << " ";
 
-				updXGhost(u, mesh.Nyu, mesh.Nzu, 
-						bc.uType, bc.uBCIdx, bc.uBCcorIdx, 2*mesh.dx, bc.uBCvalue);
+		updateGhost();
 
-				updXGhost(v, mesh.Nyv, mesh.Nzv, 
-						bc.vType, bc.vBCIdx, bc.vBCcorIdx, mesh.dx, bc.vBCvalue);
+		PredictStep();
 
-				updXGhost(w, mesh.Nyw, mesh.Nzw, 
-						bc.wType, bc.wBCIdx, bc.wBCcorIdx, mesh.dx, bc.wBCvalue);
+		updatePoissonSource();
 
-				updXGhost(p, mesh.Ny, mesh.Nz, 
-						bc.pType, bc.pBCIdx, bc.pBCcorIdx, mesh.dx, bc.pBCvalue);
+		pSolver.Solve(b, p);
 
-				break;
+		updateU();
 
-			case 2: // y
+		time += dt;
 
-				updYGhost(u, mesh.Nxu, mesh.Nzu, 
-						bc.uType, bc.uBCIdx, bc.uBCcorIdx, mesh.dy, bc.uBCvalue);
-
-				updYGhost(v, mesh.Nxv, mesh.Nzv, 
-						bc.vType, bc.vBCIdx, bc.vBCcorIdx, 2*mesh.dy, bc.vBCvalue);
-
-				updYGhost(w, mesh.Nxw, mesh.Nzw, 
-						bc.wType, bc.wBCIdx, bc.wBCcorIdx, mesh.dy, bc.wBCvalue);
-
-				updYGhost(p, mesh.Nx, mesh.Nz, 
-						bc.pType, bc.pBCIdx, bc.pBCcorIdx, mesh.dy, bc.pBCvalue);
-
-				break;
-
-			case 3: // y
-
-				updZGhost(u, mesh.Nxu, mesh.Nyu, 
-						bc.uType, bc.uBCIdx, bc.uBCcorIdx, mesh.dy, bc.uBCvalue);
-
-				updZGhost(v, mesh.Nxv, mesh.Nyv, 
-						bc.vType, bc.vBCIdx, bc.vBCcorIdx, mesh.dy, bc.vBCvalue);
-
-				updZGhost(w, mesh.Nxw, mesh.Nyw, 
-						bc.wType, bc.wBCIdx, bc.wBCcorIdx, 2*mesh.dy, bc.wBCvalue);
-
-				updZGhost(p, mesh.Nx, mesh.Ny, 
-						bc.pType, bc.pBCIdx, bc.pBCcorIdx, mesh.dy, bc.pBCvalue);
-
-				break;
-		}
+		cout << "time = " << time << endl;
 	}
+
 	return 0;
 }
+
+
 
 
 int NSSolverEuler::PredictStep()
@@ -103,205 +66,82 @@ int NSSolverEuler::PredictStep()
 }
 
 
-double NSSolverEuler::ConvectU(int &i, int &j, int &k)
+int NSSolverEuler::updatePoissonSource()
 {
-	double Fcu;
-	Fcu =
-		0.25 * ((u(i+1, j, k) + u(i, j, k)) * (u(i+1, j, k) + u(i, j, k)) -
-				(u(i, j, k) + u(i-1, j, k)) * (u(i, j, k) + u(i-1, j, k))) / dx + 
 
-		0.25 * ((u(i, j+1, k) + u(i, j, k)) * (v(i, j+1, k) + v(i-1, j+1, k)) -
-				(u(i, j, k) + u(i, j-1, k)) * (v(i, j, k) + v(i-1, j, k))) / dy +
-
-		0.25 * ((u(i, j, k+1) + u(i, j, k)) * (w(i, j, k+1) + w(i-1, j, k+1)) -
-				(u(i, j, k) + u(i, j, k-1)) * (w(i, j, k) + w(i-1, j, k))) / dz; 
-	return Fcu;
-}
-
-
-double NSSolverEuler::ConvectV(int &i, int &j, int &k)
-{
-	double Fcv;
-	Fcv =
-		0.25 * ((v(i+1, j, k) + v(i, j, k)) * (u(i+1, j, k) + u(i+1, j-1, k)) -
-				(v(i, j, k) + v(i-1, j, k)) * (u(i, j, k) + u(i, j-1, k))) / dx + 
-
-		0.25 * ((v(i, j+1, k) + v(i, j, k)) * (v(i, j+1, k) + v(i, j, k)) -
-				(v(i, j, k) + v(i, j-1, k)) * (v(i, j, k) + v(i, j-1, k))) / dy +
-
-		0.25 * ((v(i, j, k+1) + v(i, j, k)) * (w(i, j, k+1) + w(i, j-1, k+1)) -
-				(v(i, j, k) + v(i, j, k-1)) * (w(i, j, k) + w(i, j-1, k))) / dz; 
-	return Fcv;
-}
-
-
-double NSSolverEuler::ConvectW(int &i, int &j, int &k)
-{
-	double Fcw;
-	Fcw =
-		0.25 * ((w(i+1, j, k) + v(i, j, k)) * (u(i+1, j, k) + u(i+1, j, k-1)) -
-				(w(i, j, k) + v(i-1, j, k)) * (u(i, j, k) + u(i, j, k-1))) / dx +
-
-		0.25 * ((w(i, j+1, k) + w(i, j, k)) * (v(i, j+1, k) + v(i, j+1, k-1)) -
-				(w(i, j, k) + w(i, j-1, k)) * (v(i, j, k) + v(i, j, k-1))) / dy + 
-
-		0.25 * ((w(i, j, k+1) + w(i, j, k)) * (w(i, j, k+1) + w(i, j, k)) -
-				(w(i, j, k) + w(i, j, k-1)) * (w(i, j, k) + w(i, j, k-1))) / dz;
-
-	return Fcw;
-}
-
-
-double NSSolverEuler::DiffusiveU(int &i, int &j, int &k)
-{
-	double Fdu;
-	Fdu = fluid.nu * (
-			(u(i+1, j, k) - 2 * u(i, j, k) + u(i-1, j, k)) / dx2 +
-			(u(i, j+1, k) - 2 * u(i, j, k) + u(i, j-1, k)) / dy2 +
-			(u(i, j, k+1) - 2 * u(i, j, k) + u(i, j, k-1)) / dz2 );
-	return Fdu;
-}
-
-
-double NSSolverEuler::DiffusiveV(int &i, int &j, int &k)
-{
-	double Fdv;
-	Fdv = fluid.nu * (
-			(v(i+1, j, k) - 2 * v(i, j, k) + v(i-1, j, k)) / dx2 +
-			(v(i, j+1, k) - 2 * v(i, j, k) + v(i, j-1, k)) / dy2 +
-			(v(i, j, k+1) - 2 * v(i, j, k) + v(i, j, k-1)) / dz2 );
-	return Fdv;
-}
-
-
-double NSSolverEuler::DiffusiveW(int &i, int &j, int &k)
-{
-	double Fdw;
-	Fdw = fluid.nu * (
-			(w(i+1, j, k) - 2 * w(i, j, k) + w(i-1, j, k)) / dx2 +
-			(w(i, j+1, k) - 2 * w(i, j, k) + w(i, j-1, k)) / dy2 +
-			(w(i, j, k+1) - 2 * w(i, j, k) + w(i, j, k-1)) / dz2 );
-	return Fdw;
-}
-
-
-
-int updXGhost(Array3D<double> &u, int &Ny, int &Nz, 
-		int &type, int &ghIdx, int &corIdx, double coeff, double &BCvalue)
-{
-	switch (type)
-	{
-		case 0:
-			for(int j=0; j<Ny; ++j){
-				for(int k=0; k<Nz; ++k){
-					u(ghIdx, j, k) = u(corIdx, j, k); } }
-
-			break;
-
-		case 1: case -1:
-			for(int j=0; j<Ny; ++j){
-				for(int k=0; k<Nz; ++k){
-					u(ghIdx, j, k) = 
-						- type * u(corIdx, j, k) + coeff * BCvalue; } }
-
-			break;
-
-		default:
-			throw invalid_argument("In EulerNSSsolver.cpp->updXGhost");
-			break;
-	}
-	return 0;
-}
-
-
-int updYGhost(Array3D<double> &u, int &Nx, int &Nz, 
-		int &type, int &ghIdx, int &corIdx, double coeff, double &BCvalue)
-{
-	switch (type)
-	{
-		case 0:
-			for(int i=0; i<Nx; ++i){
-				for(int k=0; k<Nz; ++k){
-					u(i, ghIdx, k) = u(i, corIdx, k); } }
-
-			break;
-
-		case 1: case -1:
-			for(int i=0; i<Nx; ++i){
-				for(int k=0; k<Nz; ++k){
-					u(i, ghIdx, k) = 
-						- type * u(i, corIdx, k) + coeff * BCvalue; } }
-
-			break;
-
-		default:
-			throw invalid_argument("In EulerNSSsolver.cpp->updXGhost");
-			break;
-	}
-	return 0;
-}
-
-
-int updZGhost(Array3D<double> &u, int &Nx, int &Ny, 
-		int &type, int &ghIdx, int &corIdx, double coeff, double &BCvalue)
-{
-	switch (type)
-	{
-		case 0:
-			for(int i=0; i<Nx; ++i){
-				for(int j=0; j<Ny; ++j){
-					u(i, j, ghIdx) = u(i, j, corIdx); } }
-
-			break;
-
-		case 1: case -1:
-			for(int i=0; i<Nx; ++i){
-				for(int j=0; j<Ny; ++j){
-					u(i, j, ghIdx) = 
-						- type * u(i, j, corIdx) + coeff * BCvalue; } }
-
-			break;
-
-		default:
-			throw invalid_argument("In EulerNSSsolver.cpp->updXGhost");
-			break;
-	}
-	return 0;
-}
-
-
-int NSSolverEuler::test()
-{
-	int c = 1;	
-	for(int i=0; i<mesh.Nxu; ++i){
-		for(int j=0; j<mesh.Nyu; ++j){
-			for(int k=0; k<mesh.Nzu; ++k){
-				u(i, j, k) = c;
-				++c;
+	for(int i=0; i<Nx; ++i){
+		for(int j=0; j<Ny; ++j){
+			for(int k=0; k<Nz; ++k){
+				b(i * Nyz + j * Nz + k) = 
+					((u_str(i+1, j, k) - u_str(i, j, k)) / dx + 
+					 (v_str(i, j+1, k) - v_str(i, j, k)) / dy + 
+					 (w_str(i, j, k+1) - w_str(i, j, k)) / dz) / dt;
 			}
 		}
 	}
 
-	c = 1;	
-	for(int i=0; i<mesh.Nxv; ++i){
-		for(int j=0; j<mesh.Nyv; ++j){
-			for(int k=0; k<mesh.Nzv; ++k){
-				v(i, j, k) = c;
-				++c;
+	return 0;
+}
+
+
+int NSSolverEuler::updateU()
+{
+	int tmp1, tmp2;
+	
+	// update u
+	for(int j=0; j<Nyu; ++j){
+		for(int k=0; k<Nzu; ++k){
+			u(0, j, k) = u_str(0, j, k);
+			u(Nxu-1, j, k) = u_str(Nxu-1, j, k);
+		}
+	}
+
+	for(int i=1; i<Nxu-1; ++i){
+		for(int j=0; j<Nyu; ++j){
+			for(int k=0; k<Nzu; ++k){
+				tmp1 = i * Nyz + j * Nz + k; tmp2 = tmp1 - Nyz;
+				u(i, j, k) = u_str(i, j, k) -
+					dt * (p(tmp1) - p(tmp2)) / dx;	
 			}
 		}
 	}
 
-	c = 1;	
-	for(int i=0; i<mesh.Nxw; ++i){
-		for(int j=0; j<mesh.Nyw; ++j){
-			for(int k=0; k<mesh.Nzw; ++k){
-				w(i, j, k) = c;
-				++c;
+	// update v
+	for(int i=0; i<Nxv; ++i){
+		for(int k=0; k<Nzv; ++k){
+			v(i, 0, k) = v_str(i, 0, k);
+			v(i, Nyv-1, k) = u_str(i, Nyv-1, k);
+		}
+	}
+
+	for(int i=0; i<Nxv; ++i){
+		for(int j=1; j<Nyv-1; ++j){
+			for(int k=0; k<Nzv; ++k){
+				tmp1 = i * Nyz + j * Nz + k; tmp2 = tmp1 - Nyz;
+				v(i, j, k) = v_str(i, j, k) -
+					dt * (p(tmp1) - p(tmp2)) / dy;	
 			}
 		}
 	}
 
+	//update w
+	for(int i=0; i<Nxw; ++i){
+		for(int j=0; j<Nyw; ++j){
+			w(i, j, 0) = w_str(i, j, 0);
+			v(i, j, Nzw-1) = u_str(i, j, Nzw-1);
+		}
+	}
+
+	for(int i=0; i<Nxw; ++i){
+		for(int j=0; j<Nyw; ++j){
+			for(int k=1; k<Nzw-1; ++k){
+				tmp1 = i * Nyz + j * Nz + k; tmp2 = tmp1 - Nyz;
+				w(i, j, k) = w_str(i, j, k) -
+					dt * (p(tmp1) - p(tmp2)) / dz;	
+			}
+		}
+	}
+	   	
 	return 0;
 }
 

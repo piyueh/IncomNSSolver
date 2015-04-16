@@ -9,7 +9,6 @@
 class Boundary
 {
 	friend class Mesh;
-	friend class NSSolverEuler;
 	friend ostream &operator<<(ostream &, Boundary &);
 
 	public:
@@ -43,10 +42,10 @@ class Boundary
 		const int & get_vBCIdx() const { return vBCIdx; }
 		const int & get_wBCIdx() const { return wBCIdx; }
 
-		const int & get_pBCcorIdx() { return pBCcorIdx; }
-		const int & get_uBCcorIdx() { return uBCcorIdx; }
-		const int & get_vBCcorIdx() { return vBCcorIdx; }
-		const int & get_wBCcorIdx() { return wBCcorIdx; }
+		const int & get_pBCcorIdx() const { return pBCcorIdx; }
+		const int & get_uBCcorIdx() const { return uBCcorIdx; }
+		const int & get_vBCcorIdx() const { return vBCcorIdx; }
+		const int & get_wBCcorIdx() const { return wBCcorIdx; }
 
 	private:
 
