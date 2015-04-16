@@ -9,12 +9,17 @@
 class NSSolverEuler
 {
 	friend ostream &operator<<(ostream &, NSSolverEuler &);
+
 	public:
 
-		NSSolverEuler(Mesh &m, Fluid &f, array<int, 3> pIdx, double pR, 
-				double t, double Dt): 
-			mesh(m), fluid(f), pRefIdx(pIdx), pRef(pR), time(t), dt(Dt)
+		NSSolverEuler(Mesh &m, Fluid &f): mesh(m), fluid(f) {};
+
+		int InitSolver(double t, double Dt, 
+				array<int, 3> pIdx, double pR)
 		{
+			dt = Dt; time = t;
+			pRefIdx = pIdx; pRef = pR;
+
 			dx2 = dx * dx; dy2 = dy * dy; dz2 = dz * dz;
 
 			u.initShape(-1, Nxu, -1, Nyu, -1, Nzu);
@@ -34,6 +39,7 @@ class NSSolverEuler
 			pSolver.setLHS(mesh.get_BCs());
 			pSolver.setRefP(pRefIdx, pRef);
 			
+			return 0;
 		}
 
 		int solve(int);
