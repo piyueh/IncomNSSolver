@@ -9,7 +9,6 @@ int NSSolverEuler::solve(int targetNStep)
 
 	for(int n=0; n<targetNStep; ++n)
 	{
-		cout << "n=" << n << " ";
 
 		updateGhost();
 
@@ -23,7 +22,11 @@ int NSSolverEuler::solve(int targetNStep)
 
 		time += dt;
 
-		cout << "time = " << time << endl;
+		if (n % 50 == 0)
+		{
+			cout << "n=" << n+1 << " ";
+			cout << "time = " << time << endl;
+		}
 	}
 
 	return 0;
@@ -68,10 +71,10 @@ int NSSolverEuler::PredictStep()
 
 int NSSolverEuler::updatePoissonSource()
 {
-
 	for(int i=0; i<Nx; ++i){
 		for(int j=0; j<Ny; ++j){
 			for(int k=0; k<Nz; ++k){
+				
 				b(i * Nyz + j * Nz + k) = 
 					((u_str(i+1, j, k) - u_str(i, j, k)) / dx + 
 					 (v_str(i, j+1, k) - v_str(i, j, k)) / dy + 
@@ -110,14 +113,14 @@ int NSSolverEuler::updateU()
 	for(int i=0; i<Nxv; ++i){
 		for(int k=0; k<Nzv; ++k){
 			v(i, 0, k) = v_str(i, 0, k);
-			v(i, Nyv-1, k) = u_str(i, Nyv-1, k);
+			v(i, Nyv-1, k) = v_str(i, Nyv-1, k);
 		}
 	}
 
 	for(int i=0; i<Nxv; ++i){
 		for(int j=1; j<Nyv-1; ++j){
 			for(int k=0; k<Nzv; ++k){
-				tmp1 = i * Nyz + j * Nz + k; tmp2 = tmp1 - Nyz;
+				tmp1 = i * Nyz + j * Nz + k; tmp2 = tmp1 - Nz;
 				v(i, j, k) = v_str(i, j, k) -
 					dt * (p(tmp1) - p(tmp2)) / dy;	
 			}
@@ -128,14 +131,14 @@ int NSSolverEuler::updateU()
 	for(int i=0; i<Nxw; ++i){
 		for(int j=0; j<Nyw; ++j){
 			w(i, j, 0) = w_str(i, j, 0);
-			v(i, j, Nzw-1) = u_str(i, j, Nzw-1);
+			w(i, j, Nzw-1) = w_str(i, j, Nzw-1);
 		}
 	}
 
 	for(int i=0; i<Nxw; ++i){
 		for(int j=0; j<Nyw; ++j){
 			for(int k=1; k<Nzw-1; ++k){
-				tmp1 = i * Nyz + j * Nz + k; tmp2 = tmp1 - Nyz;
+				tmp1 = i * Nyz + j * Nz + k; tmp2 = tmp1 - 1;
 				w(i, j, k) = w_str(i, j, k) -
 					dt * (p(tmp1) - p(tmp2)) / dz;	
 			}

@@ -4,7 +4,7 @@
 
 
 # pragma once
-
+# include <cmath>
 
 class NSSolverEuler
 {
@@ -31,6 +31,22 @@ class NSSolverEuler
 			w_str.initShape(-1, Nxw, -1, Nyw, -1, Nzw);
 
 			u.setZeros(); v.setZeros(); w.setZeros();
+
+			for(int i=0; i<Nxu; ++i){
+				for(int j=0; j<Nyu; ++j){
+					for(int k=0; k<Nzu; ++k){
+						u(i, j, k) = - cos(xu[i]) * sin(yu[j]);
+					}
+				}
+			}
+
+			for(int i=0; i<Nxv; ++i){
+				for(int j=0; j<Nyv; ++j){
+					for(int k=0; k<Nzv; ++k){
+						v(i, j, k) = sin(xv[i]) * cos(yv[j]);
+					}
+				}
+			}
 
 			b.resize(Nx * Ny * Nz);
 			p.resize(Nx * Ny * Nz);
@@ -59,9 +75,14 @@ class NSSolverEuler
 		int &Nxv=mesh.Nxv, &Nyv=mesh.Nyv, &Nzv=mesh.Nzv;
 		int &Nxw=mesh.Nxw, &Nyw=mesh.Nyw, &Nzw=mesh.Nzw;
 
-		int Nyz = Ny * Nz;
+		int &Nyz = mesh.Nyz;
 
 		double &dx=mesh.dx, &dy=mesh.dy, &dz=mesh.dz;
+
+		vector<double> &xp=mesh.xp, &yp=mesh.yp, &zp=mesh.zp;
+		vector<double> &xu=mesh.xu, &yu=mesh.yu, &zu=mesh.zu;
+		vector<double> &xv=mesh.xv, &yv=mesh.yv, &zv=mesh.zv;
+		vector<double> &xw=mesh.xw, &yw=mesh.yw, &zw=mesh.zw;
 
 		double dx2, dy2, dz2;
 		

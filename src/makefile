@@ -12,12 +12,10 @@ OBJS = Boundary.o Mesh.o PoissonSolver.o NSSolverEuler.o io.o main.o
 
 debug: CFLAGS = -std=c++11 -g
 debug:
-	make clean
 	make ${BIN} CFLAGS="${CFLAGS}"
 
-release: CFLAGS = -std=c++11 -O3 -DNDEBUG -DEIGEN_NO_DEBUG
+release: CFLAGS = -std=c++11 -O3
 release:
-	make clean
 	make ${BIN} CFLAGS="${CFLAGS}"
 
 ${BIN}: ${OBJS}

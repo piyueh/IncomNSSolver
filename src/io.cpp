@@ -129,12 +129,12 @@ int NSSolverEuler::output(string fileName)
 	file << u << endl;
 	file << v << endl;
 	file << w << endl;
-	file << p << endl;
+	//file << p << endl;
 
 	return 0;
 }
 
-int NSSolverEuler::output_u() { ofstream file("u.txt"); file << u << endl; return 0; }
-int NSSolverEuler::output_v() { ofstream file("v.txt"); file << v << endl; return 0; }
-int NSSolverEuler::output_w() { ofstream file("w.txt"); file << w << endl; return 0; }
-int NSSolverEuler::output_p() { ofstream file("p.txt"); file << p << endl; return 0; }
+int NSSolverEuler::output_u() { cout << u << endl; return 0; }
+int NSSolverEuler::output_v() { cout << v << endl; return 0; }
+int NSSolverEuler::output_w() { cout << w << endl; return 0; }
+int NSSolverEuler::output_p() { cout << p << endl; return 0; }

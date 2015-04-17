@@ -24,8 +24,8 @@ def p_ext(x, y, t):
 Lx = 2 * numpy.pi
 Ly = 2 * numpy.pi
 
-Nx = 100
-Ny = 100
+Nx = 50
+Ny = 50
 
 dx = Lx / Nx
 dy = Ly / Ny
@@ -43,7 +43,7 @@ yv = numpy.linspace(0, Ly, Ny+1)
 Xv, Yv = numpy.meshgrid(xv, yv)
 
 
-t = 0
+t = 2
 
 p = p_ext(Xp, Yp, t)
 u = u_ext(Xu, Yu, t)
@@ -59,7 +59,7 @@ pyplot.figure()
 pyplot.contour(Xu, Yu, u)
 
 pyplot.figure()
-pyplot.contour(Xu, Yu, u)
+pyplot.contour(Xv, Yv, v)
 
 pyplot.figure()
 pyplot.streamplot(Xp, Yp, uc, vc)

@@ -1,42 +1,91 @@
 import numpy
+from matplotlib import pyplot
 
-f = open("B.txt", "r")
+def u_ext(x, y, t):
+    '''
+    '''
+    return - numpy.exp(- 2. * t) * numpy.cos(x) * numpy.sin(y)
+
+
+def v_ext(x, y, t):
+    '''
+    '''
+    return numpy.exp(- 2. * t) * numpy.sin(x) * numpy.cos(y)
+
+
+def p_ext(x, y, t):
+    '''
+    '''
+    return - numpy.exp(-4 * t) * \
+            (numpy.cos(2 * x) + numpy.cos(2 * y)) * 0.25
+
+
+f = open("Data.txt", "r")
 
 uN = numpy.array([int(x) for x in f.readline().split()])
-u = numpy.array([int(x) for x in f.readline().split()]).reshape(tuple(uN))
+u = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(uN))
 
 vN = numpy.array([int(x) for x in f.readline().split()])
-v = numpy.array([int(x) for x in f.readline().split()]).reshape(tuple(vN))
+v = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(vN))
 
 wN = numpy.array([int(x) for x in f.readline().split()])
-w = numpy.array([int(x) for x in f.readline().split()]).reshape(tuple(wN))
+w = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(wN))
 
-pN = numpy.array([int(x) for x in f.readline().split()])
-p = numpy.array([int(x) for x in f.readline().split()]).reshape(tuple(pN))
+#pN = numpy.array([int(x) for x in f.readline().split()])
+#p = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(pN))
 
 f.close()
 
-print(uN)
-print(vN)
-print(wN)
-print(pN)
+u = u[:, :, 1].T
+v = v[:, :, 1].T
 
 
-print('\nu:')
-for i in range(uN[2]):
-    print(u[:, :, i].T)
+uc = (u[1:-1, 2:-1] + u[1:-1, 1:-2])*0.5
+vc = (v[2:-1, 1:-1] + v[1:-2, 1:-1])*0.5
 
 
-print('\nv:')
-for i in range(vN[2]):
-    print(v[:, :, i].T)
+Nx = vN[0] - 2
+Ny = uN[1] - 2
+Lx = 2 * numpy.pi
+Ly = 2 * numpy.pi
+dx = Lx / Nx
+dy = Ly / Ny
+
+xp = numpy.linspace(dx/2, Lx-dx/2, Nx)
+yp = numpy.linspace(dy/2, Ly-dy/2, Ny)
+Xp, Yp = numpy.meshgrid(xp, yp)
+
+xu = numpy.linspace(0, Lx, Nx+1)
+yu = numpy.linspace(dy/2, Ly-dy/2, Ny)
+Xu, Yu = numpy.meshgrid(xu, yu)
+
+xv = numpy.linspace(dx/2, Lx-dx/2, Nx)
+yv = numpy.linspace(0, Ly, Ny+1)
+Xv, Yv = numpy.meshgrid(xv, yv)
 
 
-print('\nw:')
-for i in range(wN[2]):
-    print(w[:, :, i].T)
+u_e = u_ext(Xu, Yu, 2.)
+v_e = v_ext(Xv, Yv, 2.)
+
+uc_e = (u_e[:, 1:] + u_e[:, :-1]) / 2
+vc_e = (v_e[1:, :] + v_e[:-1, :]) / 2
 
 
-print('\np:')
-for i in range(pN[2]):
-    print(p[:, :, i].T)
+pyplot.figure()
+pyplot.contour(Xu, Yu, u[1:-1, 1:-1])
+
+pyplot.figure()
+pyplot.contour(Xv, Yv, v[1:-1, 1:-1])
+
+pyplot.figure()
+pyplot.streamplot(Xp, Yp, uc, vc)
+'''
+
+pyplot.figure()
+fig = pyplot.contourf(Xu, Yu, u[1:-1, 1:-1] - u_e)
+pyplot.colorbar(fig)
+
+pyplot.figure()
+fig = pyplot.contourf(Xv, Yv, v[1:-1, 1:-1] - v_e)
+pyplot.colorbar(fig)
+'''

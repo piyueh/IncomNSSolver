@@ -19,7 +19,8 @@ int main()
 	NSSolverEuler solver(mesh, fluid);
 
 	Nx = 100; Ny = 100; Nz = 1;
-	Lx = M_PI * 2; Ly = M_PI * 2; Lz = 1;
+	//Lx = M_PI * 2; Ly = M_PI * 2; Lz = 1;
+	Lx = 2*M_PI; Ly = 2*M_PI; Lz = 0.1;
 
 	mesh.InitMesh({Nx, Ny, Nz}, {Lx, Ly, Lz});
 
@@ -30,8 +31,9 @@ int main()
 	mesh.addBC(2, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
 	mesh.addBC(3, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
 
-	solver.InitSolver(0., 0.001, {Nx-1, 0, 0}, 0.);
-	solver.solve(2000);
+	solver.InitSolver(0., 0.0001, {Nx-1, 0, 0}, 0.);
+
+	solver.solve(20000);
 	
 	solver.output("Data.txt");
 
