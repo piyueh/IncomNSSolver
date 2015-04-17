@@ -87,6 +87,8 @@ int updZGhost(Array3D<double> &u, const int &Nx, const int &Ny,
 }
 
 
+
+
 int NSSolverEuler::updateGhost()
 {
 	for(auto &bcPair: mesh.get_BCs())

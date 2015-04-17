@@ -33,7 +33,7 @@ int main()
 
 	solver.InitSolver(0., 0.0001, {Nx-1, 0, 0}, 0.);
 
-	solver.solve(20000);
+	solver.solve(2000);
 	
 	solver.output("Data.txt");
 

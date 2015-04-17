@@ -63,22 +63,36 @@ xv = numpy.linspace(dx/2, Lx-dx/2, Nx)
 yv = numpy.linspace(0, Ly, Ny+1)
 Xv, Yv = numpy.meshgrid(xv, yv)
 
+t = 0.2
 
-u_e = u_ext(Xu, Yu, 2.)
-v_e = v_ext(Xv, Yv, 2.)
+u_e = u_ext(Xu, Yu, t)
+v_e = v_ext(Xv, Yv, t)
 
 uc_e = (u_e[:, 1:] + u_e[:, :-1]) / 2
 vc_e = (v_e[1:, :] + v_e[:-1, :]) / 2
 
 
 pyplot.figure()
-pyplot.contour(Xu, Yu, u[1:-1, 1:-1])
+fig = pyplot.contour(Xu, Yu, u[1:-1, 1:-1])
+pyplot.colorbar(fig)
+pyplot.title("u simulation")
 
 pyplot.figure()
-pyplot.contour(Xv, Yv, v[1:-1, 1:-1])
+fig = pyplot.contour(Xv, Yv, v[1:-1, 1:-1])
+pyplot.colorbar(fig)
+pyplot.title("v simulation")
+
 
 pyplot.figure()
-pyplot.streamplot(Xp, Yp, uc, vc)
+fig = pyplot.contour(Xu, Yu, u_e)
+pyplot.colorbar(fig)
+pyplot.title("u exact")
+
+pyplot.figure()
+fig = pyplot.contour(Xv, Yv, v_e)
+pyplot.colorbar(fig)
+pyplot.title("v exact")
+
 '''
 
 pyplot.figure()
@@ -89,3 +103,5 @@ pyplot.figure()
 fig = pyplot.contourf(Xv, Yv, v[1:-1, 1:-1] - v_e)
 pyplot.colorbar(fig)
 '''
+
+pyplot.show()

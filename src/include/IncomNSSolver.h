@@ -14,6 +14,7 @@
 # include <vector>
 # include <map>
 # include <utility>
+# include <functional>
 
 using namespace std;
 
@@ -29,3 +30,12 @@ using namespace Eigen;
 # include "class_PoissonSolver.h"
 # include "class_NSSolverEuler.h"
 
+
+ostream &operator<<(ostream &os, Boundary &BC);
+
+
+int tripleLoop(int &, int &, int &, int &, int &, int &,  
+		function<void(int &, int &, int &)>);
+
+int dualLoop(int &, int &, int &, int &,  
+		function<void(int &, int &)>);

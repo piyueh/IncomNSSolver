@@ -23,6 +23,7 @@ class Boundary
 				const pair<int, double>, const pair<int, double>, 
 				const pair<int, double>, const pair<int, double>);
 
+		Boundary & operator=(const Boundary &);
 
 		const int & get_Dir() const { return dir; }
 		const int & get_Sign() const { return sign; }
@@ -51,15 +52,19 @@ class Boundary
 
 		int dir, sign;
 
-		int pType, uType, vType, wType;
+		array<int, 4> BCtype, BCIdx, BCcorIdx;
+		array<double, 4> BCvalues;
 
-		double pBCvalue, uBCvalue, vBCvalue, wBCvalue;
+		int & pType = BCtype[0], & uType = BCtype[1], 
+			& vType = BCtype[2], & wType = BCtype[3];
+ 
+		int & pBCIdx = BCIdx[0], & pBCcorIdx =BCcorIdx[0];
+		int & uBCIdx = BCIdx[1], & uBCcorIdx =BCcorIdx[1];
+		int & vBCIdx = BCIdx[2], & vBCcorIdx =BCcorIdx[2];
+		int & wBCIdx = BCIdx[3], & wBCcorIdx =BCcorIdx[3];
 
-		int pBCIdx, pBCcorIdx;
-		int uBCIdx, uBCcorIdx;
-		int vBCIdx, vBCcorIdx;
-		int wBCIdx, wBCcorIdx;
-
+		double & pBCvalue = BCvalues[0], & uBCvalue = BCvalues[1], 
+			   & vBCvalue = BCvalues[2], & wBCvalue = BCvalues[3];
 };
 
 
