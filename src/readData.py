@@ -20,7 +20,7 @@ def p_ext(x, y, t):
             (numpy.cos(2 * x) + numpy.cos(2 * y)) * 0.25
 
 
-f = open("Data.txt", "r")
+f = open("Data1.txt", "r")
 
 uN = numpy.array([int(x) for x in f.readline().split()])
 u = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(uN))
@@ -36,13 +36,14 @@ w = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(wN))
 
 f.close()
 
+'''
 u = u[:, :, 1].T
 v = v[:, :, 1].T
 
 
 uc = (u[1:-1, 2:-1] + u[1:-1, 1:-2])*0.5
 vc = (v[2:-1, 1:-1] + v[1:-2, 1:-1])*0.5
-
+'''
 
 Nx = vN[0] - 2
 Ny = uN[1] - 2
@@ -71,7 +72,7 @@ v_e = v_ext(Xv, Yv, t)
 uc_e = (u_e[:, 1:] + u_e[:, :-1]) / 2
 vc_e = (v_e[1:, :] + v_e[:-1, :]) / 2
 
-
+'''
 pyplot.figure()
 fig = pyplot.contour(Xu, Yu, u[1:-1, 1:-1])
 pyplot.colorbar(fig)
@@ -93,7 +94,7 @@ fig = pyplot.contour(Xv, Yv, v_e)
 pyplot.colorbar(fig)
 pyplot.title("v exact")
 
-'''
+
 
 pyplot.figure()
 fig = pyplot.contourf(Xu, Yu, u[1:-1, 1:-1] - u_e)

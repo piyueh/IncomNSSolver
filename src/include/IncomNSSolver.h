@@ -23,7 +23,18 @@ using namespace std;
 
 using namespace Eigen;
 
+
 # include "class_Array3D.h"
+
+
+typedef const int CI;
+typedef const unsigned int CUI;
+typedef const double CD;
+typedef Array3D<double> A3Dd;
+typedef const pair<int, double> CPairID;
+typedef const array<int, 3> CaryI3;
+
+
 # include "class_Fluid.h"
 # include "class_Boundary.h"
 # include "class_Mesh.h"
@@ -31,11 +42,16 @@ using namespace Eigen;
 # include "class_NSSolverEuler.h"
 
 
+
+
+template<typename T> ostream & operator<<(ostream &os, vector<T> x);
+template<typename T> ostream & operator<<(ostream &os, Array3D<T> &A);
 ostream &operator<<(ostream &os, Boundary &BC);
+ostream &operator<<(ostream &os, Mesh &mesh);
+ostream &operator<<(ostream &os, NSSolverEuler &solver);
 
 
-int tripleLoop(int &, int &, int &, int &, int &, int &,  
+int tripleLoop(CI &, CI &, CI &, CI &, CI &, CI &, 
 		function<void(int &, int &, int &)>);
 
-int dualLoop(int &, int &, int &, int &,  
-		function<void(int &, int &)>);
+int dualLoop(CI &, CI &, CI &, CI &, function<void(CI &, CI &)>);

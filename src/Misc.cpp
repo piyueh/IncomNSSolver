@@ -1,7 +1,7 @@
-int tripleLoop(int &ia, int &ib, int &ja, int &jb, int &ka, int &kb,  
-		function<void(int &, int &, int &)> f)
+int tripleLoop(const int &ia, const int &ib, const int &ja, const int &jb, 
+		const int &ka, const int &kb, function<void(int &, int &, int &)> f)
 {
-	for(int i=ia; i<ib, ++i)
+	for(int i=ia; i<ib; ++i)
 	{
 		for(int j=ja; j<jb; ++j)
 		{
@@ -10,16 +10,20 @@ int tripleLoop(int &ia, int &ib, int &ja, int &jb, int &ka, int &kb,
 				f(i, j, k);
 		}
 	}
+
+	return 0;
 }
 
 
-int dualLoop(int &ia, int &ib, int &ja, int &jb, 
+int dualLoop(const int &ia, const int &ib, const int &ja, const int &jb, 
 		function<void(int &, int &)> f)
 {
-	for(int i=ia; i<ib, ++i)
+	for(int i=ia; i<ib; ++i)
 	{
 		for(int j=ja; j<jb; ++j)
 
 			f(i, j);
 	}
+
+	return 0;
 }

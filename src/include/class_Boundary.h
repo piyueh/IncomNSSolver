@@ -17,36 +17,38 @@ class Boundary
 
 		/*
 		 * Input:
-		 * Nx, Ny, Nz, Direction, P BC, P BC Value, V BC, V BC Value
+		 * {Nx, Ny, Nz}, Dir, sign, 
+		 * {p BC, Value}, {u BC, Value}, {v BC, Value}, {w BC, Value}
 		 */
-		Boundary(const array<int ,3>, const unsigned int, const int, 
-				const pair<int, double>, const pair<int, double>, 
-				const pair<int, double>, const pair<int, double>);
+		Boundary(CaryI3, CUI, CI, CPairID, CPairID, CPairID, CPairID);
 
 		Boundary & operator=(const Boundary &);
 
-		const int & get_Dir() const { return dir; }
-		const int & get_Sign() const { return sign; }
+		CI & get_Dir() const { return dir; }
+		CI & get_Sign() const { return sign; }
 
-		const int & get_pType() const { return pType; }
-		const int & get_uType() const { return uType; }
-		const int & get_vType() const { return vType; }
-		const int & get_wType() const { return wType; }
+		CI & get_pType() const { return pType; }
+		CI & get_uType() const { return uType; }
+		CI & get_vType() const { return vType; }
+		CI & get_wType() const { return wType; }
 
-		const double & get_pBCvalue() const { return pBCvalue; }
-		const double & get_uBCvalue() const { return uBCvalue; }
-		const double & get_vBCvalue() const { return vBCvalue; }
-		const double & get_wBCvalue() const { return wBCvalue; }
+		CD & get_pBCvalue() const { return pBCvalue; }
+		CD & get_uBCvalue() const { return uBCvalue; }
+		CD & get_vBCvalue() const { return vBCvalue; }
+		CD & get_wBCvalue() const { return wBCvalue; }
 
-		const int & get_pBCIdx() const { return pBCIdx; }
-		const int & get_uBCIdx() const { return uBCIdx; }
-		const int & get_vBCIdx() const { return vBCIdx; }
-		const int & get_wBCIdx() const { return wBCIdx; }
+		CI & get_pBCIdx() const { return pBCIdx; }
+		CI & get_uBCIdx() const { return uBCIdx; }
+		CI & get_vBCIdx() const { return vBCIdx; }
+		CI & get_wBCIdx() const { return wBCIdx; }
 
-		const int & get_pBCcorIdx() const { return pBCcorIdx; }
-		const int & get_uBCcorIdx() const { return uBCcorIdx; }
-		const int & get_vBCcorIdx() const { return vBCcorIdx; }
-		const int & get_wBCcorIdx() const { return wBCcorIdx; }
+		CI & get_pBCcorIdx() const { return pBCcorIdx; }
+		CI & get_uBCcorIdx() const { return uBCcorIdx; }
+		CI & get_vBCcorIdx() const { return vBCcorIdx; }
+		CI & get_wBCcorIdx() const { return wBCcorIdx; }
+
+
+		int updGhost(CI &, CI &, CI &, A3Dd &, CD &);
 
 	private:
 
@@ -65,6 +67,10 @@ class Boundary
 
 		double & pBCvalue = BCvalues[0], & uBCvalue = BCvalues[1], 
 			   & vBCvalue = BCvalues[2], & wBCvalue = BCvalues[3];
+
+		array<function<void(CI &, CI &, A3Dd &, CD &)>, 4> updOneGh;
+
+		int InitUpdGh();
 };
 
 
