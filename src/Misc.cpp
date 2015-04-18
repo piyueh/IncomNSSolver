@@ -1,3 +1,5 @@
+# include "include/IncomNSSolver.h"
+
 int tripleLoop(const int &ia, const int &ib, const int &ja, const int &jb, 
 		const int &ka, const int &kb, function<void(int &, int &, int &)> f)
 {

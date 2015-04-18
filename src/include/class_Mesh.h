@@ -15,12 +15,11 @@ class Mesh
 	public:
 
 		Mesh() = default;
-		Mesh(array<int, 3> N, array<double, 3> L){ InitMesh(N, L); };
+		Mesh(CaryI3 N, CaryD3 L){ InitMesh(N, L); };
 
-		int InitMesh(array<int, 3>, array<double, 3>);
+		int InitMesh(CaryI3, CaryD3);
 
-		int addBC(unsigned int dir, int sign, pair<int, double> p, 
-				pair<int, double> u, pair<int, double> v, pair<int, double> w); 
+		int addBC(CUI dir, CI sign, CPairID p, CPairID u, CPairID v, CPairID w); 
 
 		const map<int, Boundary> & get_BCs() const { return BCs; }
 

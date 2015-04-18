@@ -14,8 +14,7 @@ class NSSolverEuler
 
 		NSSolverEuler(Mesh &m, Fluid &f): mesh(m), fluid(f) {};
 
-		int InitSolver(double t, double Dt, 
-				array<int, 3> pIdx, double pR)
+		int InitSolver(CD t, CD Dt, CaryI3 pIdx, CD pR)
 		{
 			dt = Dt; time = t;
 			pRefIdx = pIdx; pRef = pR;
@@ -69,6 +68,8 @@ class NSSolverEuler
 
 		Mesh & mesh;
 		Fluid & fluid;
+
+		map<int, Boundary> & BCs = mesh.BCs;
 
 		int &Nx=mesh.Nx, &Ny=mesh.Ny, &Nz=mesh.Nz;
 		int &Nxu=mesh.Nxu, &Nyu=mesh.Nyu, &Nzu=mesh.Nzu;

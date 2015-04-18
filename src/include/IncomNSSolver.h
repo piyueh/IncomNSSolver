@@ -32,7 +32,10 @@ typedef const unsigned int CUI;
 typedef const double CD;
 typedef Array3D<double> A3Dd;
 typedef const pair<int, double> CPairID;
+typedef array<int, 3> aryI3;
+typedef array<double, 3> aryD3;
 typedef const array<int, 3> CaryI3;
+typedef const array<double, 3> CaryD3;
 
 
 # include "class_Fluid.h"
