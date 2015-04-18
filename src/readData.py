@@ -64,7 +64,7 @@ xv = numpy.linspace(dx/2, Lx-dx/2, Nx)
 yv = numpy.linspace(0, Ly, Ny+1)
 Xv, Yv = numpy.meshgrid(xv, yv)
 
-t = 0.2
+t = 0.1
 
 u_e = u_ext(Xu, Yu, t)
 v_e = v_ext(Xv, Yv, t)
@@ -95,7 +95,7 @@ pyplot.colorbar(fig)
 pyplot.title("v exact")
 
 
-'''
+
 pyplot.figure()
 fig = pyplot.contourf(Xu, Yu, u[1:-1, 1:-1] - u_e)
 pyplot.colorbar(fig)
@@ -103,6 +103,6 @@ pyplot.colorbar(fig)
 pyplot.figure()
 fig = pyplot.contourf(Xv, Yv, v[1:-1, 1:-1] - v_e)
 pyplot.colorbar(fig)
-'''
+
 
 pyplot.show()

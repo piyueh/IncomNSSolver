@@ -24,16 +24,16 @@ int main()
 
 	mesh.InitMesh({Nx, Ny, Nz}, {Lx, Ly, Lz});
 
-	mesh.addBC(1, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
-	mesh.addBC(2, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
+	mesh.addBC(1, 1, {-1, 0}, {-1, 0}, {1, 0}, {0, 0});
+	mesh.addBC(2, 1, {-1, 0}, {1, 0}, {-1, 0}, {0, 0});
 	mesh.addBC(3, 1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
-	mesh.addBC(1, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
-	mesh.addBC(2, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
+	mesh.addBC(1, -1, {-1, 0}, {-1, 0}, {1, 0}, {0, 0});
+	mesh.addBC(2, -1, {-1, 0}, {1, 0}, {-1, 0}, {0, 0});
 	mesh.addBC(3, -1, {-1, 0}, {0, 0}, {0, 0}, {0, 0});
 
 	solver.InitSolver(0., 0.0001, {Nx-1, 0, 0}, 0.);
 
-	solver.solve(2000);
+	solver.solve(1000);
 	
 	solver.output("Data.txt");
 
