@@ -26,7 +26,7 @@ ostream & operator<<(ostream &os, Array3D<T> &A)
 }
 
 
-ostream &operator<<(ostream &os, NSSolverEuler &solver)
+ostream &operator<<(ostream &os, NSSolver &solver)
 {
 	os << "Current time: " << solver.time << endl;
 	os << "Time step: " << solver.dt << endl;
@@ -122,19 +122,19 @@ ostream &operator<<(ostream &os, Mesh &mesh)
 }
 
 
-int NSSolverEuler::output(string fileName)
+int NSSolver::output(string fileName)
 {
 	ofstream file(fileName);
 
 	file << u << endl;
 	file << v << endl;
 	file << w << endl;
-	//file << p << endl;
+	file << p << endl;
 
 	return 0;
 }
 
-int NSSolverEuler::output_u() { cout << u << endl; return 0; }
-int NSSolverEuler::output_v() { cout << v << endl; return 0; }
-int NSSolverEuler::output_w() { cout << w << endl; return 0; }
-int NSSolverEuler::output_p() { cout << p << endl; return 0; }
+int NSSolver::output_u() { cout << u << endl; return 0; }
+int NSSolver::output_v() { cout << v << endl; return 0; }
+int NSSolver::output_w() { cout << w << endl; return 0; }
+int NSSolver::output_p() { cout << p << endl; return 0; }

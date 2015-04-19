@@ -20,7 +20,7 @@ def p_ext(x, y, t):
             (numpy.cos(2 * x) + numpy.cos(2 * y)) * 0.25
 
 
-f = open("Data.txt", "r")
+f = open("8900.txt", "r")
 
 uN = numpy.array([int(x) for x in f.readline().split()])
 u = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(uN))
@@ -74,16 +74,23 @@ vc_e = (v_e[1:, :] + v_e[:-1, :]) / 2
 
 
 pyplot.figure()
-fig = pyplot.contour(Xu, Yu, u[1:-1, 1:-1])
+fig = pyplot.contourf(Xu, Yu, u[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 pyplot.title("u simulation")
 
 pyplot.figure()
-fig = pyplot.contour(Xv, Yv, v[1:-1, 1:-1])
+fig = pyplot.contourf(Xv, Yv, v[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 pyplot.title("v simulation")
 
+pyplot.figure()
+fig = pyplot.streamplot(Xp, Yp, uc, vc,
+                        density=2)
+pyplot.axis("equal")
+pyplot.xlim(0, 2*numpy.pi)
+pyplot.ylim(0, 2*numpy.pi)
 
+'''
 pyplot.figure()
 fig = pyplot.contour(Xu, Yu, u_e)
 pyplot.colorbar(fig)
@@ -103,6 +110,6 @@ pyplot.colorbar(fig)
 pyplot.figure()
 fig = pyplot.contourf(Xv, Yv, v[1:-1, 1:-1] - v_e)
 pyplot.colorbar(fig)
-
+'''
 
 pyplot.show()

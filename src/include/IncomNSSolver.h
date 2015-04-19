@@ -51,10 +51,10 @@ template<typename T> ostream & operator<<(ostream &os, vector<T> x);
 template<typename T> ostream & operator<<(ostream &os, Array3D<T> &A);
 ostream &operator<<(ostream &os, Boundary &BC);
 ostream &operator<<(ostream &os, Mesh &mesh);
-ostream &operator<<(ostream &os, NSSolverEuler &solver);
+ostream &operator<<(ostream &os, NSSolver &solver);
 
 
 int tripleLoop(CI &, CI &, CI &, CI &, CI &, CI &, 
-		function<void(int &, int &, int &)>);
+		function<void(CI &, CI &, CI &)>);
 
 int dualLoop(CI &, CI &, CI &, CI &, function<void(CI &, CI &)>);

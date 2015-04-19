@@ -1,6 +1,6 @@
+//double NSSolver
 
-
-double NSSolverEuler::DiffusiveU(int &i, int &j, int &k)
+double NSSolver::DiffusiveU(int &i, int &j, int &k)
 {
 	double Fdu;
 	Fdu = fluid.nu * (
@@ -11,7 +11,7 @@ double NSSolverEuler::DiffusiveU(int &i, int &j, int &k)
 }
 
 
-double NSSolverEuler::DiffusiveV(int &i, int &j, int &k)
+double NSSolver::DiffusiveV(int &i, int &j, int &k)
 {
 	double Fdv;
 	Fdv = fluid.nu * (
@@ -22,7 +22,7 @@ double NSSolverEuler::DiffusiveV(int &i, int &j, int &k)
 }
 
 
-double NSSolverEuler::DiffusiveW(int &i, int &j, int &k)
+double NSSolver::DiffusiveW(int &i, int &j, int &k)
 {
 	double Fdw;
 	Fdw = fluid.nu * (

@@ -1,5 +1,5 @@
 
-double NSSolverEuler::ConvectU(int &i, int &j, int &k)
+double NSSolver::ConvectU(int &i, int &j, int &k)
 {
 	double Fcu;
 	Fcu =
@@ -15,7 +15,7 @@ double NSSolverEuler::ConvectU(int &i, int &j, int &k)
 }
 
 
-double NSSolverEuler::ConvectV(int &i, int &j, int &k)
+double NSSolver::ConvectV(int &i, int &j, int &k)
 {
 	double Fcv;
 	Fcv =
@@ -31,7 +31,7 @@ double NSSolverEuler::ConvectV(int &i, int &j, int &k)
 }
 
 
-double NSSolverEuler::ConvectW(int &i, int &j, int &k)
+double NSSolver::ConvectW(int &i, int &j, int &k)
 {
 	double Fcw;
 	Fcw =

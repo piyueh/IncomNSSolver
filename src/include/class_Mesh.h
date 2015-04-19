@@ -9,7 +9,7 @@
 
 class Mesh
 {
-	friend class NSSolverEuler;
+	friend class NSSolver;
 	friend ostream &operator<<(ostream &os, Mesh &mesh);
 
 	public:

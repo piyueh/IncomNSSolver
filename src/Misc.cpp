@@ -1,7 +1,7 @@
 # include "include/IncomNSSolver.h"
 
-int tripleLoop(const int &ia, const int &ib, const int &ja, const int &jb, 
-		const int &ka, const int &kb, function<void(int &, int &, int &)> f)
+int tripleLoop(CI & ia, CI & ib, CI & ja, CI & jb, CI & ka, CI & kb, 
+		function<void(CI &, CI &, CI &)> f)
 {
 	for(int i=ia; i<ib; ++i)
 	{
@@ -17,8 +17,8 @@ int tripleLoop(const int &ia, const int &ib, const int &ja, const int &jb,
 }
 
 
-int dualLoop(const int &ia, const int &ib, const int &ja, const int &jb, 
-		function<void(int &, int &)> f)
+int dualLoop(CI & ia, CI & ib, CI & ja, CI & jb,
+	   	function<void(CI &, CI &)> f)
 {
 	for(int i=ia; i<ib; ++i)
 	{

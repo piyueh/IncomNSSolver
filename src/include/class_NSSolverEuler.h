@@ -4,58 +4,16 @@
 
 
 # pragma once
-# include <cmath>
 
-class NSSolverEuler
+class NSSolver
 {
-	friend ostream &operator<<(ostream &, NSSolverEuler &);
+	friend ostream &operator<<(ostream &, NSSolver &);
 
 	public:
 
-		NSSolverEuler(Mesh &m, Fluid &f): mesh(m), fluid(f) {};
+		NSSolver(Mesh &m, Fluid &f): mesh(m), fluid(f) {};
 
-		int InitSolver(CD t, CD Dt, CaryI3 pIdx, CD pR)
-		{
-			dt = Dt; time = t;
-			pRefIdx = pIdx; pRef = pR;
-
-			dx2 = dx * dx; dy2 = dy * dy; dz2 = dz * dz;
-
-			u.initShape(-1, Nxu, -1, Nyu, -1, Nzu);
-			v.initShape(-1, Nxv, -1, Nyv, -1, Nzv);
-			w.initShape(-1, Nxw, -1, Nyw, -1, Nzw);
-
-			u_str.initShape(-1, Nxu, -1, Nyu, -1, Nzu);
-			v_str.initShape(-1, Nxv, -1, Nyv, -1, Nzv);
-			w_str.initShape(-1, Nxw, -1, Nyw, -1, Nzw);
-
-			u.setZeros(); v.setZeros(); w.setZeros();
-
-			for(int i=0; i<Nxu; ++i){
-				for(int j=0; j<Nyu; ++j){
-					for(int k=0; k<Nzu; ++k){
-						u(i, j, k) = - cos(xu[i]) * sin(yu[j]);
-					}
-				}
-			}
-
-			for(int i=0; i<Nxv; ++i){
-				for(int j=0; j<Nyv; ++j){
-					for(int k=0; k<Nzv; ++k){
-						v(i, j, k) = sin(xv[i]) * cos(yv[j]);
-					}
-				}
-			}
-
-			b.resize(Nx * Ny * Nz);
-			p.resize(Nx * Ny * Nz);
-
-			pSolver.InitLinSys({Nx, Ny, Nz}, {dx, dy, dz});
-			pSolver.setLHS(mesh.get_BCs());
-			pSolver.setRefP(pRefIdx, pRef);
-			
-			return 0;
-		}
+		int InitSolver(CD t, CD Dt, CaryI3 pIdx, CD pR);
 
 		int solve(int);
 
@@ -86,6 +44,7 @@ class NSSolverEuler
 		vector<double> &xw=mesh.xw, &yw=mesh.yw, &zw=mesh.zw;
 
 		double dx2, dy2, dz2;
+		int uBgIdx, uEdIdx, vBgIdx, vEdIdx, wBgIdx, wEdIdx; 
 		
 		PoissonSolver pSolver;
 		array<int, 3> pRefIdx;

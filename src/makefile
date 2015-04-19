@@ -14,7 +14,7 @@ debug: CFLAGS = -std=c++11 -g
 debug:
 	make ${BIN} CFLAGS="${CFLAGS}"
 
-release: CFLAGS = -std=c++11 -O3
+release: CFLAGS = -std=c++11 -O3 -DNDEBUG -DEIGEN_NO_DEBUG
 release:
 	make ${BIN} CFLAGS="${CFLAGS}"
 
