@@ -23,8 +23,7 @@ Mesh::Mesh(string &fName)
 		else if (var.empty()) {}
 		else
 			throw invalid_argument(
-					string("Invalid Argument in ") + fName +
-					": " + var);
+					string("Invalid Argument in ") + fName + ": " + var);
 	}
 	file.close();
 

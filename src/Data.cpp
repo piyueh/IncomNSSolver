@@ -1,5 +1,68 @@
 # include "include/IncomNSSolver.h"
 
+Data::Data(string & fName)
+{
+	ifstream file(fName);
+	string line;
+
+	while (getline(file, line))
+	{
+		istringstream OneLine(line);
+		string var;
+		
+		int N1, N2, N3;
+
+		OneLine >> var;
+		if (var == "TIME") {OneLine >> time;}
+		else if (var == "Nu") 
+		{
+			OneLine >> N1 >> N2 >> N3;
+			u.initShape(-1, N1-2, -1, N2-2, -1, N3-2);
+		}
+		else if (var == "Nv") 
+		{
+			OneLine >> N1 >> N2 >> N3;
+			v.initShape(-1, N1-2, -1, N2-2, -1, N3-2);
+		}
+		else if (var == "Nw") 
+		{
+			OneLine >> N1 >> N2 >> N3;
+			w.initShape(-1, N1-2, -1, N2-2, -1, N3-2);
+		}
+		else if (var == "Np") 
+		{
+			OneLine >> Nx >> Ny >> Nz;
+			p.resize(Nx * Ny * Nz);
+		}
+		else if ((var.empty()) || (var == "u") || 
+				(var == "v") || (var == "w") || (var == "p")) {}
+		else
+			throw invalid_argument(
+					string("Invalid Argument in ") + fName + ": " + var);
+	}
+	file.close();
+
+	file.open(fName);
+	while (getline(file, line))
+	{
+		istringstream OneLine(line);
+		string var;
+		
+		OneLine >> var;
+		if (var == "u") 
+			for(auto &Ui: u) OneLine >> Ui;
+		else if (var == "v") 
+			for(auto &Ui: v) OneLine >> Ui;
+		else if (var == "w") 
+			for(auto &Ui: w) OneLine >> Ui;
+		else if (var == "p") 
+			for(int i=0; i<p.size(); ++i) OneLine >> p[i];
+	}
+	file.close();
+
+}
+
+
 int Data::InitData(Mesh & mesh)
 {
 

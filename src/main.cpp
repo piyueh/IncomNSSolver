@@ -24,14 +24,13 @@ int main(int argc, char *argv[])
 
 	Fluid fluid(Files["-f"]);
 	Mesh mesh(Files["-m"]);
-	Data data;
+	Data data(Files["-d"]);
 	NSSolver solver(mesh, fluid, data);
 
-	data.InitData(mesh);	
 
-	solver.InitSolver(0.001, {0, 0, 0}, 0.);
+	solver.InitSolver(Files["-c"]);
 
-	solver.solve(150000, 50);
+	solver.solve();
 	
 	data.output("Data.txt");
 

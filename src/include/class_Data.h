@@ -4,6 +4,7 @@ class Data
 	public:
 
 		Data() = default;
+		Data(string &);
 
 		int InitData(Mesh & mesh);
 

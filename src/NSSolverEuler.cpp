@@ -2,9 +2,10 @@
 # include "NS_ElementryFuncs.cpp"
 
 
-int NSSolver::InitSolver(CD Dt, CaryI3 pIdx, CD pR)
+int NSSolver::InitSolver(CD Dt, CI & tNStep, CI & ON, CaryI3 pIdx, CD pR)
 {
 	dt = Dt;
+	targetNStep = tNStep; outputN = ON;
 	pRefIdx = pIdx; pRef = pR;
 
 	dx2 = dx * dx; dy2 = dy * dy; dz2 = dz * dz;
@@ -32,7 +33,35 @@ int NSSolver::InitSolver(CD Dt, CaryI3 pIdx, CD pR)
 }
 
 
-int NSSolver::solve(CI & targetNStep, CI & OutputN)
+int NSSolver::InitSolver(string & fName)
+{
+	ifstream file(fName);
+	string line;
+
+	while(getline(file, line))
+	{
+		istringstream OneLine(line);
+		string var;
+
+		file >> var;
+
+		if (var == "DT") file >> dt;
+		else if (var == "TargetNStep") file >> targetNStep;
+		else if (var == "OutputNStep") file >> outputN;
+		else if (var == "RefPIdx") file >> pRefIdx[0] >> pRefIdx[1] >> pRefIdx[2];
+		else if (var == "RefP") file >> pRef;
+		else
+			throw invalid_argument(
+					string("Invalid Argument in ") + fName + ": " + var);
+	}
+
+	file.close();
+
+	return 0;
+}
+
+
+int NSSolver::solve()
 {
 	pair<int, double> Itr;
 
@@ -61,7 +90,7 @@ int NSSolver::solve(CI & targetNStep, CI & OutputN)
 
 		time += dt;
 
-		if (n % OutputN == 0)
+		if (n % outputN == 0)
 		{
 			data.output(to_string(n)+".txt");
 			cout << "n=" << n+1 << " ";
