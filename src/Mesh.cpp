@@ -1,5 +1,66 @@
 # include "include/IncomNSSolver.h"
 
+
+Mesh::Mesh(string &fName)
+{
+	ifstream file(fName);
+	string line;
+
+	while(getline(file, line))
+	{
+		istringstream wholeLine(line);
+		string var;
+
+		wholeLine >> var;
+
+		if (var == "Nx") { wholeLine >> Nx; }
+		else if (var == "Ny") { wholeLine >> Ny; }
+		else if (var == "Nz") { wholeLine >> Nz; }
+		else if (var == "Lx") { wholeLine >> Lx; }
+		else if (var == "Ly") { wholeLine >> Ly; }
+		else if (var == "Lz") { wholeLine >> Lz; }
+		else if (var == "BC") {}
+		else if (var.empty()) {}
+		else
+			throw invalid_argument(
+					string("Invalid Argument in ") + fName +
+					": " + var);
+	}
+	file.close();
+
+	InitMesh({Nx, Ny, Nz}, {Lx, Ly, Lz});
+
+	file.open(fName);
+	while(getline(file, line))
+	{
+		istringstream wholeLine(line);
+		string var;
+
+		wholeLine >> var;
+
+		if (var == "BC")
+		{
+			unsigned int dir;
+			wholeLine >> dir;
+
+			int sign;
+			wholeLine >> sign;
+
+			pair<int, double> p, u, v, w;
+			wholeLine >> p.first >> p.second;
+			wholeLine >> u.first >> u.second;
+			wholeLine >> v.first >> v.second;
+			wholeLine >> w.first >> w.second;
+
+			addBC(dir, sign, p, u, v, w);
+
+		}
+	}
+	file.close();
+
+}
+
+
 int Mesh::InitMesh(array<int, 3> N, array<double, 3> L)
 {
 	Nx = N[0]; Ny = N[1]; Nz = N[2];

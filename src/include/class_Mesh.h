@@ -15,6 +15,7 @@ class Mesh
 	public:
 
 		Mesh() = default;
+		Mesh(string &);
 		Mesh(CaryI3 N, CaryD3 L){ InitMesh(N, L); };
 
 		int InitMesh(CaryI3, CaryD3);
