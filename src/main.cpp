@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
 	data.InitData(mesh);	
 
-	solver.InitSolver(0.001, {Nx-1, 0, 0}, 0.);
+	solver.InitSolver(0.001, {0, 0, 0}, 0.);
 
 	solver.solve(150000, 50);
 	
