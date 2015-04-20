@@ -20,8 +20,10 @@ int NSSolver::InitSolver(CD t, CD Dt, CaryI3 pIdx, CD pR)
 
 	u.setZeros(); v.setZeros(); w.setZeros();
 
+	/*
 	TGVortex(Nxu, Nyu, Nzu, u, xu, yu,
 			 Nxv, Nyv, Nzv, v, xv, yv, time);
+	*/
 
 	b.resize(Nx * Ny * Nz);
 	p.resize(Nx * Ny * Nz);

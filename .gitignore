@@ -39,3 +39,7 @@
 
 # txt file
 *.txt
+
+# obj and bin directory
+**/obj
+**/bin

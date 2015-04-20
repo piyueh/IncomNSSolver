@@ -20,7 +20,7 @@ def p_ext(x, y, t):
             (numpy.cos(2 * x) + numpy.cos(2 * y)) * 0.25
 
 
-f = open("4000.txt", "r")
+f = open("Data.txt", "r")
 
 uN = numpy.array([int(x) for x in f.readline().split()])
 u = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(uN))
@@ -104,7 +104,7 @@ pyplot.axis("equal")
 pyplot.xlim(0, 2*numpy.pi)
 pyplot.ylim(0, 2*numpy.pi)
 
-
+'''
 pyplot.figure()
 fig = pyplot.contourf(Xu, Yu, u_e, 100)
 pyplot.colorbar(fig)
@@ -129,6 +129,6 @@ pyplot.colorbar(fig)
 pyplot.figure()
 fig = pyplot.contourf(Xv, Yv, v[1:-1, 1:-1] - v_e)
 pyplot.colorbar(fig)
-
+'''
 
 pyplot.show()
