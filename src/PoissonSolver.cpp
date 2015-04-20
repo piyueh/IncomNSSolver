@@ -34,23 +34,32 @@ int PoissonSolver::setLHS(const map<int, Boundary> & BC)
 int PoissonSolver::setRefP(const array<int, 3> & Idx, const double & value)
 {
 	refLoc = getIdx(Idx);
-	refP = - value * A.coeffRef(refLoc, refLoc);
+	refP = value;
 
-	A.coeffRef(refLoc, refLoc) = 0.;
+	A.coeffRef(refLoc, refLoc) = 1;
+	
+	if ((refLoc - Nyz) >= 0) A.coeffRef(refLoc, refLoc - Nyz) = 0;
+	if ((refLoc + Nyz) < NCells) A.coeffRef(refLoc, refLoc + Nyz) = 0;
+	if ((refLoc - Nz) >= 0) A.coeffRef(refLoc, refLoc - Nz) = 0;
+	if ((refLoc + Nz) < NCells) A.coeffRef(refLoc, refLoc + Nz) = 0;
+	if ((refLoc - 1) >= 0) A.coeffRef(refLoc, refLoc - 1) = 0;
+	if ((refLoc + 1) < NCells) A.coeffRef(refLoc, refLoc + 1) = 0;
+
+	A.makeCompressed();
 
 	return 0;
 }
 
 
-int PoissonSolver::Solve(VectorXd & f, VectorXd & soln)
+pair<int, double> PoissonSolver::Solve(VectorXd & f, VectorXd & soln)
 {
 	assert(f.size() == NCells);
 
-	f.coeffRef(refLoc) += refP;
+	f[refLoc] = refP;
 
-	soln = cgSolver.solve(f.matrix());
+	soln = cgSolver.solveWithGuess(f, soln);
 
-	return 0;
+	return {cgSolver.iterations(), cgSolver.error()};
 }
 
 

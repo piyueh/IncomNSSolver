@@ -22,11 +22,13 @@ class NSSolver
 
 	private:
 
-		double time, dt;
 
-		Mesh & mesh;
+
+
 		Fluid & fluid;
+		Mesh & mesh;
 
+		double &nu=fluid.nu, &rho=fluid.rho;
 		map<int, Boundary> & BCs = mesh.BCs;
 
 		int &Nx=mesh.Nx, &Ny=mesh.Ny, &Nz=mesh.Nz;
@@ -50,23 +52,35 @@ class NSSolver
 		array<int, 3> pRefIdx;
 		double pRef;
 
+		double time, dt;
+		double Re, invRe;
 
 		Array3D<double> u, v, w;
-		Array3D<double> u_str, v_str, w_str;
+		Array3D<double> Gu, Gv, Gw;
 
 		VectorXd p, b;
 
 		int updateGhost();
 
-		int PredictStep();
-		double ConvectU(int &, int &, int &);
-		double ConvectV(int &, int &, int &);
-		double ConvectW(int &, int &, int &);
-		double DiffusiveU(int &, int &, int &);
-		double DiffusiveV(int &, int &, int &);
-		double DiffusiveW(int &, int &, int &);
+		int PredictStep(CD & DT);
+		int PredictStep(CD & DT, CD & coef);
+		function<double(CI &, CI &, CI &)> ConvU, ConvV, ConvW;
+		function<double(CI &, CI &, CI &)> DiffU, DiffV, DiffW;
+		function<void(CI &, CI &, CI &)> updGu, updGv, updGw;
+		function<void(CI &, CI &, CI &, CD &)> updGu2, updGv2, updGw2;
+		function<void(CI &, CI &, CI &, CD &)> preU, preV, preW;
 
-		int updatePoissonSource();
+		int updatePoissonSource(CD &);
 
-		int updateU();
+		int updateU(CD &);
+
+		int InitLambda();
+
+		function<int(CI &, CI &, CI &)> calIdx;
+
+		function<void(CI &, CI &)> updUB, updVB, updWB;
+		function<void(CI &, CI &, CI &, CD &)> updU, updV, updW;
+
+		function<void(CI &, CI &, CI &)> DivOnPresPt;
+
 };

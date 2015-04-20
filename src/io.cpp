@@ -129,7 +129,10 @@ int NSSolver::output(string fileName)
 	file << u << endl;
 	file << v << endl;
 	file << w << endl;
-	file << p << endl;
+	file << Nx << " " << Ny << " " << Nz << endl;
+	for(int i=0; i<Nx*Ny*Nz; ++i) file << p(i) << " "; file << endl;
+	file << Nx << " " << Ny << " " << Nz << endl;
+	for(int i=0; i<Nx*Ny*Nz; ++i) file << b(i) << " "; file << endl;
 
 	return 0;
 }

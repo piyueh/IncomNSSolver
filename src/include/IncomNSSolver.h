@@ -15,6 +15,7 @@
 # include <map>
 # include <utility>
 # include <functional>
+# include <cmath>
 
 using namespace std;
 
@@ -36,6 +37,7 @@ typedef array<int, 3> aryI3;
 typedef array<double, 3> aryD3;
 typedef const array<int, 3> CaryI3;
 typedef const array<double, 3> CaryD3;
+typedef vector<double> VD;
 
 
 # include "class_Fluid.h"
@@ -57,4 +59,10 @@ ostream &operator<<(ostream &os, NSSolver &solver);
 int tripleLoop(CI &, CI &, CI &, CI &, CI &, CI &, 
 		function<void(CI &, CI &, CI &)>);
 
+int tripleLoop(CI &, CI &, CI &, CI &, CI &, CI &, 
+		CD &, function<void(CI &, CI &, CI &, CD &)>);
+
 int dualLoop(CI &, CI &, CI &, CI &, function<void(CI &, CI &)>);
+
+int TGVortex(CI & Nxu, CI & Nyu, CI & Nzu, A3Dd & u, VD & xu, VD & yu,
+		CI & Nxv, CI & Nyv, CI & Nzv, A3Dd & v, VD & xv, VD & yv, CD & t);
