@@ -20,7 +20,9 @@ def p_ext(x, y, t):
             (numpy.cos(2 * x) + numpy.cos(2 * y)) * 0.25
 
 
-f = open("Data.txt", "r")
+f = open("2700.txt", "r")
+
+t = float(f.readline())
 
 uN = numpy.array([int(x) for x in f.readline().split()])
 u = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(uN))
@@ -34,8 +36,6 @@ w = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(wN))
 pN = numpy.array([int(x) for x in f.readline().split()])
 p = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(pN))
 
-bN = numpy.array([int(x) for x in f.readline().split()])
-b = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(bN))
 
 f.close()
 
@@ -50,7 +50,6 @@ uc = (u[1:-1, 2:-1] + u[1:-1, 1:-2])*0.5
 vc = (v[2:-1, 1:-1] + v[1:-2, 1:-1])*0.5
 
 p = p[:, :, 0].T
-b = b[:, :, 0].T
 
 Nx = vN[0] - 2
 Ny = uN[1] - 2

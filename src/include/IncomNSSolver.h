@@ -43,6 +43,7 @@ typedef vector<double> VD;
 # include "class_Fluid.h"
 # include "class_Boundary.h"
 # include "class_Mesh.h"
+# include "class_Data.h"
 # include "class_PoissonSolver.h"
 # include "class_NSSolverEuler.h"
 
@@ -66,3 +67,5 @@ int dualLoop(CI &, CI &, CI &, CI &, function<void(CI &, CI &)>);
 
 int TGVortex(CI & Nxu, CI & Nyu, CI & Nzu, A3Dd & u, VD & xu, VD & yu,
 		CI & Nxv, CI & Nyv, CI & Nzv, A3Dd & v, VD & xv, VD & yv, CD & t);
+
+double evalRelErr(VectorXd & x, VectorXd & xe);

@@ -11,20 +11,15 @@ class NSSolver
 
 	public:
 
-		NSSolver(Mesh &m, Fluid &f): mesh(m), fluid(f) {};
+		NSSolver(Mesh &m, Fluid &f, Data &d): mesh(m), fluid(f), data(d) {};
 
-		int InitSolver(CD t, CD Dt, CaryI3 pIdx, CD pR);
+		int InitSolver(CD Dt, CaryI3 pIdx, CD pR);
 
-		int solve(int);
-
-		int output(string);
-		int output_u(); int output_v(); int output_w(); int output_p();
+		int solve(CI &, CI &);
 
 	private:
 
-
-
-
+		Data & data;
 		Fluid & fluid;
 		Mesh & mesh;
 
@@ -52,13 +47,15 @@ class NSSolver
 		array<int, 3> pRefIdx;
 		double pRef;
 
-		double time, dt;
+		double &time=data.time;
+		double dt;
 		double Re, invRe;
 
-		Array3D<double> u, v, w;
+		Array3D<double> &u=data.u, &v=data.v, &w=data.w;
 		Array3D<double> Gu, Gv, Gw;
 
-		VectorXd p, b;
+		VectorXd &p = data.p;
+		VectorXd b;
 
 		int updateGhost();
 

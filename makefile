@@ -10,7 +10,7 @@ BPATH = bin
 OPATH = objs
 
 BIN = IncomNSSolver
-OBJS = Misc.o Boundary.o Mesh.o PoissonSolver.o NSSolverEuler.o io.o main.o
+OBJS = Misc.o Boundary.o Mesh.o Data.o PoissonSolver.o NSSolverEuler.o io.o main.o
 
 .PHONY: clean debug release
 

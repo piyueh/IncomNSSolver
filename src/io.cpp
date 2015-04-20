@@ -122,22 +122,17 @@ ostream &operator<<(ostream &os, Mesh &mesh)
 }
 
 
-int NSSolver::output(string fileName)
+int Data::output(string fileName)
 {
 	ofstream file(fileName);
 
+	file << time << endl;
 	file << u << endl;
 	file << v << endl;
 	file << w << endl;
 	file << Nx << " " << Ny << " " << Nz << endl;
 	for(int i=0; i<Nx*Ny*Nz; ++i) file << p(i) << " "; file << endl;
-	file << Nx << " " << Ny << " " << Nz << endl;
-	for(int i=0; i<Nx*Ny*Nz; ++i) file << b(i) << " "; file << endl;
 
 	return 0;
 }
 
-int NSSolver::output_u() { cout << u << endl; return 0; }
-int NSSolver::output_v() { cout << v << endl; return 0; }
-int NSSolver::output_w() { cout << w << endl; return 0; }
-int NSSolver::output_p() { cout << p << endl; return 0; }
