@@ -47,6 +47,8 @@ int PoissonSolver::setRefP(const array<int, 3> & Idx, const double & value)
 
 	A.makeCompressed();
 
+	cgSolver.compute(A);
+
 	return 0;
 }
 
@@ -56,8 +58,9 @@ pair<int, double> PoissonSolver::Solve(VectorXd & f, VectorXd & soln)
 	assert(f.size() == NCells);
 
 	f[refLoc] = refP;
-
+	
 	soln = cgSolver.solveWithGuess(f, soln);
+	//soln = cgSolver.solve(f);
 
 	return {cgSolver.iterations(), cgSolver.error()};
 }

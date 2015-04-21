@@ -6,26 +6,6 @@ int NSSolver::InitLambda()
 	};
 	
 
-	/*
-	updUB = [this] (CI & i, CI & j) -> void 
-	{ 
-		u(0, i, j) = u_str(0, i, j); 
-		u(Nxu-1, i, j) = u_str(Nxu-1, i, j); 
-	};
-
-	updVB = [this] (CI & i, CI & j) -> void 
-	{ 
-		v(i, 0, j) = v_str(i, 0, j); 
-		v(i, Nyv-1, j) = v_str(i, Nyv-1, j); 
-	};
-
-	updWB = [this] (CI & i, CI & j) -> void 
-	{ 
-		w(i, j, 0) = w_str(i, j, 0); 
-		w(i, j, Nzw-1) = w_str(i, j, Nzw-1); 
-	}; 
-	*/
-
 	updU = [this] (CI & i, CI & j, CI & k, CD & DT) -> void 
 	{ 
 		int tmp1 = calIdx(i, j, k); int tmp2 = tmp1 - Nyz; 

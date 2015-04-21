@@ -25,10 +25,17 @@ int main(int argc, char *argv[])
 	Fluid fluid(Files["-f"]);
 	Mesh mesh(Files["-m"]);
 	Data data(Files["-d"]);
-	NSSolver solver(mesh, fluid, data);
+	NSSolver solver(mesh, fluid, data, Files["-c"]);
 
+	if ((data.Nx != mesh.get_Nx()) || (data.Ny != mesh.get_Ny()) || 
+		(data.Nz != mesh.get_Nz()))
+	{
+		cerr << "The mesh setting and the initial value data differ!!" << endl;
+		return 1;
+	}	
+	cout << solver << endl;
 
-	solver.InitSolver(Files["-c"]);
+	//solver.InitSolver(0.001, 150000, 50, {0, 0, 0}, 0.);
 
 	solver.solve();
 	

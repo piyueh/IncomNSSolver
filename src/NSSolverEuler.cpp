@@ -2,7 +2,46 @@
 # include "NS_ElementryFuncs.cpp"
 
 
-int NSSolver::InitSolver(CD Dt, CI & tNStep, CI & ON, CaryI3 pIdx, CD pR)
+NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, string &fName): mesh(m), fluid(f), data(d)
+{
+	ifstream file(fName);
+	string line;
+
+	int tNStep, ON;
+	double DT;
+	double pR;
+	array<int, 3> pRIdx;
+
+	while(getline(file, line))
+	{
+		istringstream OneLine(line);
+		string var;
+
+		OneLine >> var;
+
+		if (var == "DT") { OneLine >> DT; }
+		else if (var == "TargetNStep") { OneLine >> tNStep; }
+		else if (var == "OutputNStep") { OneLine >> ON; }
+		else if (var == "RefPIdx") 
+		{ 
+			OneLine >> pRIdx[0] >> pRIdx[1] >> pRIdx[2]; 
+		}
+		else if (var == "RefP") { OneLine >> pR; }
+		else
+		{
+			throw invalid_argument(
+					string("Invalid Argument in ") + fName + ": " + var);
+		}
+	}
+
+	file.close();
+
+	InitSolver(DT, tNStep, ON, pRIdx, pR);
+
+}
+
+
+int NSSolver::InitSolver(CD & Dt, CI & tNStep, CI & ON, CaryI3 & pIdx, CD & pR)
 {
 	dt = Dt;
 	targetNStep = tNStep; outputN = ON;
@@ -28,34 +67,6 @@ int NSSolver::InitSolver(CD Dt, CI & tNStep, CI & ON, CaryI3 pIdx, CD pR)
 	wEdIdx = (BCs[3].get_wType() == 1) ? Nzw-1 : Nzw;
 	
 	InitLambda();
-
-	return 0;
-}
-
-
-int NSSolver::InitSolver(string & fName)
-{
-	ifstream file(fName);
-	string line;
-
-	while(getline(file, line))
-	{
-		istringstream OneLine(line);
-		string var;
-
-		file >> var;
-
-		if (var == "DT") file >> dt;
-		else if (var == "TargetNStep") file >> targetNStep;
-		else if (var == "OutputNStep") file >> outputN;
-		else if (var == "RefPIdx") file >> pRefIdx[0] >> pRefIdx[1] >> pRefIdx[2];
-		else if (var == "RefP") file >> pRef;
-		else
-			throw invalid_argument(
-					string("Invalid Argument in ") + fName + ": " + var);
-	}
-
-	file.close();
 
 	return 0;
 }

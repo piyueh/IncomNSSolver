@@ -50,13 +50,13 @@ Data::Data(string & fName)
 		
 		OneLine >> var;
 		if (var == "u") 
-			for(auto &Ui: u) OneLine >> Ui;
+		{ for(auto &Ui: u) OneLine >> Ui; }
 		else if (var == "v") 
-			for(auto &Ui: v) OneLine >> Ui;
+		{ for(auto &Ui: v) OneLine >> Ui; }
 		else if (var == "w") 
-			for(auto &Ui: w) OneLine >> Ui;
+		{ for(auto &Ui: w) OneLine >> Ui; }
 		else if (var == "p") 
-			for(int i=0; i<p.size(); ++i) OneLine >> p[i];
+		{ for(int i=0; i<p.size(); ++i) OneLine >> p[i]; }
 	}
 	file.close();
 

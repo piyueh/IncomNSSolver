@@ -12,9 +12,9 @@ class NSSolver
 	public:
 
 		NSSolver(Mesh &m, Fluid &f, Data &d): mesh(m), fluid(f), data(d) {};
+		NSSolver(Mesh &m, Fluid &f, Data &d, string &fn);
 
-		int InitSolver(CD Dt, CI &, CI &, CaryI3 pIdx, CD pR);
-		int InitSolver(string &);
+		int InitSolver(CD &, CI &, CI &, CaryI3 &, CD &);
 
 		int solve();
 
