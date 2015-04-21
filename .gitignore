@@ -1,3 +1,6 @@
+# C Tags
+**/tags
+
 # Compiled Object files
 *.slo
 *.lo
@@ -26,3 +29,17 @@
 *.exe
 *.out
 *.app
+
+# Backup files in KDE
+*~
+.*~
+
+# Backup files of VIM
+.*.swp
+
+# txt file
+*.txt
+
+# obj and bin directory
+**/obj
+**/bin
