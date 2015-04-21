@@ -16,6 +16,7 @@
 # include <map>
 # include <utility>
 # include <functional>
+# include <algorithm>
 # include <cmath>
 
 using namespace std;
@@ -47,8 +48,6 @@ typedef vector<double> VD;
 # include "class_Data.h"
 # include "class_PoissonSolver.h"
 # include "class_NSSolverEuler.h"
-
-
 
 
 template<typename T> ostream & operator<<(ostream &os, vector<T> x);

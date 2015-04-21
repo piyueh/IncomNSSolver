@@ -20,7 +20,7 @@ def p_ext(x, y, t):
             (numpy.cos(2 * x) + numpy.cos(2 * y)) * 0.25
 
 
-f = open("5200.txt", "r")
+f = open("4000.txt", "r")
 
 t = float(f.readline())
 

@@ -56,7 +56,22 @@ class Array3D: public vector<T>
 
 		vector<int> shape(){
 			return vector<int> {Nx, Ny, Nz};}
+
 		
+		Array3D<T> & operator=(const Array3D<T> & A)
+		{
+			assert(this->size() == A.size());
+			copy(A.cbegin(), A.cend(), this->begin());
+			return *this;
+		}
+
+
+		Array3D<T> & operator=(const vector<T> & A)
+		{
+			assert(this->size() == A.size());
+			copy(A.cbegin(), A.cend(), this->begin());
+			return *this;
+		}
 
 	private:
 

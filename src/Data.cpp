@@ -33,6 +33,7 @@ Data::Data(string & fName)
 		{
 			OneLine >> Nx >> Ny >> Nz;
 			p.resize(Nx * Ny * Nz);
+			p.setZero();
 		}
 		else if ((var.empty()) || (var == "u") || 
 				(var == "v") || (var == "w") || (var == "p")) {}
@@ -47,17 +48,35 @@ Data::Data(string & fName)
 	{
 		istringstream OneLine(line);
 		string var;
+		double value;
 		
 		OneLine >> var;
 		if (var == "u") 
-		{ for(auto &Ui: u) OneLine >> Ui; }
+		{ 
+			Array3D<double> tmp;
+			while (OneLine >> value) tmp.push_back(value);
+			if (tmp.size() == u.size()) { u = tmp; }
+			else if (tmp.size() == 1) { u.setConstant(tmp[0]); }
+			else { throw invalid_argument("Size of input u is wrong!"); }
+		}
 		else if (var == "v") 
-		{ for(auto &Ui: v) OneLine >> Ui; }
+		{ 
+			Array3D<double> tmp;
+			while (OneLine >> value) tmp.push_back(value);
+			if (tmp.size() == v.size()) { v = tmp; }
+			else if (tmp.size() == 1) { v.setConstant(tmp[0]); }
+			else { throw invalid_argument("Size of input v is wrong!"); }
+		}
 		else if (var == "w") 
-		{ for(auto &Ui: w) OneLine >> Ui; }
-		else if (var == "p") 
-		{ for(int i=0; i<p.size(); ++i) OneLine >> p[i]; }
+		{ 
+			Array3D<double> tmp;
+			while (OneLine >> value) tmp.push_back(value);
+			if (tmp.size() == w.size()) { w = tmp; }
+			else if (tmp.size() == 1) { w.setConstant(tmp[0]); }
+			else { throw invalid_argument("Size of input w is wrong!"); }
+		}
 	}
+
 	file.close();
 
 }

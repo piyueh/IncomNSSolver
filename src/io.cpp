@@ -30,8 +30,9 @@ ostream &operator<<(ostream &os, NSSolver &solver)
 {
 	os << "Current time: " << solver.time << endl;
 	os << "Time step: " << solver.dt << endl;
-	os << "mesh -> Lx x Ly x Lz: " << solver.Lx << "x" << solver.Ly 
-		<< "x" << solver.Lz << endl;
+	os << "mesh -> Lx x Ly x Lz: " << solver.mesh.get_Lx() 
+		<< "x" << solver.mesh.get_Ly() 
+		<< "x" << solver.mesh.get_Lz() << endl;
 	os << "mesh -> Nx x Ny x Nz: " << solver.Nx << "x" << solver.Ny 
 		<< "x" << solver.Nz << endl;
 	os << "Data -> Nx x Ny x Nz: " << solver.data.Nx << "x" << solver.data.Ny 

@@ -33,9 +33,8 @@ int main(int argc, char *argv[])
 		cerr << "The mesh setting and the initial value data differ!!" << endl;
 		return 1;
 	}	
-	cout << solver << endl;
 
-	//solver.InitSolver(0.001, 150000, 50, {0, 0, 0}, 0.);
+	cout << solver << endl;
 
 	solver.solve();
 	
