@@ -32,8 +32,6 @@ Data::Data(string & fName)
 		else if (var == "Np") 
 		{
 			OneLine >> Nx >> Ny >> Nz;
-			p.resize(Nx * Ny * Nz);
-			p.setZero();
 		}
 		else if ((var.empty()) || (var == "u") || 
 				(var == "v") || (var == "w") || (var == "p")) {}

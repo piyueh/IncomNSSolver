@@ -27,6 +27,7 @@ NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, string &fName): mesh(m), fluid(f)
 			OneLine >> pRIdx[0] >> pRIdx[1] >> pRIdx[2]; 
 		}
 		else if (var == "RefP") { OneLine >> pR; }
+		else if (var == "PTOL") { OneLine >> ptol; }
 		else
 		{
 			throw invalid_argument(
@@ -53,11 +54,13 @@ int NSSolver::InitSolver(CD & Dt, CI & tNStep, CI & ON, CaryI3 & pIdx, CD & pR)
 	Gv.initShape(-1, Nxv, -1, Nyv, -1, Nzv);
 	Gw.initShape(-1, Nxw, -1, Nyw, -1, Nzw);
 
-	b.resize(Nx * Ny * Nz);
+	b.resize(Nx * Ny * Nz); b.setZero();
+	p.resize(Nx * Ny * Nz); p.setZero();
 
 	pSolver.InitLinSys({Nx, Ny, Nz}, {dx, dy, dz});
 	pSolver.setLHS(mesh.get_BCs());
 	pSolver.setRefP(pRefIdx, pRef);
+	pSolver.setTolerance(ptol);
 
 	uBgIdx = (BCs[-1].get_uType() == 1) ? 1 : 0;
 	uEdIdx = (BCs[1].get_uType() == 1) ? Nxu-1 : Nxu;
@@ -76,8 +79,11 @@ int NSSolver::solve()
 {
 	pair<int, double> Itr;
 
+	clock_t t0, t;
+
 	for(int n=0; n<targetNStep; ++n)
 	{
+		t0 = clock();
 
 		updateGhost();
 		PredictStep(dt/3);
@@ -86,27 +92,31 @@ int NSSolver::solve()
 		updateU(dt/3);
 
 		updateGhost();
-		PredictStep(15*dt/16, -5./9.);
-		updatePoissonSource(5*dt/12);
+		PredictStep(15.*dt/16., -5./9.);
+		updatePoissonSource(5.*dt/12.);
 		Itr = pSolver.Solve(b, p);
-		updateU(5*dt/12);
+		updateU(5.*dt/12.);
 
 		updateGhost();
-		PredictStep(8*dt/15, -153./128.);
-		updatePoissonSource(dt/4);
+		PredictStep(8.*dt/15., -153./128.);
+		updatePoissonSource(dt/4.);
 		Itr = pSolver.Solve(b, p);
-		updateU(dt/4);
+		updateU(dt/4.);
 
-		p *= rho;
+		t = clock() - t0;
+
+		//p *= rho;
 
 		time += dt;
+
+		cout << "n=" << n+1 << " ";
+		cout << "time = " << time << " ";
+		cout << Itr.first << " " << Itr.second << " ";
+		cout << ((float)t)/CLOCKS_PER_SEC << endl;
 
 		if (n % outputN == 0)
 		{
 			data.output(to_string(n)+".txt");
-			cout << "n=" << n+1 << " ";
-			cout << "time = " << time << " ";
-			cout << Itr.first << " " << Itr.second << endl;
 		}
 	}
 

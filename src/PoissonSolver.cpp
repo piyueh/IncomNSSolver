@@ -53,6 +53,13 @@ int PoissonSolver::setRefP(const array<int, 3> & Idx, const double & value)
 }
 
 
+int PoissonSolver::setTolerance(CD & tol)
+{
+	cgSolver.setTolerance(tol);
+	return 0;
+}
+
+
 pair<int, double> PoissonSolver::Solve(VectorXd & f, VectorXd & soln)
 {
 	assert(f.size() == NCells);
@@ -61,6 +68,13 @@ pair<int, double> PoissonSolver::Solve(VectorXd & f, VectorXd & soln)
 	
 	soln = cgSolver.solveWithGuess(f, soln);
 	//soln = cgSolver.solve(f);
+	
+	if (cgSolver.info() != Success)
+	{
+		cout << cgSolver.info() << endl;
+		cerr << "Error solving matrix" << endl;
+		throw exception();
+	}
 
 	return {cgSolver.iterations(), cgSolver.error()};
 }

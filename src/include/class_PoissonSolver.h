@@ -19,6 +19,8 @@ class PoissonSolver
 
 		int setLHS(const map<int, Boundary> &);
 
+		int setTolerance(CD &);
+
 		pair<int, double> Solve(VectorXd &, VectorXd &);
 
 		void printA();
@@ -35,7 +37,6 @@ class PoissonSolver
 
 
 		SparseMatrix<double> A;
-		//ConjugateGradient<SparseMatrix<double>> cgSolver;
 		BiCGSTAB<SparseMatrix<double>, IncompleteLUT<double>> cgSolver;
 
 

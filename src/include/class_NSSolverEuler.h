@@ -59,6 +59,7 @@ class NSSolver
 		// Poisson solver
 		PoissonSolver pSolver;
 		VectorXd b;
+		double ptol = 1e-10;
 
 
 		// variables that are convinent for simplifying codes
