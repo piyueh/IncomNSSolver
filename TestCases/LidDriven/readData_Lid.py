@@ -1,7 +1,7 @@
 import numpy
 from matplotlib import pyplot
 
-f = open("N256/Data.txt", "r")
+f = open("N512/Data.txt", "r")
 
 t = float(f.readline())
 
