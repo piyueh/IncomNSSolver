@@ -41,6 +41,7 @@ ostream &operator<<(ostream &os, NSSolver &solver)
 	os << "Number of output interval: " << solver.outputN << endl;
 	os << "Visvosity: " << solver.nu << endl;
 	os << "Density: " << solver.rho << endl;
+	os << "Tolerance of the Poisson Solver: " << solver.ptol << endl;
 
 	return os;
 }

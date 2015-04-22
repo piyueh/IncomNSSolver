@@ -32,8 +32,6 @@ Data::Data(string & fName)
 		else if (var == "Np") 
 		{
 			OneLine >> Nx >> Ny >> Nz;
-			p.resize(Nx * Ny * Nz);
-			p.setZero();
 		}
 		else if ((var.empty()) || (var == "u") || 
 				(var == "v") || (var == "w") || (var == "p")) {}
@@ -57,7 +55,12 @@ Data::Data(string & fName)
 			while (OneLine >> value) tmp.push_back(value);
 			if (tmp.size() == u.size()) { u = tmp; }
 			else if (tmp.size() == 1) { u.setConstant(tmp[0]); }
-			else { throw invalid_argument("Size of input u is wrong!"); }
+			else 
+			{ 
+				throw invalid_argument(string("Size of input u is wrong! ") +
+						string("tmp.size=") + to_string(tmp.size()) + " while " + 
+						string("u.size=") + to_string(u.size())); 
+			}
 		}
 		else if (var == "v") 
 		{ 
@@ -65,7 +68,12 @@ Data::Data(string & fName)
 			while (OneLine >> value) tmp.push_back(value);
 			if (tmp.size() == v.size()) { v = tmp; }
 			else if (tmp.size() == 1) { v.setConstant(tmp[0]); }
-			else { throw invalid_argument("Size of input v is wrong!"); }
+			else
+			{ 
+				throw invalid_argument(string("Size of input v is wrong! ") +
+						string("tmp.size=") + to_string(tmp.size()) + " while " + 
+						string("v.size=") + to_string(v.size())); 
+			}
 		}
 		else if (var == "w") 
 		{ 
@@ -73,7 +81,12 @@ Data::Data(string & fName)
 			while (OneLine >> value) tmp.push_back(value);
 			if (tmp.size() == w.size()) { w = tmp; }
 			else if (tmp.size() == 1) { w.setConstant(tmp[0]); }
-			else { throw invalid_argument("Size of input w is wrong!"); }
+			else
+			{ 
+				throw invalid_argument(string("Size of input w is wrong! ") +
+						string("tmp.size=") + to_string(tmp.size()) + " while " + 
+						string("w.size=") + to_string(w.size())); 
+			}
 		}
 	}
 

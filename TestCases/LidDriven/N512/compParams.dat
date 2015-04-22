@@ -1,5 +1,6 @@
-DT 0.005
-TargetNStep 2000
+DT 0.0000002
+TargetNStep 40000
 OutputNStep 100
 RefPIdx 0 0 0
 RefP 0
+PTOL 1e-6
