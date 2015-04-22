@@ -7,10 +7,10 @@ NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, string &fName): mesh(m), fluid(f)
 	ifstream file(fName);
 	string line;
 
-	int tNStep, ON;
-	double DT;
-	double pR;
-	array<int, 3> pRIdx;
+	int tNStep = -1, ON = 100, SN = 1;
+	double DT = -1;
+	double pR = 0;
+	array<int, 3> pRIdx = {0, 0, 0};
 
 	while(getline(file, line))
 	{
@@ -22,6 +22,7 @@ NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, string &fName): mesh(m), fluid(f)
 		if (var == "DT") { OneLine >> DT; }
 		else if (var == "TargetNStep") { OneLine >> tNStep; }
 		else if (var == "OutputNStep") { OneLine >> ON; }
+		else if (var == "ScreenNStep") { OneLine >> SN; }
 		else if (var == "RefPIdx") 
 		{ 
 			OneLine >> pRIdx[0] >> pRIdx[1] >> pRIdx[2]; 
@@ -37,15 +38,25 @@ NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, string &fName): mesh(m), fluid(f)
 
 	file.close();
 
-	InitSolver(DT, tNStep, ON, pRIdx, pR);
+	if (tNStep == -1) 
+		throw invalid_argument(
+				string("No Setting of total running time ") + 
+				"steps is detected! Use the keyworld: tNStep");
+
+	if (DT == -1) 
+		throw invalid_argument(
+				string("No Setting of time step is detected! ") +
+				"Use the keyworld: DT");
+
+	InitSolver(DT, tNStep, ON, SN, pRIdx, pR);
 
 }
 
 
-int NSSolver::InitSolver(CD & Dt, CI & tNStep, CI & ON, CaryI3 & pIdx, CD & pR)
+int NSSolver::InitSolver(CD & Dt, CI & tNStep, CI & ON, CI & SN, CaryI3 & pIdx, CD & pR)
 {
 	dt = Dt;
-	targetNStep = tNStep; outputN = ON;
+	targetNStep = tNStep; outputN = ON; screenN = SN;
 	pRefIdx = pIdx; pRef = pR;
 
 	dx2 = dx * dx; dy2 = dy * dy; dz2 = dz * dz;
@@ -109,15 +120,15 @@ int NSSolver::solve()
 
 		time += dt;
 
-		cout << "n=" << n+1 << " ";
-		cout << "time = " << time << " ";
-		cout << Itr.first << " " << Itr.second << " ";
-		cout << ((float)t)/CLOCKS_PER_SEC << endl;
-
-		if (n % outputN == 0)
+		if (n % screenN == 0) 
 		{
-			data.output(to_string(n)+".txt");
+			cout << "n=" << n+1 << " ";
+			cout << "time = " << time << " ";
+			cout << Itr.first << " " << Itr.second << " ";
+			cout << ((float)t)/CLOCKS_PER_SEC << endl;
 		}
+
+		if (n % outputN == 0) data.output(to_string(n)+".txt");
 	}
 
 	return 0;
