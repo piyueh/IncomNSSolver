@@ -43,3 +43,6 @@
 # obj and bin directory
 **/obj
 **/bin
+
+# Executable file for test cases
+**/TestCases/IncomNSSolver
