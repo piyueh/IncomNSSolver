@@ -179,6 +179,7 @@ int NSSolver::PredictStep(CD & DT)
 	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, updGv);
 	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, updGw);
 
+
 	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, DT, preU);
 	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, DT, preV);
 	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, DT, preW);
@@ -192,6 +193,7 @@ int NSSolver::PredictStep(CD & DT, CD & coef)
 	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, coef, updGu2);
 	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, coef, updGv2);
 	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, coef, updGw2);
+
 
 	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, DT, preU);
 	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, DT, preV);
