@@ -4,7 +4,7 @@ from genInitData import v_ext as v_ext
 from genInitData import p_ext as p_ext
 from matplotlib import pyplot
 
-f = open("1200.txt", "r")
+f = open("Data.txt", "r")
 
 t = float(f.readline())
 
@@ -116,16 +116,16 @@ pyplot.title("p exact")
 
 pyplot.figure()
 fig = pyplot.contourf(Xu[1:-1, 1:-1], Yu[1:-1, 1:-1],
-                      u[1:-1, 1:-1] - u_e[1:-1, 1:-1])
+                      u[1:-1, 1:-1] - u_e[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 
 pyplot.figure()
 fig = pyplot.contourf(Xv[1:-1, 1:-1], Yv[1:-1, 1:-1],
-                      v[1:-1, 1:-1] - v_e[1:-1, 1:-1])
+                      v[1:-1, 1:-1] - v_e[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 
 pyplot.figure()
-fig = pyplot.contourf(Xp, Yp, p - p_e)
+fig = pyplot.contourf(Xp, Yp, p - p_e, 100)
 pyplot.colorbar(fig)
 
 pyplot.show()
