@@ -85,5 +85,5 @@ def outputInitData(t, u, v, w, p, filename):
 
 
 t = 0
-p, u, v, w = TaylorGreen(t, 160, 160)
+p, u, v, w = TaylorGreen(t, 161, 161)
 outputInitData(t, u, v, w, p, "initData.dat")

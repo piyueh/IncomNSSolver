@@ -16,14 +16,28 @@ int PoissonSolver::InitLinSys(const array<int, 3> n, const array<double, 3> dl)
 
 
 
-int PoissonSolver::setLHS(const map<int, Boundary> & BC)
+int PoissonSolver::setLHS(map<int, Boundary> & BC)
 {
 
 	InitA();
 
-	for(auto &it: BC)
-		BCCorrectA(it.second.get_Dir(), it.second.get_Sign(), 
-				it.second.get_pType(), it.second.get_pBCvalue());
+	BCCorrectA(BC[1].get_Dir(), BC[1].get_Sign(), 
+			BC[1].get_pType(), BC[1].get_pBCvalue());
+	BCCorrectA(BC[-1].get_Dir(), BC[-1].get_Sign(), 
+			BC[-1].get_pType(), BC[-1].get_pBCvalue());
+
+	BCCorrectA(BC[2].get_Dir(), BC[2].get_Sign(), 
+			BC[2].get_pType(), BC[2].get_pBCvalue());
+	BCCorrectA(BC[-2].get_Dir(), BC[-2].get_Sign(), 
+			BC[-2].get_pType(), BC[-2].get_pBCvalue());
+
+	if (Nz != 1)
+	{
+		BCCorrectA(BC[3].get_Dir(), BC[3].get_Sign(), 
+				BC[3].get_pType(), BC[3].get_pBCvalue());
+		BCCorrectA(BC[-3].get_Dir(), BC[-3].get_Sign(), 
+				BC[-3].get_pType(), BC[-3].get_pBCvalue());
+	}
 
 	cgSolver.compute(A);
 
@@ -68,6 +82,8 @@ pair<int, double> PoissonSolver::Solve(VectorXd & f, VectorXd & soln)
 	
 	soln = cgSolver.solveWithGuess(f, soln);
 	//soln = cgSolver.solve(f);
+
+	//cout << (A * soln - f).lpNorm<Infinity>() << endl;
 	
 	if (cgSolver.info() != Success)
 	{
@@ -104,7 +120,16 @@ int PoissonSolver::InitA()
 	dzInv2 = 1.0 / (dz * dz);
 
 	// the value of diagonal elements
-	dgValue = - 2.0 * (dxInv2 + dyInv2 + dzInv2);
+	switch (Nz)
+	{
+		case 1:
+			dgValue = - 2.0 * (dxInv2 + dyInv2);
+			break;
+		default:
+			dgValue = - 2.0 * (dxInv2 + dyInv2 + dzInv2);
+			break;
+	}
+
 
 
 	// assign the values to the 0th diagonal elements
@@ -112,13 +137,16 @@ int PoissonSolver::InitA()
 		CoeffMatrix.push_back(Triplet<double>(idx, idx, dgValue));
 
 
-	// assign the values to the 1st diagonal elements
-	for(int idx=0; idx<NDG1; ++idx)
-		CoeffMatrix.push_back(Triplet<double>(idx, idx+1, dzInv2));
+	if (Nz != 1)
+	{
+		// assign the values to the 1st diagonal elements
+		for(int idx=0; idx<NDG1; ++idx)
+			CoeffMatrix.push_back(Triplet<double>(idx, idx+1, dzInv2));
 
-	// assign the values to the -1st diagonal elements
-	for(int idx=1; idx<NDG0; ++idx)
-		CoeffMatrix.push_back(Triplet<double>(idx, idx-1, dzInv2));
+		// assign the values to the -1st diagonal elements
+		for(int idx=1; idx<NDG0; ++idx)
+			CoeffMatrix.push_back(Triplet<double>(idx, idx-1, dzInv2));
+	}
 
 
 	// assign the values to the 2nd diagonal elements (A[i, i+Nz])
@@ -176,8 +204,6 @@ int PoissonSolver::BCCorrectA(const unsigned int & dir, const int & sign,
 
 	jTarget *= sign;
 
-	if (type == 1) adjValue *= -1;
-
 	switch (type)
 	{
 		case 0: bg_j = Cells.second.cbegin(); break;
@@ -190,7 +216,7 @@ int PoissonSolver::BCCorrectA(const unsigned int & dir, const int & sign,
 
 	for(auto it=bg_i, it2=bg_j; it<ed_i; ++it, ++it2){
 		A.coeffRef(*it, *it2) += adjValue;
-		if (*it + jTarget >= 0 && *it + jTarget < A.cols())
+		if ((*it + jTarget >= 0) && (*it + jTarget < A.cols()))
 			A.coeffRef(*it, *it+jTarget) -= adjValue;
 	}
 

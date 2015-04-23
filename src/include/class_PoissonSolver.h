@@ -17,7 +17,7 @@ class PoissonSolver
 
 		int setRefP(const array<int, 3> &, const double &);
 
-		int setLHS(const map<int, Boundary> &);
+		int setLHS(map<int, Boundary> &);
 
 		int setTolerance(CD &);
 
@@ -38,6 +38,7 @@ class PoissonSolver
 
 		SparseMatrix<double> A;
 		BiCGSTAB<SparseMatrix<double>, IncompleteLUT<double>> cgSolver;
+		//BiCGSTAB<SparseMatrix<double>> cgSolver;
 
 
 		int InitA();

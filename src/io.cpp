@@ -20,7 +20,9 @@ ostream & operator<<(ostream &os, Array3D<T> &A)
 {
 	os << A.shape() << endl;
 	
-	for(auto &i: A) os << i << " ";
+	for(auto &i: A) os << setiosflags(ios::scientific) 
+					   << setprecision(18)
+					   << i << " ";
 
 	return os;
 }
