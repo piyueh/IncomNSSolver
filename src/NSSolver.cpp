@@ -2,14 +2,14 @@
 # include "NS_ElementryFuncs.cpp"
 
 
-NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, string &fName): mesh(m), fluid(f), data(d)
+NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, string &fName): 
+	mesh(m), fluid(f), data(d)
 {
 	ifstream file(fName);
 	string line;
 
 	int tNStep = -1, ON = 100, SN = 1;
-	double DT = -1;
-	double pR = 0;
+	double DT = -1; double pR = 0;
 	array<int, 3> pRIdx = {0, 0, 0};
 
 	while(getline(file, line))
@@ -41,7 +41,7 @@ NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, string &fName): mesh(m), fluid(f)
 	if (tNStep == -1) 
 		throw invalid_argument(
 				string("No Setting of total running time ") + 
-				"steps is detected! Use the keyworld: tNStep");
+				"steps is detected! Use the keyworld: TargetNStep");
 
 	if (DT == -1) 
 		throw invalid_argument(
@@ -65,8 +65,9 @@ int NSSolver::InitSolver(CD & Dt, CI & tNStep, CI & ON, CI & SN, CaryI3 & pIdx, 
 	Gv.initShape(-1, Nxv, -1, Nyv, -1, Nzv);
 	Gw.initShape(-1, Nxw, -1, Nyw, -1, Nzw);
 
+	dp.initShape(Nx, Ny, Nz); dp.setZeros();
+
 	b.resize(Nx * Ny * Nz); b.setZero();
-	p.resize(Nx * Ny * Nz); p.setZero();
 
 	pSolver.InitLinSys({Nx, Ny, Nz}, {dx, dy, dz});
 	pSolver.setLHS(mesh.get_BCs());
@@ -92,27 +93,29 @@ int NSSolver::solve()
 
 	clock_t t0, t;
 
+	Map<VectorXd> dp_Eigen(dp.data(), dp.size());
+
 	for(int n=0; n<targetNStep; ++n)
 	{
 		t0 = clock();
 
 		updateGhost();
-		PredictStep(dt/3);
-		updatePoissonSource(dt/3);
-		Itr = pSolver.Solve(b, p);
-		updateU(dt/3);
+		PredictStep(dt/3.);
+		updatePoissonSource(1);
+		Itr = pSolver.Solve(b, dp_Eigen);
+		updateField(dt/3.);
 
 		updateGhost();
 		PredictStep(15.*dt/16., -5./9.);
-		updatePoissonSource(5.*dt/12.);
-		Itr = pSolver.Solve(b, p);
-		updateU(5.*dt/12.);
+		updatePoissonSource(1);
+		Itr = pSolver.Solve(b, dp_Eigen);
+		updateField(15.*dt/16);
 
 		updateGhost();
 		PredictStep(8.*dt/15., -153./128.);
-		updatePoissonSource(dt/4.);
-		Itr = pSolver.Solve(b, p);
-		updateU(dt/4.);
+		updatePoissonSource(1);
+		Itr = pSolver.Solve(b, dp_Eigen);
+		updateField(8.*dt/15.);
 
 		t = clock() - t0;
 
@@ -137,33 +140,33 @@ int NSSolver::solve()
 
 int NSSolver::updateGhost()
 {
-	//BCs[-3].updGhost(Nx, Ny, 0, p, dz);
+	BCs[-3].updGhost(Nx, Ny, 0, p, dz);
 	BCs[-3].updGhost(Nxu, Nyu, 1, u, dz);
 	BCs[-3].updGhost(Nxv, Nyv, 2, v, dz);
 	BCs[-3].updGhost(Nxw, Nyw, 3, w, dz);
 
-	//BCs[-2].updGhost(Nx, Nz, 0, p, dy);
+	BCs[-2].updGhost(Nx, Nz, 0, p, dy);
 	BCs[-2].updGhost(Nxu, Nzu, 1, u, dy);
 	BCs[-2].updGhost(Nxv, Nzv, 2, v, dy);
 	BCs[-2].updGhost(Nxw, Nzw, 3, w, dy);
 
-	//BCs[-1].updGhost(Ny, Nz, 0, p, dx);
+	BCs[-1].updGhost(Ny, Nz, 0, p, dx);
 	BCs[-1].updGhost(Nyu, Nzu, 1, u, dx);
 	BCs[-1].updGhost(Nyv, Nzv, 2, v, dx);
 	BCs[-1].updGhost(Nyw, Nzw, 3, w, dx);
 
 
-	//BCs[1].updGhost(Ny, Nz, 0, p, dx);
+	BCs[1].updGhost(Ny, Nz, 0, p, dx);
 	BCs[1].updGhost(Nyu, Nzu, 1, u, dx);
 	BCs[1].updGhost(Nyv, Nzv, 2, v, dx);
 	BCs[1].updGhost(Nyw, Nzw, 3, w, dx);
 
-	//BCs[2].updGhost(Nx, Nz, 0, p, dy);
+	BCs[2].updGhost(Nx, Nz, 0, p, dy);
 	BCs[2].updGhost(Nxu, Nzu, 1, u, dy);
 	BCs[2].updGhost(Nxv, Nzv, 2, v, dy);
 	BCs[2].updGhost(Nxw, Nzw, 3, w, dy);
 
-	//BCs[3].updGhost(Nx, Ny, 0, p, dz);
+	BCs[3].updGhost(Nx, Ny, 0, p, dz);
 	BCs[3].updGhost(Nxu, Nyu, 1, u, dz);
 	BCs[3].updGhost(Nxv, Nyv, 2, v, dz);
 	BCs[3].updGhost(Nxw, Nyw, 3, w, dz);
@@ -175,6 +178,10 @@ int NSSolver::updateGhost()
 
 int NSSolver::PredictStep(CD & DT)
 {
+	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, updGu);
+	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, updGv);
+	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, updGw);
+
 	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, updGu);
 	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, updGv);
 	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, updGw);
@@ -213,16 +220,19 @@ int NSSolver::updatePoissonSource(CD & DT)
 }
 
 
-int NSSolver::updateU(CD & DT)
+int NSSolver::updateField(CD & coeff)
 {
 	// update u
-	tripleLoop(1, Nxu-1, 0, Nyu, 0, Nzu, DT, updU); 
+	tripleLoop(1, Nxu-1, 0, Nyu, 0, Nzu, updU); 
 
 	// update v
-	tripleLoop(0, Nxv, 1, Nyv-1, 0, Nzv, DT, updV); 
+	tripleLoop(0, Nxv, 1, Nyv-1, 0, Nzv, updV); 
 
 	//update w
-	tripleLoop(0, Nxw, 0, Nyw, 1, Nzw-1, DT, updW); 
+	tripleLoop(0, Nxw, 0, Nyw, 1, Nzw-1, updW); 
+
+	// update p
+	tripleLoop(0, Nx, 0, Ny, 0, Nz, coeff, updP);
 
 	return 0;
 }

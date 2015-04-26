@@ -11,7 +11,8 @@ class PoissonSolver
 	public:
 	
 		PoissonSolver() = default;
-		PoissonSolver(const array<int, 3> n, const array<double, 3> d) {InitLinSys(n, d);}
+		PoissonSolver(const array<int, 3> n, const array<double, 3> d) 
+		{InitLinSys(n, d);}
 
 		int InitLinSys(const array<int, 3>, const array<double, 3>);
 
@@ -21,7 +22,7 @@ class PoissonSolver
 
 		int setTolerance(CD &);
 
-		pair<int, double> Solve(VectorXd &, VectorXd &);
+		pair<int, double> Solve(VectorXd &, Map<VectorXd> &);
 
 		void printA();
 	
@@ -38,7 +39,6 @@ class PoissonSolver
 
 		SparseMatrix<double> A;
 		BiCGSTAB<SparseMatrix<double>, IncompleteLUT<double>> cgSolver;
-		//BiCGSTAB<SparseMatrix<double>> cgSolver;
 
 
 		int InitA();

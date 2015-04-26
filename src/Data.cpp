@@ -32,6 +32,7 @@ Data::Data(string & fName)
 		else if (var == "Np") 
 		{
 			OneLine >> Nx >> Ny >> Nz;
+			p.initShape(-1, N1-2, -1, N2-2, -1, N3-2);
 		}
 		else if ((var.empty()) || (var == "u") || 
 				(var == "v") || (var == "w") || (var == "p")) {}
@@ -88,6 +89,19 @@ Data::Data(string & fName)
 						string("w.size=") + to_string(w.size())); 
 			}
 		}
+		else if (var == "p") 
+		{ 
+			Array3D<double> tmp;
+			while (OneLine >> value) tmp.push_back(value);
+			if (tmp.size() == p.size()) { p = tmp; }
+			else if (tmp.size() == 1) { p.setConstant(tmp[0]); }
+			else
+			{ 
+				throw invalid_argument(string("Size of input p is wrong! ") +
+						string("tmp.size=") + to_string(tmp.size()) + " while " + 
+						string("p.size=") + to_string(w.size())); 
+			}
+		}
 	}
 
 	file.close();
@@ -110,38 +124,48 @@ int Data::InitData(Mesh & mesh)
 	u.initShape(-1, Nxu, -1, Nyu, -1, Nzu);
 	v.initShape(-1, Nxv, -1, Nyv, -1, Nzv);
 	w.initShape(-1, Nxw, -1, Nyw, -1, Nzw);
+	p.initShape(-1, Nx, -1, Ny, -1, Nz);
 
-	u.setZeros(); v.setZeros(); w.setZeros();
+	u.setZeros(); v.setZeros(); w.setZeros(); p.setZeros();
 
-	p.resize(Nx * Ny * Nz); p.setZero();
 
+	/*********************************************************
+	 * Setting the value on the boundary for Dirichlet BCs.
+	 * Note: pressure is always Neumann BC in this solver.
+	 *********************************************************/
 	function<void(CI &, CI &)> f;
 
+	// -x direction
 	f = [&, this] (CI & i, CI & j) 
 	{ u(0, i, j) = BCs[-1].get_uBCvalue();} ;
 
 	if (BCs[-1].get_uType() == 1) dualLoop(0, Nyu, 0, Nzu, f);
 
+	// -y direction
 	f = [&, this] (CI & i, CI & j) 
 	{ v(i, 0, i) = BCs[-2].get_vBCvalue();} ;
 
 	if (BCs[-2].get_vType() == 1) dualLoop(0, Nxv, 0, Nzv, f);
 	
+	// -z direction
 	f = [&, this] (CI & i, CI & j) 
 	{ w(i, j, 0) = BCs[-3].get_wBCvalue();} ;
 
 	if (BCs[-3].get_wType() == 1) dualLoop(0, Nxw, 0, Nyw, f);
 
+	// +x direction
 	f = [&, this] (CI & i, CI & j) 
 	{ u(Nxu-1, i, j) = BCs[1].get_uBCvalue();} ;
 
 	if (BCs[1].get_uType() == 1) dualLoop(0, Nyu, 0, Nzu, f);
 
+	// +y direction
 	f = [&, this] (CI & i, CI & j) 
 	{ v(i, Nyv-1, i) = BCs[2].get_vBCvalue();} ;
 
 	if (BCs[2].get_vType() == 1) dualLoop(0, Nxv, 0, Nzv, f);
 	
+	// +z direction
 	f = [&, this] (CI & i, CI & j) 
 	{ w(i, j, Nzw-1) = BCs[3].get_wBCvalue();} ;
 

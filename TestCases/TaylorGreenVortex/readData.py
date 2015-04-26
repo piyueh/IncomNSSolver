@@ -1,10 +1,10 @@
 import numpy
-from genInitData import u_ext as u_ext
-from genInitData import v_ext as v_ext
-from genInitData import p_ext as p_ext
+from genTGinitData import u_ext as u_ext
+from genTGinitData import v_ext as v_ext
+from genTGinitData import p_ext as p_ext
 from matplotlib import pyplot
 
-f = open("Data.txt", "r")
+f = open("TimeConvergeTest/Data.txt", "r")
 
 t = float(f.readline())
 
@@ -41,8 +41,8 @@ Ly = 2 * numpy.pi
 dx = Lx / Nx
 dy = Ly / Ny
 
-xp = numpy.linspace(dx/2, Lx-dx/2, Nx)
-yp = numpy.linspace(dy/2, Ly-dy/2, Ny)
+xp = numpy.linspace(-dx/2, Lx+dx/2, Nx+2)
+yp = numpy.linspace(-dy/2, Ly+dy/2, Ny+2)
 Xp, Yp = numpy.meshgrid(xp, yp)
 
 
@@ -81,34 +81,34 @@ pyplot.ylim(0, 2*numpy.pi)
 '''
 
 pyplot.figure()
-fig = pyplot.contourf(Xu, Yu, u, 100)
+fig = pyplot.contourf(Xu[1:-1, 1:-1], Yu[1:-1, 1:-1], u[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 pyplot.title("u simulation")
 
 pyplot.figure()
-fig = pyplot.contourf(Xu, Yu, u_e, 100)
+fig = pyplot.contourf(Xu[1:-1, 1:-1], Yu[1:-1, 1:-1], u_e[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 pyplot.title("u exact")
 
 
 pyplot.figure()
-fig = pyplot.contourf(Xv, Yv, v, 100)
+fig = pyplot.contourf(Xv[1:-1, 1:-1], Yv[1:-1, 1:-1], v[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 pyplot.title("v simulation")
 
 pyplot.figure()
-fig = pyplot.contourf(Xv, Yv, v_e, 100)
+fig = pyplot.contourf(Xv[1:-1, 1:-1], Yv[1:-1, 1:-1], v_e[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 pyplot.title("v exact")
 
 
 pyplot.figure()
-fig = pyplot.contourf(Xp, Yp, p, 100)
+fig = pyplot.contourf(Xp[1:-1, 1:-1], Yp[1:-1, 1:-1], p[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 pyplot.title("p simulation")
 
 pyplot.figure()
-fig = pyplot.contourf(Xp, Yp, p_e, 100)
+fig = pyplot.contourf(Xp[1:-1, 1:-1], Yp[1:-1, 1:-1], p_e[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 pyplot.title("p exact")
 
@@ -116,16 +116,16 @@ pyplot.title("p exact")
 
 pyplot.figure()
 fig = pyplot.contourf(Xu[1:-1, 1:-1], Yu[1:-1, 1:-1],
-                      u[1:-1, 1:-1] - u_e[1:-1, 1:-1], 100)
+                      (u - u_e)[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 
 pyplot.figure()
 fig = pyplot.contourf(Xv[1:-1, 1:-1], Yv[1:-1, 1:-1],
-                      v[1:-1, 1:-1] - v_e[1:-1, 1:-1], 100)
+                      (v - v_e)[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 
 pyplot.figure()
-fig = pyplot.contourf(Xp, Yp, p - p_e, 100)
+fig = pyplot.contourf(Xp[1:-1, 1:-1], Yp[1:-1, 1:-1], (p - p_e)[1:-1, 1:-1], 100)
 pyplot.colorbar(fig)
 
 pyplot.show()
