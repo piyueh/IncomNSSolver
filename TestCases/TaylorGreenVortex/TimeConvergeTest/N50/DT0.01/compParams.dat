@@ -1,5 +1,5 @@
-DT 0.005
-TargetNStep 2
+DT 0.01
+TargetNStep 1
 OutputNStep 1
 ScreenNStep 1
 RefPIdx 0 0 0

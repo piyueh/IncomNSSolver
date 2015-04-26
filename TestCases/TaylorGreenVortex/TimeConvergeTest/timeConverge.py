@@ -24,19 +24,24 @@ def p_ext(x, y, t):
 
 Lx = Ly = 2 * numpy.pi
 
-Case = [0.00025, 0.000125, 0.0000625, 0.00003125]
+DT = ["0.01", "0.005", "0.0025", "0.00125", "0.000625", "0.0003125", "0.00015625", "0.000078125"]
 
-File = {0.00025: "DT25E-5/2000.txt", 0.000125: "DT12.5E-5/4000.txt", 
-        0.0000625: "DT6.25E-5/8000.txt", 0.00003125: "DT3.125E-5/16000.txt"}
+File = {dt: "DT"+dt+"/Data.txt" for dt in DT}
 
-L2norm = {i: 0 for i in Case}
+ErrU = numpy.zeros(0, dtype=numpy.float)
+ErrV = numpy.zeros(0, dtype=numpy.float)
+ErrP = numpy.zeros(0, dtype=numpy.float)
 
-for dt in Case:
+ErrReU = numpy.zeros(0, dtype=numpy.float)
+ErrReV = numpy.zeros(0, dtype=numpy.float)
+ErrReP = numpy.zeros(0, dtype=numpy.float)
+
+for dt in DT:
 
     f = open(File[dt], "r")
 
     t = float(f.readline())
-    print(t)
+    print(dt, t)
 
     uN = numpy.array([int(x) for x in f.readline().split()])
     u = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(uN))
@@ -59,13 +64,14 @@ for dt in Case:
     v = v[:, :, 1].T
     p = p[:, :, 0].T
 
+
     Nx = vN[0] - 2
     Ny = uN[1] - 2
     dx = Lx / Nx
     dy = Ly / Ny
 
-    xp = numpy.linspace(dx/2, Lx-dx/2, Nx)
-    yp = numpy.linspace(dy/2, Ly-dy/2, Ny)
+    xp = numpy.linspace(-dx/2, Lx+dx/2, Nx+2)
+    yp = numpy.linspace(-dy/2, Ly+dy/2, Ny+2)
     Xp, Yp = numpy.meshgrid(xp, yp)
 
     xu = numpy.linspace(-dx, Lx+dx, Nx+3)
@@ -80,8 +86,62 @@ for dt in Case:
     v_e = v_ext(Xv, Yv, t)
     p_e = p_ext(Xp, Yp, t)
 
+    p += p_ext(Xp[0, 0], Yp[0, 0], t)
 
-    L2norm[dt] = numpy.sqrt(numpy.sum((u - u_e)**2)) / (Nx * Ny)
+    ErrU = numpy.append(ErrU, numpy.abs(u-u_e)[1:-1, 1:-1].max())
+    ErrV = numpy.append(ErrV, numpy.abs(v-v_e)[1:-1, 1:-1].max())
+    ErrP = numpy.append(ErrP, numpy.abs(p-p_e)[1:-1, 1:-1].max())
+
+    ErrReU = numpy.append(ErrReU, u[1:-1, 1:-1].max())
+    ErrReV = numpy.append(ErrReV, v[1:-1, 1:-1].max())
+    ErrReP = numpy.append(ErrReP, p[1:-1, 1:-1].max())
 
 
-print(L2norm)
+for i, dt in enumerate(DT):
+    ErrReU[i] = numpy.abs(ErrReU[i] - ErrReU[-1])
+    ErrReV[i] = numpy.abs(ErrReV[i] - ErrReV[-1])
+    ErrReP[i] = numpy.abs(ErrReP[i] - ErrReP[-1])
+
+
+for i, dt in enumerate(DT):
+    print(dt, ErrU[i], ErrV[i], ErrP[i])
+
+for i, dt in enumerate(DT):
+    print(dt, ErrReU[i], ErrReV[i], ErrReP[i])
+
+
+DT = numpy.array([float(dt) for dt in DT])
+
+
+pyplot.figure()
+pyplot.loglog(DT, ErrU, "kx", markersize=10, label="Err(u)")
+pyplot.loglog(DT, ErrV, "k^", markersize=10, label="Err(v)")
+pyplot.loglog(DT, 
+        numpy.array([ErrU[0]/(2**n) for n in range(DT.size)]), 
+        "r--", label="1st order")
+pyplot.loglog(DT, 
+        numpy.array([ErrU[0]/(4**n) for n in range(DT.size)]), 
+        "r--", label="2nd order")
+pyplot.loglog(DT, 
+        numpy.array([ErrU[0]/(8**n) for n in range(DT.size)]), 
+        "r--", label="3rd order")
+pyplot.axis("equal")
+pyplot.legend(loc=0)
+
+
+pyplot.figure()
+pyplot.loglog(DT[:-1], ErrReU[:-1], "kx", markersize=10, label="ErrRe(u)")
+pyplot.loglog(DT[:-1], ErrReV[:-1], "k^", markersize=10, label="ErrRe(v)")
+pyplot.loglog(DT, 
+        numpy.array([ErrReU[0]/(2**n) for n in range(DT.size)]), 
+        "r--", label="1st order")
+pyplot.loglog(DT, 
+        numpy.array([ErrReU[0]/(4**n) for n in range(DT.size)]), 
+        "r--", label="2nd order")
+pyplot.loglog(DT, 
+        numpy.array([ErrReU[0]/(8**n) for n in range(DT.size)]), 
+        "r--", label="3rd order")
+pyplot.axis("equal")
+pyplot.legend(loc=0)
+
+pyplot.show()

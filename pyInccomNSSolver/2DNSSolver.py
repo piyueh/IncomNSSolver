@@ -134,7 +134,7 @@ def RK3_NSSolver(nu, u, v, p, dx, dy, dt, Nx, Ny, Nt):
             singleEuler(nu, u, v, p, dp, Gu, Gv, dx, dy, dt, Nx, Ny, -153./128., 8./15.)
 
         t = (n + 1) * dt
-        print("N = ", n, " Time = ", t)
+        print("N = ", n+1, " Time = ", t)
 
 
     updGhosts(u, v, p)
@@ -153,8 +153,8 @@ Xu, Yu, Xv, Yv, Xp, Yp = genCoord(Lx, Ly, dx, dy, Nx, Ny)
 
 
 nu = 1
-DT = numpy.array([0.01 / (2**n) for n in range(10)])
-DT /= 2
+DT = numpy.array([0.005 / (2**n) for n in range(7)])
+
 ErrU = numpy.zeros(0)
 ErrV = numpy.zeros(0)
 ErrP = numpy.zeros(0)
@@ -162,7 +162,7 @@ ErrP = numpy.zeros(0)
 
 for dt in DT:
 
-    Nt = int(0.01 / dt + 0.5)
+    Nt = int(0.005 / dt + 0.5)
 
     u = u_ext(Xu, Yu, 0)
     v = v_ext(Xv, Yv, 0)
@@ -173,14 +173,14 @@ for dt in DT:
     uc = (u[2:-1, 1:-1] + u[1:-2, 1:-1]) / 2
     vc = (v[1:-1, 2:-1] + v[1:-1, 1:-2]) / 2
 
-    '''
-    ErrU = numpy.append(ErrU, (u[1:-1, 1:-1] - u_ext(Xu, Yu, t)[1:-1, 1:-1]).max())
-    ErrV = numpy.append(ErrV, (v[1:-1, 1:-1] - v_ext(Xv, Yv, t)[1:-1, 1:-1]).max())
-    ErrP = numpy.append(ErrP, (p[1:-1, 1:-1] + p_ext(Xp[1, 1], Yp[1, 1], t) - p_ext(Xp, Yp, t)[1:-1, 1:-1]).max())
+    ErrU = numpy.append(ErrU, numpy.abs(u[1:-1, 1:-1] - u_ext(Xu, Yu, t)[1:-1, 1:-1]).max())
+    ErrV = numpy.append(ErrV, numpy.abs(v[1:-1, 1:-1] - v_ext(Xv, Yv, t)[1:-1, 1:-1]).max())
+    ErrP = numpy.append(ErrP, numpy.abs(p[1:-1, 1:-1] + p_ext(Xp[1, 1], Yp[1, 1], t) - p_ext(Xp, Yp, t)[1:-1, 1:-1]).max())
     '''
     ErrU = numpy.append(ErrU, u[1:-1, 1:-1].max())
     ErrV = numpy.append(ErrV, v[1:-1, 1:-1].max())
     ErrP = numpy.append(ErrP, p[1:-1, 1:-1].max())
+    '''
 
     '''
     pyplot.figure()
@@ -202,15 +202,12 @@ for dt in DT:
     '''
 
 
+'''
 ErrU = numpy.abs(ErrU-ErrU[-1])
 ErrV = numpy.abs(ErrV-ErrV[-1])
 ErrP = numpy.abs(ErrP-ErrP[-1])
+'''
 
-'''
-ErrU = numpy.abs(ErrU)
-ErrV = numpy.abs(ErrV)
-ErrP = numpy.abs(ErrP)
-'''
 
 for i, dt in enumerate(DT):
     print(dt, ErrU[i], ErrV[i], ErrP[i])
