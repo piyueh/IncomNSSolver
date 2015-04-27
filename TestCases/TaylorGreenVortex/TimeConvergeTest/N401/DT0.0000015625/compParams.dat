@@ -1,5 +1,5 @@
 DT 0.0000015625
-TargetNStep 256
+TargetNStep 512
 OutputNStep 1
 ScreenNStep 1
 RefPIdx 0 0 0
