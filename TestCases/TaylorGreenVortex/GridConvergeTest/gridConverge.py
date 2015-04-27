@@ -64,6 +64,7 @@ for i, n in enumerate(N):
     v = v[:, :, 1].T
     p = p[:, :, 0].T
 
+    p -= numpy.average(p[1:-1, 1:-1])
 
     Nx = vN[0] - 2
     Ny = uN[1] - 2
@@ -86,19 +87,14 @@ for i, n in enumerate(N):
     v_e = v_ext(Xv, Yv, t)
     p_e = p_ext(Xp, Yp, t)
 
-    p += p_ext(Xp[0, 0], Yp[0, 0], t)
-
-    ErrU = numpy.append(ErrU, numpy.sqrt(numpy.sum((u-u_e)[1:-1, 1:-1]**2)/(Nx*Ny)))
-    ErrV = numpy.append(ErrV, numpy.sqrt(numpy.sum((v-v_e)[1:-1, 1:-1]**2)/(Nx*Ny)))
-    ErrP = numpy.append(ErrP, numpy.sqrt(numpy.sum((p-p_e)[1:-1, 1:-1]**2)/(Nx*Ny)))
+    ErrU = numpy.append(ErrU, numpy.abs(u-u_e)[1:-1, 1:-1].max())
+    ErrV = numpy.append(ErrV, numpy.abs(v-v_e)[1:-1, 1:-1].max())
+    ErrP = numpy.append(ErrP, numpy.abs(p-p_e)[1:-1, 1:-1].max())
 
     ErrReU = numpy.append(ErrReU, numpy.max(u[1:-1, 1:-1]))
     ErrReV = numpy.append(ErrReV, numpy.max(v[1:-1, 1:-1]))
     ErrReP = numpy.append(ErrReP, numpy.max(p[1:-1, 1:-1]))
 
-
-for i, n in enumerate(N):
-    print(n, ErrReU[i], ErrReV[i], ErrReP[i])
 
 for i, n in enumerate(N):
     ErrReU[i] = numpy.abs(ErrReU[i] - ErrReU[-1])
@@ -117,23 +113,40 @@ DL = numpy.array([Lx / float(n) for n in N])
 
 
 pyplot.figure()
-pyplot.title(r"$L_2$ norm of absolute error to the exact solution")
-pyplot.loglog(DL, ErrU, "kx", markersize=10, label="Err(u)")
-pyplot.loglog(DL, ErrV, "k^", markersize=10, label="Err(v)")
+pyplot.title(r"$L_\infty$ of absolute error " + 
+              "\n relative to the exact solution",
+             fontsize=16)
+pyplot.xlabel(r"$\Delta x$(=$\Delta y$)", fontsize=18)
+pyplot.ylabel(r"$L_\infty$", fontsize=18)
+pyplot.loglog(DL, ErrU, "kx", markersize=10, label="u-velocity")
+pyplot.loglog(DL, ErrV, "k^", markersize=10, label="v-velocity")
+pyplot.loglog(DL, ErrP, "kd", markersize=10, label="Pressure")
 pyplot.loglog(numpy.array([DL[0]/(2**n) for n in range(5)]), 
         numpy.array([ErrU[0]/(2**n) for n in range(5)]), 
         "r--", label="1st order")
 pyplot.loglog(numpy.array([DL[0]/(2**n) for n in range(5)]), 
         numpy.array([ErrU[0]/(4**n) for n in range(5)]), 
-        "r--", label="2nd order")
+        "g--", label="2nd order")
 pyplot.loglog(numpy.array([DL[0]/(2**n) for n in range(5)]), 
         numpy.array([ErrU[0]/(8**n) for n in range(5)]), 
-        "r--", label="3rd order")
-#pyplot.axis("equal")
-pyplot.legend(loc=0)
+        "b--", label="3rd order")
+pyplot.loglog(numpy.array([DL[0]/(2**n) for n in range(5)]), 
+        numpy.array([ErrP[0]/(2**n) for n in range(5)]), 
+        "r--")
+pyplot.loglog(numpy.array([DL[0]/(2**n) for n in range(5)]), 
+        numpy.array([ErrP[0]/(4**n) for n in range(5)]), 
+        "g--")
+pyplot.loglog(numpy.array([DL[0]/(2**n) for n in range(5)]), 
+        numpy.array([ErrP[0]/(8**n) for n in range(5)]), 
+        "b--")
+pyplot.xlim(DL.min()/10, DL.max()*10)
+pyplot.ylim(ErrU.min()/10, 10**(numpy.log10(ErrP.max())+2))
+pyplot.legend(loc=9, ncol=3, mode="expand", numpoints=1)
 pyplot.grid(True)
+pyplot.savefig("GridErrExact.png", format="png")
 
 
+'''
 pyplot.figure()
 pyplot.title(r"$L_2$ norm of absolute error to the finest grid")
 pyplot.loglog(DL[:-1], ErrReU[:-1], "kx", markersize=10, label="ErrRe(u)")
@@ -150,5 +163,6 @@ pyplot.loglog(numpy.array([DL[0]/(2**n) for n in range(5)]),
 #pyplot.axis("equal")
 pyplot.legend(loc=0)
 pyplot.grid(True)
+'''
 
 pyplot.show()
