@@ -161,10 +161,10 @@ for N in NBase:
             numpy.array([ErrP[0]/(8**n) for n in range(DT.size)]), 
             "b--")
     pyplot.xlim(DT.min()/10, DT.max()*10)
-    pyplot.ylim(ErrU.min()/10, 10**(numpy.log10(ErrReP.max())+2))
+    pyplot.ylim(ErrU.min()/10, 10**(numpy.log10(ErrP.max())+2))
     pyplot.legend(loc=9, ncol=3, mode="expand", numpoints=1)
     pyplot.grid(True)
-    pyplot.savefig("N"+str(N)+"_TempErrExact.png", format="png")
+    pyplot.savefig("N"+str(N)+"_TimeErrExact.png", format="png")
 
 
     pyplot.figure()
@@ -199,6 +199,6 @@ for N in NBase:
     pyplot.ylim(ymax=10**(numpy.log10(ErrReP.max())+6))
     pyplot.legend(loc=9, ncol=3, mode="expand", numpoints=1)
     pyplot.grid(True)
-    pyplot.savefig("N"+str(N)+"_TempErrFinestTime.png", format="png")
+    pyplot.savefig("N"+str(N)+"_TimeErrFinestTime.png", format="png")
 
 pyplot.show()
