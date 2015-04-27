@@ -30,7 +30,12 @@ class NSSolver
 		Fluid & fluid;
 		double &nu = fluid.nu, &rho = fluid.rho;
 
-		// mesh
+
+		/********************************************************************
+		 * mesh:
+		 * 		All data are references refer to mesh objects in order to 
+		 * 		minimize the memory usage.
+		 ********************************************************************/
 		Mesh & mesh;
 		map<int, Boundary> & BCs = mesh.BCs;
 
@@ -49,41 +54,50 @@ class NSSolver
 		vector<double> &xw = mesh.xw, &yw = mesh.yw, &zw = mesh.zw;
 
 
-		// data of primative variables
+		/********************************************************************
+		 * data of primative variables:
+		 ********************************************************************/
 		Data & data;
 		double &time = data.time;
-		Array3D<double> &u = data.u, &v = data.v, &w = data.w;
-		VectorXd &p = data.p;
+		Array3D<double> &u = data.u, &v = data.v, &w = data.w, &p = data.p;
 
+		Array3D<double> dp;
 
-		// Poisson solver
+		/********************************************************************
+		 * Poisson solver:
+		 ********************************************************************/
 		PoissonSolver pSolver;
-		VectorXd b;
+		VectorXd b; 
 		double ptol = 1e-10;
 
 
-		// variables that are convinent for simplifying codes
+		/********************************************************************
+		 * variables that are convinent for simplifying codes
+		 ********************************************************************/
 		double dx2, dy2, dz2;
 		int uBgIdx, uEdIdx, vBgIdx, vEdIdx, wBgIdx, wEdIdx; 
 		Array3D<double> Gu, Gv, Gw;
 
 
-		// private functions
+		/********************************************************************
+		 * private functions
+		 ********************************************************************/
 		int InitLambda();
 		int updateGhost();
 		int PredictStep(CD & DT);
 		int PredictStep(CD & DT, CD & coef);
 		int updatePoissonSource(CD &);
-		int updateU(CD &);
+		int updateField(CD &);
 
 		function<double(CI &, CI &, CI &)> ConvU, ConvV, ConvW;
 		function<double(CI &, CI &, CI &)> DiffU, DiffV, DiffW;
+		function<double(CI &, CI &, CI &)> PresU, PresV, PresW;
 		function<void(CI &, CI &, CI &)> updGu, updGv, updGw;
 		function<void(CI &, CI &, CI &, CD &)> updGu2, updGv2, updGw2;
 		function<void(CI &, CI &, CI &, CD &)> preU, preV, preW;
 		function<int(CI &, CI &, CI &)> calIdx;
-		function<void(CI &, CI &)> updUB, updVB, updWB;
-		function<void(CI &, CI &, CI &, CD &)> updU, updV, updW;
+		function<void(CI &, CI &, CI &)> updU, updV, updW;
+		function<void(CI &, CI &, CI &, CD &)> updP;
 		function<void(CI &, CI &, CI &)> DivOnPresPt;
 
 };

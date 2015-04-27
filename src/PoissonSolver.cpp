@@ -8,9 +8,6 @@ int PoissonSolver::InitLinSys(const array<int, 3> n, const array<double, 3> dl)
 
 	NCells = Nx * Ny * Nz; Nyz = Ny * Nz;
 
-	A.resize(NCells, NCells);
-	A.setZero();
-
 	return 0;
 }	
 
@@ -74,16 +71,14 @@ int PoissonSolver::setTolerance(CD & tol)
 }
 
 
-pair<int, double> PoissonSolver::Solve(VectorXd & f, VectorXd & soln)
+pair<int, double> PoissonSolver::Solve(VectorXd & f, Map<VectorXd> & soln)
 {
 	assert(f.size() == NCells);
 
 	f[refLoc] = refP;
 	
-	soln = cgSolver.solveWithGuess(f, soln);
-	//soln = cgSolver.solve(f);
-
-	//cout << (A * soln - f).lpNorm<Infinity>() << endl;
+	//soln = cgSolver.solveWithGuess(f, soln);
+	soln = cgSolver.solve(f);
 	
 	if (cgSolver.info() != Success)
 	{
@@ -96,10 +91,10 @@ pair<int, double> PoissonSolver::Solve(VectorXd & f, VectorXd & soln)
 }
 
 
-/*
+/********************************************************************************
  * Initialize the matrix A in the linear system Ax=b for the 3D Poisson problems.
  * The boundary conditions will not be implemented in the returned matrix A.
- */
+ ********************************************************************************/
 int PoissonSolver::InitA()
 {
 	// the numbers of diagonal sub-diagonal elements
