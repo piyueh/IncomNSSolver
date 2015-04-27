@@ -47,5 +47,5 @@
 # python
 **/__pycache__
 
-# Executable file for test cases
-**/TestCases/IncomNSSolver
+# pyIncomNSSolver
+pyIncomNSSolver/
