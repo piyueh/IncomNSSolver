@@ -56,6 +56,13 @@ uGhia = numpy.array([0, -0.03717, -0.04192, -0.04775, -0.06434, -0.10150,
                      -0.15662, -0.21090, -0.20581, -0.13641, 0.00332, 0.23151, 
                      0.68717, 0.73722, 0.78871, 0.84123, 1])
 
+xGhia = numpy.array([0, 0.0625, 0.0703, 0.0781, 0.0938, 0.1563, 
+                     0.2266, 0.2344, 0.5, 0.8047, 0.8594, 0.9063, 
+                     0.9453, 0.9531, 0.9609, 0.9688, 1])
+vGhia = numpy.array([0, 0.09233, 0.10091, 0.10890, 0.12317, 0.16077, 
+                     0.17507, 0.17527, 0.05454, -0.24533, -0.22445, -0.16914, 
+                     -0.10313, -0.08864, -0.07391, -0.05906, 0])
+
 
 pyplot.figure()
 pyplot.title("Streamlines @ t = 50 sec", fontsize=18)
@@ -94,14 +101,24 @@ pyplot.savefig("Lid_Pressure.png", format="png")
 pyplot.figure()
 pyplot.title("u velocity along the vertical center line" +
              "\n @ t = 50 sec", fontsize=18)
-pyplot.xlabel(r"$y / L$", fontsize=18)
-pyplot.ylabel(r"$u / U_{lid}$", fontsize=18)
-pyplot.plot(u[1:-1, Nx/2+1], Yu[1:-1, Nx/2+1], 'k.', 
-        markersize=10, label="present project")
-pyplot.plot(uGhia, yGhia, 'r--', lw=2, label="Ghia et. al., 1982")
+pyplot.xlabel(r"$u / U_{lid}$", fontsize=18)
+pyplot.ylabel(r"$y / L$", fontsize=18)
+pyplot.plot(u[1:-1, Nx/2+1], Yu[1:-1, Nx/2+1], 'k-', lw=2, label="present project")
+pyplot.plot(uGhia, yGhia, 'r^', markersize=10, label="Ghia et. al., 1982")
 pyplot.grid(True)
 pyplot.legend(loc=0)
 pyplot.savefig("Lid_CenterUvelocity.png", format="png")
+
+pyplot.figure()
+pyplot.title("v velocity along the horizontal center line" +
+             "\n @ t = 50 sec", fontsize=18)
+pyplot.xlabel(r"$x / L$", fontsize=18)
+pyplot.ylabel(r"$v / U_{lid}$", fontsize=18)
+pyplot.plot(Xv[Ny/2+1, 1:-1], v[Ny/2+1, 1:-1], 'k-', lw=2, label="present project")
+pyplot.plot(xGhia, vGhia, 'r^', lw=2, markersize=10, label="Ghia et. al., 1982")
+pyplot.grid(True)
+pyplot.legend(loc=0)
+pyplot.savefig("Lid_CenterVvelocity.png", format="png")
 
 
 pyplot.show()

@@ -62,7 +62,7 @@ for i, n in enumerate(N):
 
     u = u[:, :, 1].T
     v = v[:, :, 1].T
-    p = p[:, :, 0].T
+    p = p[:, :, 1].T
 
     p -= numpy.average(p[1:-1, 1:-1])
 
