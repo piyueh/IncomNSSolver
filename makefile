@@ -14,13 +14,13 @@ OBJS = Misc.o Boundary.o Mesh.o Data.o Solid.o PoissonSolver.o NSSolver.o io.o m
 
 .PHONY: clean debug release
 
-debug: CFLAGS = -std=c++11 -g
+debug: CFLAGS = -std=c++11 -g -DCYLINDER
 debug:
 	@if [ ! -e ${OPATH} ]; then mkdir ${OPATH}; fi
 	@if [ ! -e ${BPATH} ]; then mkdir ${BPATH}; fi
 	make ${BPATH}/${BIN} CFLAGS="${CFLAGS}"
 
-release: CFLAGS = -std=c++11 -O3 -march=native -DNDEBUG -DEIGEN_NO_DEBUG
+release: CFLAGS = -std=c++11 -O3 -march=native -DNDEBUG -DEIGEN_NO_DEBUG -DCYLINDER
 release:
 	@if [ ! -e ${OPATH} ]; then mkdir ${OPATH}; fi
 	@if [ ! -e ${BPATH} ]; then mkdir ${BPATH}; fi

@@ -2,8 +2,8 @@
 # include "NS_ElementryFuncs.cpp"
 
 
-NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, string &fName): 
-	mesh(m), fluid(f), data(d)
+NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, Solid &s, string &fName): 
+	mesh(m), fluid(f), data(d), cyln(s)
 {
 	ifstream file(fName);
 	string line;
@@ -101,18 +101,21 @@ int NSSolver::solve()
 
 		updateGhost();
 		PredictStep(dt/3.);
+		cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b, dp_Eigen);
 		updateField(dt/3.);
 
 		updateGhost();
 		PredictStep(15.*dt/16., -5./9.);
+		cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b, dp_Eigen);
 		updateField(15.*dt/16);
 
 		updateGhost();
 		PredictStep(8.*dt/15., -153./128.);
+		cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b, dp_Eigen);
 		updateField(8.*dt/15.);

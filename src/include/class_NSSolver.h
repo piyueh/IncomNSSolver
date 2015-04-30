@@ -11,8 +11,9 @@ class NSSolver
 
 	public:
 
-		NSSolver(Mesh &m, Fluid &f, Data &d): mesh(m), fluid(f), data(d) {};
-		NSSolver(Mesh &m, Fluid &f, Data &d, string &fn);
+		NSSolver(Mesh &m, Fluid &f, Data &d, Solid &s): 
+							mesh(m), fluid(f), data(d), cyln(s) {};
+		NSSolver(Mesh &m, Fluid &f, Data &d, Solid &s, string &fn);
 
 		int InitSolver(CD &, CI &, CI &, CI &, CaryI3 &, CD &);
 
@@ -52,6 +53,12 @@ class NSSolver
 		vector<double> &xu = mesh.xu, &yu = mesh.yu, &zu = mesh.zu;
 		vector<double> &xv = mesh.xv, &yv = mesh.yv, &zv = mesh.zv;
 		vector<double> &xw = mesh.xw, &yw = mesh.yw, &zw = mesh.zw;
+
+
+		/********************************************************************
+		 * Cylinder:
+		 ********************************************************************/
+		Solid & cyln;
 
 
 		/********************************************************************

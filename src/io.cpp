@@ -149,3 +149,14 @@ int Data::output(string fileName)
 	return 0;
 }
 
+
+int Solid::output(string fileName)
+{
+	ofstream file(fileName);
+
+	file << uFlag << endl;
+	file << vFlag << endl;
+	file << wFlag << endl;
+
+	return 0;
+}

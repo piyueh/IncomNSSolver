@@ -26,11 +26,10 @@ int main(int argc, char *argv[])
 	Mesh mesh(Files["-m"]);
 	Data data(Files["-d"]);
 
-# ifdef CYLINDER
 	Solid cylinder({10, 10}, 0.5, mesh);
-# endif
+	cylinder.output("flags.txt");
 
-	NSSolver solver(mesh, fluid, data, Files["-c"]);
+	NSSolver solver(mesh, fluid, data, cylinder, Files["-c"]);
 
 	if ((data.Nx != mesh.get_Nx()) || (data.Ny != mesh.get_Ny()) || 
 		(data.Nz != mesh.get_Nz()))

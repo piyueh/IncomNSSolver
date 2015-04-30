@@ -12,15 +12,26 @@ Solid::Solid(const array<double, 2> & Center, CD & Radius, const Mesh & mesh)
 	uFlag.setConstant(false); vFlag.setConstant(false); wFlag.setConstant(false); 
 
 	determineFlags(mesh);
-	determineIdx(mesh)
+	determineIdx(mesh);
 }
 
 
 int Solid::determineFlags(const Mesh & mesh)
 {
-	auto &xu = mesh.get_xu(), &yu = mesh.get_yu(), &zu = mesh.get_zu(); 
-	auto &xv = mesh.get_xv(), &yv = mesh.get_yv(), &zv = mesh.get_zv(); 
-	auto &xw = mesh.get_xw(), &yw = mesh.get_yw(), &zw = mesh.get_zw(); 
+	VD xu = mesh.get_xu(), yu = mesh.get_yu(), zu = mesh.get_zu(); 
+	VD xv = mesh.get_xv(), yv = mesh.get_yv(), zv = mesh.get_zv(); 
+	VD xw = mesh.get_xw(), yw = mesh.get_yw(), zw = mesh.get_zw(); 
+
+	auto fx = [this] (double & d) -> void { d -= center[0]; };
+	auto fy = [this] (double & d) -> void { d -= center[1]; };
+
+	for_each(xu.begin(), xu.end(), fx);
+	for_each(xv.begin(), xv.end(), fx);
+	for_each(xw.begin(), xw.end(), fx);
+
+	for_each(yu.begin(), yu.end(), fy);
+	for_each(yv.begin(), yv.end(), fy);
+	for_each(yw.begin(), yw.end(), fy);
 
 	auto fu = [this, &xu, &yu] (CI &i, CI &j, CI &k) -> void
 	{
@@ -47,9 +58,21 @@ int Solid::determineFlags(const Mesh & mesh)
 
 int Solid::determineIdx(const Mesh & mesh)
 {
-	const VD &xu = mesh.get_xu(), &yu = mesh.get_yu(), &zu = mesh.get_zu(); 
-	const VD &xv = mesh.get_xv(), &yv = mesh.get_yv(), &zv = mesh.get_zv(); 
-	const VD &xw = mesh.get_xw(), &yw = mesh.get_yw(), &zw = mesh.get_zw(); 
+	VD xu = mesh.get_xu(), yu = mesh.get_yu(), zu = mesh.get_zu(); 
+	VD xv = mesh.get_xv(), yv = mesh.get_yv(), zv = mesh.get_zv(); 
+	VD xw = mesh.get_xw(), yw = mesh.get_yw(), zw = mesh.get_zw(); 
+
+	auto fx = [this] (double & d) -> void { d -= center[0]; };
+	auto fy = [this] (double & d) -> void { d -= center[1]; };
+
+
+	for_each(xu.begin(), xu.end(), fx);
+	for_each(xv.begin(), xv.end(), fx);
+	for_each(xw.begin(), xw.end(), fx);
+
+	for_each(yu.begin(), yu.end(), fy);
+	for_each(yv.begin(), yv.end(), fy);
+	for_each(yw.begin(), yw.end(), fy);
 
 	const double &dx = mesh.get_dx(), &dy = mesh.get_dy(), &dz = mesh.get_dz(); 
 
@@ -174,6 +197,66 @@ int Solid::determineIdx(const Mesh & mesh)
 	tripleLoop(0, mesh.get_Nxv(), 0, mesh.get_Nyv(), 0, mesh.get_Nzv(), fv);
 	tripleLoop(0, mesh.get_Nxw(), 0, mesh.get_Nyw(), 0, mesh.get_Nzw(), fw);
 
+	NPu = uIdxBC.size();
+	NPv = vIdxBC.size();
+	NPw = wIdxBC.size();
+
 			
+	return 0;
+}
+
+
+int Solid::updVelocity(A3Dd &u, A3Dd &v, A3Dd &w)
+{
+	int idx1, idx2, idx3;
+	int cIdx1, cIdx2, cIdx3;
+
+	double uBase;
+
+	for(int i=0; i<NPu; ++i)
+	{
+		idx1 = uIdxBC[i][0];
+		idx2 = uIdxBC[i][1];
+		idx3 = uIdxBC[i][2];
+
+		cIdx1 = uCorIdxBC[i][0];
+		cIdx2 = uCorIdxBC[i][1];
+		cIdx3 = uCorIdxBC[i][2];
+
+		uBase = u(cIdx1, cIdx2, cIdx3);
+
+		u(idx1, idx2, idx3) = uBase * uDist[i][0] / uDist[i][1];
+	}
+
+	for(int i=0; i<NPv; ++i)
+	{
+		idx1 = vIdxBC[i][0];
+		idx2 = vIdxBC[i][1];
+		idx3 = vIdxBC[i][2];
+
+		cIdx1 = vCorIdxBC[i][0];
+		cIdx2 = vCorIdxBC[i][1];
+		cIdx3 = vCorIdxBC[i][2];
+
+		uBase = v(cIdx1, cIdx2, cIdx3);
+
+		v(idx1, idx2, idx3) = uBase * vDist[i][0] / vDist[i][1];
+	}
+
+	for(int i=0; i<NPw; ++i)
+	{
+		idx1 = wIdxBC[i][0];
+		idx2 = wIdxBC[i][1];
+		idx3 = wIdxBC[i][2];
+
+		cIdx1 = wCorIdxBC[i][0];
+		cIdx2 = wCorIdxBC[i][1];
+		cIdx3 = wCorIdxBC[i][2];
+
+		uBase = w(cIdx1, cIdx2, cIdx3);
+
+		w(idx1, idx2, idx3) = uBase * wDist[i][0] / wDist[i][1];
+	}
+
 	return 0;
 }
