@@ -4,7 +4,7 @@ class Data
 	public:
 
 		Data() = default;
-		Data(string &);
+		Data(const string &, Mesh & mesh);
 
 		int InitData(Mesh & mesh);
 
@@ -15,4 +15,8 @@ class Data
 		double time;
 		int Nx, Ny, Nz;
 		Array3D<double> u, v, w, p;
+	
+	private:
+
+		int SetBCvalues(Mesh & mesh);
 };
