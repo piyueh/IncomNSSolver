@@ -47,6 +47,7 @@ typedef vector<double> VD;
 # include "class_Boundary.h"
 # include "class_Mesh.h"
 # include "class_Data.h"
+# include "class_Solid.h"
 # include "class_PoissonSolver.h"
 # include "class_NSSolver.h"
 

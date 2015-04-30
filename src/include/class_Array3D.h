@@ -47,12 +47,11 @@ class Array3D: public vector<T>
 
 
 		void setConstant(T value){
-			for(auto &i: *this) i = value;}
+			fill(this->begin(), this->end(), value);}
 
 
 		void setZeros() {
-			for(auto &i: *this) i = 0;}
-
+			fill(this->begin(), this->end(), 0);}
 
 		vector<int> shape(){
 			return vector<int> {Nx, Ny, Nz};}
