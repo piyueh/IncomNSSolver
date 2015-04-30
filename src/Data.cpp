@@ -1,6 +1,6 @@
 # include "include/IncomNSSolver.h"
 
-Data::Data(string & fName)
+Data::Data(const string & fName, Mesh & mesh)
 {
 	ifstream file(fName);
 	string line;
@@ -106,6 +106,8 @@ Data::Data(string & fName)
 
 	file.close();
 
+	SetBCvalues(mesh);
+
 }
 
 
@@ -128,11 +130,23 @@ int Data::InitData(Mesh & mesh)
 
 	u.setZeros(); v.setZeros(); w.setZeros(); p.setZeros();
 
+	SetBCvalues(mesh);
 
-	/*********************************************************
-	 * Setting the value on the boundary for Dirichlet BCs.
-	 * Note: pressure is always Neumann BC in this solver.
-	 *********************************************************/
+	return 0;
+}
+
+
+/*********************************************************
+ * Setting the value on the boundary for Dirichlet BCs.
+ * Note: pressure is always Neumann BC in this solver.
+ *********************************************************/
+int Data::SetBCvalues(Mesh & mesh)
+{
+	map<int, Boundary> & BCs = mesh.get_BCs();
+	const int &Nxu=mesh.get_Nxu(), &Nyu=mesh.get_Nyu(), &Nzu=mesh.get_Nzu();
+	const int &Nxv=mesh.get_Nxv(), &Nyv=mesh.get_Nyv(), &Nzv=mesh.get_Nzv();
+	const int &Nxw=mesh.get_Nxw(), &Nyw=mesh.get_Nyw(), &Nzw=mesh.get_Nzw();
+
 	function<void(CI &, CI &)> f;
 
 	// -x direction
@@ -173,4 +187,3 @@ int Data::InitData(Mesh & mesh)
 
 	return 0;
 }
-

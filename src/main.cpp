@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
 	Fluid fluid(Files["-f"]);
 	Mesh mesh(Files["-m"]);
-	Data data(Files["-d"]);
+	Data data(Files["-d"], mesh);
 	NSSolver solver(mesh, fluid, data, Files["-c"]);
 
 	if ((data.Nx != mesh.get_Nx()) || (data.Ny != mesh.get_Ny()) || 
