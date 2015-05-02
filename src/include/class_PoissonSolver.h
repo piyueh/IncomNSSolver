@@ -22,7 +22,7 @@ class PoissonSolver
 
 		int setTolerance(CD &);
 
-		pair<int, double> Solve(VectorXd &, Map<VectorXd> &);
+		pair<int, double> Solve(Map<VectorXd> &, Map<VectorXd> &);
 
 		void printA();
 	

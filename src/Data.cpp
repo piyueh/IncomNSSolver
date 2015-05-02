@@ -31,7 +31,8 @@ Data::Data(const string & fName, Mesh & mesh)
 		}
 		else if (var == "Np") 
 		{
-			OneLine >> Nx >> Ny >> Nz;
+			OneLine >> N1 >> N2 >> N3;
+			Nx = N1 - 2; Ny = N2 - 2; Nz = N3 - 2;
 			p.initShape(-1, N1-2, -1, N2-2, -1, N3-2);
 		}
 		else if ((var.empty()) || (var == "u") || 
@@ -157,7 +158,7 @@ int Data::SetBCvalues(Mesh & mesh)
 
 	// -y direction
 	f = [&, this] (CI & i, CI & j) 
-	{ v(i, 0, i) = BCs[-2].get_vBCvalue();} ;
+	{ v(i, 0, j) = BCs[-2].get_vBCvalue();} ;
 
 	if (BCs[-2].get_vType() == 1) dualLoop(0, Nxv, 0, Nzv, f);
 	
@@ -175,7 +176,7 @@ int Data::SetBCvalues(Mesh & mesh)
 
 	// +y direction
 	f = [&, this] (CI & i, CI & j) 
-	{ v(i, Nyv-1, i) = BCs[2].get_vBCvalue();} ;
+	{ v(i, Nyv-1, j) = BCs[2].get_vBCvalue();} ;
 
 	if (BCs[2].get_vType() == 1) dualLoop(0, Nxv, 0, Nzv, f);
 	

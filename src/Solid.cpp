@@ -5,9 +5,9 @@ Solid::Solid(const array<double, 2> & Center, CD & Radius, const Mesh & mesh)
 {
 	center = Center; R = Radius;
 
-	uFlag.initShape(mesh.get_Nxu(), mesh.get_Nyu(), mesh.get_Nzu());
-	vFlag.initShape(mesh.get_Nxv(), mesh.get_Nyv(), mesh.get_Nzv());
-	wFlag.initShape(mesh.get_Nxw(), mesh.get_Nyw(), mesh.get_Nzw());
+	uFlag.initShape(-1, mesh.get_Nxu(), -1, mesh.get_Nyu(), -1, mesh.get_Nzu());
+	vFlag.initShape(-1, mesh.get_Nxv(), -1, mesh.get_Nyv(), -1, mesh.get_Nzv());
+	wFlag.initShape(-1, mesh.get_Nxw(), -1, mesh.get_Nyw(), -1, mesh.get_Nzw());
 
 	uFlag.setConstant(false); vFlag.setConstant(false); wFlag.setConstant(false); 
 

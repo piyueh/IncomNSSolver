@@ -74,7 +74,7 @@ class NSSolver
 		 * Poisson solver:
 		 ********************************************************************/
 		PoissonSolver pSolver;
-		VectorXd b; 
+		Array3D<double> b; 
 		double ptol = 1e-10;
 
 

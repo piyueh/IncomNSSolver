@@ -71,7 +71,7 @@ int PoissonSolver::setTolerance(CD & tol)
 }
 
 
-pair<int, double> PoissonSolver::Solve(VectorXd & f, Map<VectorXd> & soln)
+pair<int, double> PoissonSolver::Solve(Map<VectorXd> & f, Map<VectorXd> & soln)
 {
 	assert(f.size() == NCells);
 

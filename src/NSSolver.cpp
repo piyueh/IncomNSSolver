@@ -66,8 +66,7 @@ int NSSolver::InitSolver(CD & Dt, CI & tNStep, CI & ON, CI & SN, CaryI3 & pIdx, 
 	Gw.initShape(-1, Nxw, -1, Nyw, -1, Nzw);
 
 	dp.initShape(Nx, Ny, Nz); dp.setZeros();
-
-	b.resize(Nx * Ny * Nz); b.setZero();
+	b.initShape(Nx, Ny, Nz); b.setZeros();
 
 	pSolver.InitLinSys({Nx, Ny, Nz}, {dx, dy, dz});
 	pSolver.setLHS(mesh.get_BCs());
@@ -94,6 +93,7 @@ int NSSolver::solve()
 	clock_t t0, t;
 
 	Map<VectorXd> dp_Eigen(dp.data(), dp.size());
+	Map<VectorXd> b_Eigen(b.data(), b.size());
 
 	for(int n=0; n<targetNStep; ++n)
 	{
@@ -103,26 +103,24 @@ int NSSolver::solve()
 		PredictStep(dt/3.);
 		cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
-		Itr = pSolver.Solve(b, dp_Eigen);
+		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(dt/3.);
 
 		updateGhost();
 		PredictStep(15.*dt/16., -5./9.);
 		cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
-		Itr = pSolver.Solve(b, dp_Eigen);
+		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(15.*dt/16);
 
 		updateGhost();
 		PredictStep(8.*dt/15., -153./128.);
 		cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
-		Itr = pSolver.Solve(b, dp_Eigen);
+		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(8.*dt/15.);
-
+		
 		t = clock() - t0;
-
-		//p *= rho;
 
 		time += dt;
 
@@ -212,8 +210,6 @@ int NSSolver::PredictStep(CD & DT, CD & coef)
 int NSSolver::updatePoissonSource(CD & DT)
 {
 	tripleLoop(0, Nx, 0, Ny, 0, Nz, DivOnPresPt);
-
-	b /= DT;
 
 	return 0;
 }
