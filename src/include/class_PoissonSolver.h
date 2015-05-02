@@ -39,6 +39,7 @@ class PoissonSolver
 
 		SparseMatrix<double> A;
 		BiCGSTAB<SparseMatrix<double>, IncompleteLUT<double>> cgSolver;
+		PardisoLDLT<SparseMatrix<double>> mklSolver;
 
 
 		int InitA();

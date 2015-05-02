@@ -37,6 +37,7 @@ int PoissonSolver::setLHS(map<int, Boundary> & BC)
 	}
 
 	cgSolver.compute(A);
+	mklSolver.compute(A);
 
 	return 0;
 }
@@ -59,6 +60,7 @@ int PoissonSolver::setRefP(const array<int, 3> & Idx, const double & value)
 	A.makeCompressed();
 
 	cgSolver.compute(A);
+	mklSolver.compute(A);
 
 	return 0;
 }
@@ -67,27 +69,34 @@ int PoissonSolver::setRefP(const array<int, 3> & Idx, const double & value)
 int PoissonSolver::setTolerance(CD & tol)
 {
 	cgSolver.setTolerance(tol);
+	//mklSolver.setTolerance(tol);
 	return 0;
 }
 
 
 pair<int, double> PoissonSolver::Solve(Map<VectorXd> & f, Map<VectorXd> & soln)
 {
+	setNbThreads(4);
+
 	assert(f.size() == NCells);
 
 	f[refLoc] = refP;
 	
 	//soln = cgSolver.solveWithGuess(f, soln);
-	soln = cgSolver.solve(f);
+	//soln = cgSolver.solve(f);
+	soln = mklSolver.solve(f);
 	
+	/*
 	if (cgSolver.info() != Success)
 	{
 		cout << cgSolver.info() << endl;
 		cerr << "Error solving matrix" << endl;
 		throw exception();
 	}
+	*/
 
-	return {cgSolver.iterations(), cgSolver.error()};
+	//return {cgSolver.iterations(), cgSolver.error()};
+	return {0, 0};
 }
 
 

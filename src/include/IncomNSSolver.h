@@ -22,8 +22,14 @@
 
 using namespace std;
 
-# include <eigen3/Eigen/Dense>
-# include <eigen3/Eigen/Sparse>
+# define EIGEN_USE_MKL_ALL
+# define MKL_BLAS MKL_DOMAIN_BLAS
+# define UF_long SuiteSparse_long
+
+# include <Eigen/Dense>
+# include <Eigen/Sparse>
+# include <Eigen/PardisoSupport>
+# include <Eigen/CholmodSupport>
 
 using namespace Eigen;
 

@@ -15,14 +15,14 @@ class NSSolver
 							mesh(m), fluid(f), data(d), cyln(s) {};
 		NSSolver(Mesh &m, Fluid &f, Data &d, Solid &s, string &fn);
 
-		int InitSolver(CD &, CI &, CI &, CI &, CaryI3 &, CD &);
+		int InitSolver(CD &, CI &, CI &, CI &, CI &, CaryI3 &, CD &);
 
 		int solve();
 
 	private:
 
 		// computational parameters
-		int targetNStep, outputN=100, screenN=1;
+		int currentN, targetNStep, outputN=100, screenN=1;
 		double dt;
 		double pRef;
 		array<int, 3> pRefIdx;

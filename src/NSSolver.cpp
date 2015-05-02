@@ -8,7 +8,7 @@ NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, Solid &s, string &fName):
 	ifstream file(fName);
 	string line;
 
-	int tNStep = -1, ON = 100, SN = 1;
+	int CN = 0, tNStep = -1, ON = 100, SN = 1;
 	double DT = -1; double pR = 0;
 	array<int, 3> pRIdx = {0, 0, 0};
 
@@ -20,6 +20,7 @@ NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, Solid &s, string &fName):
 		OneLine >> var;
 
 		if (var == "DT") { OneLine >> DT; }
+		else if (var == "CurrentNStep") { OneLine >> CN; }
 		else if (var == "TargetNStep") { OneLine >> tNStep; }
 		else if (var == "OutputNStep") { OneLine >> ON; }
 		else if (var == "ScreenNStep") { OneLine >> SN; }
@@ -48,15 +49,16 @@ NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, Solid &s, string &fName):
 				string("No Setting of time step is detected! ") +
 				"Use the keyworld: DT");
 
-	InitSolver(DT, tNStep, ON, SN, pRIdx, pR);
+	InitSolver(DT, CN, tNStep, ON, SN, pRIdx, pR);
 
 }
 
 
-int NSSolver::InitSolver(CD & Dt, CI & tNStep, CI & ON, CI & SN, CaryI3 & pIdx, CD & pR)
+int NSSolver::InitSolver(CD & Dt, CI & CN, CI & tNStep, CI & ON, CI & SN, 
+						 CaryI3 & pIdx, CD & pR)
 {
 	dt = Dt;
-	targetNStep = tNStep; outputN = ON; screenN = SN;
+	currentN = CN; targetNStep = tNStep; outputN = ON; screenN = SN;
 	pRefIdx = pIdx; pRef = pR;
 
 	dx2 = dx * dx; dy2 = dy * dy; dz2 = dz * dz;
@@ -95,30 +97,54 @@ int NSSolver::solve()
 	Map<VectorXd> dp_Eigen(dp.data(), dp.size());
 	Map<VectorXd> b_Eigen(b.data(), b.size());
 
-	for(int n=0; n<targetNStep; ++n)
+	for(int n=currentN; n<targetNStep; ++n)
 	{
 		t0 = clock();
 
 		updateGhost();
 		PredictStep(dt/3.);
+		for(int j=0; j<Nxu; ++j) {
+			for(int k=0; k<Nzu; ++k)
+				u(Nxu-1, j, k) = u(Nxu-2, j, k);
+		}
 		cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(dt/3.);
+		for(int j=0; j<Nxu; ++j) {
+			for(int k=0; k<Nzu; ++k)
+				u(Nxu-1, j, k) -= dt * (dp(Nx-1, j, k) - dp(Nx-2, j, k)) / 3.;
+		}
 
 		updateGhost();
 		PredictStep(15.*dt/16., -5./9.);
+		for(int j=0; j<Nxu; ++j) {
+			for(int k=0; k<Nzu; ++k)
+				u(Nxu-1, j, k) = u(Nxu-2, j, k);
+		}
 		cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(15.*dt/16);
+		for(int j=0; j<Nxu; ++j) {
+			for(int k=0; k<Nzu; ++k)
+				u(Nxu-1, j, k) -= 15 * dt * (dp(Nx-1, j, k) - dp(Nx-2, j, k)) / 16;
+		}
 
 		updateGhost();
 		PredictStep(8.*dt/15., -153./128.);
+		for(int j=0; j<Nxu; ++j) {
+			for(int k=0; k<Nzu; ++k)
+				u(Nxu-1, j, k) = u(Nxu-2, j, k);
+		}
 		cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(8.*dt/15.);
+		for(int j=0; j<Nxu; ++j) {
+			for(int k=0; k<Nzu; ++k)
+				u(Nxu-1, j, k) -= 8 * dt * (dp(Nx-1, j, k) - dp(Nx-2, j, k)) / 15;
+		}
 		
 		t = clock() - t0;
 
@@ -179,14 +205,14 @@ int NSSolver::updateGhost()
 
 int NSSolver::PredictStep(CD & DT)
 {
-	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, updGu);
-	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, updGv);
-	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, updGw);
+	tripleLoop(1, Nxu-1, 0, Nyu, 0, Nzu, updGu);
+	tripleLoop(0, Nxv, 1, Nyv-1, 0, Nzv, updGv);
+	tripleLoop(0, Nxw, 0, Nyw, 1, Nzw-1, updGw);
 
 
-	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, DT, preU);
-	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, DT, preV);
-	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, DT, preW);
+	tripleLoop(1, Nxu-1, 0, Nyu, 0, Nzu, DT, preU);
+	tripleLoop(0, Nxv, 1, Nyv-1, 0, Nzv, DT, preV);
+	tripleLoop(0, Nxw, 0, Nyw, 1, Nzw-1, DT, preW);
 
 	return 0;
 }
@@ -194,14 +220,15 @@ int NSSolver::PredictStep(CD & DT)
 
 int NSSolver::PredictStep(CD & DT, CD & coef)
 {
-	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, coef, updGu2);
-	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, coef, updGv2);
-	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, coef, updGw2);
+
+	tripleLoop(1, Nxu-1, 0, Nyu, 0, Nzu, coef, updGu2);
+	tripleLoop(0, Nxv, 1, Nyv-1, 0, Nzv, coef, updGv2);
+	tripleLoop(0, Nxw, 0, Nyw, 1, Nzw-1, coef, updGw2);
 
 
-	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, DT, preU);
-	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, DT, preV);
-	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, DT, preW);
+	tripleLoop(1, Nxu-1, 0, Nyu, 0, Nzu, DT, preU);
+	tripleLoop(0, Nxv, 1, Nyv-1, 0, Nzv, DT, preV);
+	tripleLoop(0, Nxw, 0, Nyw, 1, Nzw-1, DT, preW);
 
 	return 0;
 }
