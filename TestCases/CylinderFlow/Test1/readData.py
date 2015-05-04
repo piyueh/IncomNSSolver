@@ -1,7 +1,7 @@
 import numpy
 from matplotlib import pyplot
 
-f = open("19200.txt", "r")
+f = open("4000.txt", "r")
 
 t = float(f.readline())
 

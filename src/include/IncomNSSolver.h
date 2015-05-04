@@ -24,12 +24,10 @@ using namespace std;
 
 # define EIGEN_USE_MKL_ALL
 # define MKL_BLAS MKL_DOMAIN_BLAS
-# define UF_long SuiteSparse_long
 
 # include <Eigen/Dense>
 # include <Eigen/Sparse>
 # include <Eigen/PardisoSupport>
-# include <Eigen/CholmodSupport>
 
 using namespace Eigen;
 
@@ -44,9 +42,11 @@ typedef Array3D<double> A3Dd;
 typedef const pair<int, double> CPairID;
 typedef array<int, 3> aryI3;
 typedef array<double, 3> aryD3;
+typedef vector<double> VD;
+
+typedef array<A3Dd *, 4> aA3Dd_ptr_4;
 typedef const array<int, 3> CaryI3;
 typedef const array<double, 3> CaryD3;
-typedef vector<double> VD;
 
 
 # include "class_Fluid.h"

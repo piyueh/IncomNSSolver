@@ -17,23 +17,26 @@ Data::Data(const string & fName, Mesh & mesh)
 		else if (var == "Nu") 
 		{
 			OneLine >> N1 >> N2 >> N3;
-			u.initShape(-1, N1-2, -1, N2-2, -1, N3-2);
+			N[1][0] = N1 - 2; N[1][1] = N2 - 2; N[1][2] = N3 - 2;
+			u.initShape(-1, N[1][0], -1, N[1][1], -1, N[1][2]);
 		}
 		else if (var == "Nv") 
 		{
 			OneLine >> N1 >> N2 >> N3;
-			v.initShape(-1, N1-2, -1, N2-2, -1, N3-2);
+			N[2][0] = N1 - 2; N[2][1] = N2 - 2; N[2][2] = N3 - 2;
+			v.initShape(-1, N[2][0], -1, N[2][1], -1, N[2][2]);
 		}
 		else if (var == "Nw") 
 		{
 			OneLine >> N1 >> N2 >> N3;
-			w.initShape(-1, N1-2, -1, N2-2, -1, N3-2);
+			N[3][0] = N1 - 2; N[3][1] = N2 - 2; N[3][2] = N3 - 2;
+			w.initShape(-1, N[3][0], -1, N[3][1], -1, N[3][2]);
 		}
 		else if (var == "Np") 
 		{
 			OneLine >> N1 >> N2 >> N3;
-			Nx = N1 - 2; Ny = N2 - 2; Nz = N3 - 2;
-			p.initShape(-1, N1-2, -1, N2-2, -1, N3-2);
+			N[0][0] = N1 - 2; N[0][1] = N2 - 2; N[0][2] = N3 - 2;
+			p.initShape(-1, N[0][0], -1, N[0][1], -1, N[0][2]);
 		}
 		else if ((var.empty()) || (var == "u") || 
 				(var == "v") || (var == "w") || (var == "p")) {}
@@ -107,7 +110,32 @@ Data::Data(const string & fName, Mesh & mesh)
 
 	file.close();
 
-	SetBCvalues(mesh);
+
+	if (N[1] != array<int, 3>({mesh.get_Nxu(), mesh.get_Nyu(), mesh.get_Nzu()}))
+	{
+		throw invalid_argument(string("The mesh setting and ") +
+				"the initial value data differ!! => u");
+	}
+
+	if (N[2] != array<int, 3>({mesh.get_Nxv(), mesh.get_Nyv(), mesh.get_Nzv()}))
+	{
+		throw invalid_argument(string("The mesh setting and ") +
+				"the initial value data differ!! => v");
+	}
+	
+	if (N[3] != array<int, 3>({mesh.get_Nxw(), mesh.get_Nyw(), mesh.get_Nzw()}))
+	{
+		cout << N[3][0] << " " << N[3][1] << " " << N[3][2] << endl;
+		cout << mesh.get_Nxw() << " " << mesh.get_Nyw() << " " << mesh.get_Nzw() << endl;
+		throw invalid_argument(string("The mesh setting and ") +
+				"the initial value data differ!! => w");
+	}
+	
+	if (N[0] != array<int, 3>({mesh.get_Nx(), mesh.get_Ny(), mesh.get_Nz()}))
+	{
+		throw invalid_argument(string("The mesh setting and ") +
+				"the initial value data differ!! => p");
+	}
 
 }
 
@@ -116,75 +144,22 @@ int Data::InitData(Mesh & mesh)
 {
 
 	map<int, Boundary> & BCs = mesh.get_BCs();
-	const int &Nxu=mesh.get_Nxu(), &Nyu=mesh.get_Nyu(), &Nzu=mesh.get_Nzu();
-	const int &Nxv=mesh.get_Nxv(), &Nyv=mesh.get_Nyv(), &Nzv=mesh.get_Nzv();
-	const int &Nxw=mesh.get_Nxw(), &Nyw=mesh.get_Nyw(), &Nzw=mesh.get_Nzw();
 
 	time = 0;
 
-	Nx = mesh.get_Nx(); Ny = mesh.get_Ny(); Nz = mesh.get_Nz();
+	N[0][0] = mesh.get_Nx(); N[0][1] = mesh.get_Ny(); N[0][2] = mesh.get_Nz();
+	N[1][0] = mesh.get_Nxu(), N[1][1] = mesh.get_Nyu(), N[1][2] = mesh.get_Nzu();
+	N[2][0] = mesh.get_Nxv(), N[2][1] = mesh.get_Nyv(), N[2][2] = mesh.get_Nzv();
+	N[3][0] = mesh.get_Nxw(), N[3][1] = mesh.get_Nyw(), N[3][2] = mesh.get_Nzw();
 
-	u.initShape(-1, Nxu, -1, Nyu, -1, Nzu);
-	v.initShape(-1, Nxv, -1, Nyv, -1, Nzv);
-	w.initShape(-1, Nxw, -1, Nyw, -1, Nzw);
-	p.initShape(-1, Nx, -1, Ny, -1, Nz);
+	p.initShape(-1, N[0][0], -1, N[0][1], -1, N[0][2]);
+	u.initShape(-1, N[1][0], -1, N[1][1], -1, N[1][2]);
+	v.initShape(-1, N[2][0], -1, N[2][1], -1, N[2][2]);
+	w.initShape(-1, N[3][0], -1, N[3][1], -1, N[3][2]);
 
-	u.setZeros(); v.setZeros(); w.setZeros(); p.setZeros();
-
-	SetBCvalues(mesh);
-
-	return 0;
-}
-
-
-/*********************************************************
- * Setting the value on the boundary for Dirichlet BCs.
- * Note: pressure is always Neumann BC in this solver.
- *********************************************************/
-int Data::SetBCvalues(Mesh & mesh)
-{
-	map<int, Boundary> & BCs = mesh.get_BCs();
-	const int &Nxu=mesh.get_Nxu(), &Nyu=mesh.get_Nyu(), &Nzu=mesh.get_Nzu();
-	const int &Nxv=mesh.get_Nxv(), &Nyv=mesh.get_Nyv(), &Nzv=mesh.get_Nzv();
-	const int &Nxw=mesh.get_Nxw(), &Nyw=mesh.get_Nyw(), &Nzw=mesh.get_Nzw();
-
-	function<void(CI &, CI &)> f;
-
-	// -x direction
-	f = [&, this] (CI & i, CI & j) 
-	{ u(0, i, j) = BCs[-1].get_uBCvalue();} ;
-
-	if (BCs[-1].get_uType() == 1) dualLoop(0, Nyu, 0, Nzu, f);
-
-	// -y direction
-	f = [&, this] (CI & i, CI & j) 
-	{ v(i, 0, j) = BCs[-2].get_vBCvalue();} ;
-
-	if (BCs[-2].get_vType() == 1) dualLoop(0, Nxv, 0, Nzv, f);
-	
-	// -z direction
-	f = [&, this] (CI & i, CI & j) 
-	{ w(i, j, 0) = BCs[-3].get_wBCvalue();} ;
-
-	if (BCs[-3].get_wType() == 1) dualLoop(0, Nxw, 0, Nyw, f);
-
-	// +x direction
-	f = [&, this] (CI & i, CI & j) 
-	{ u(Nxu-1, i, j) = BCs[1].get_uBCvalue();} ;
-
-	if (BCs[1].get_uType() == 1) dualLoop(0, Nyu, 0, Nzu, f);
-
-	// +y direction
-	f = [&, this] (CI & i, CI & j) 
-	{ v(i, Nyv-1, j) = BCs[2].get_vBCvalue();} ;
-
-	if (BCs[2].get_vType() == 1) dualLoop(0, Nxv, 0, Nzv, f);
-	
-	// +z direction
-	f = [&, this] (CI & i, CI & j) 
-	{ w(i, j, Nzw-1) = BCs[3].get_wBCvalue();} ;
-
-	if (BCs[3].get_wType() == 1) dualLoop(0, Nxw, 0, Nyw, f);
+	p.setZeros(); u.setZeros(); v.setZeros(); w.setZeros(); 
 
 	return 0;
 }
+
+

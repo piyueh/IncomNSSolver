@@ -45,6 +45,9 @@ p = numpy.array([float(x) for x in f.readline().split()]).reshape(tuple(pN))
 
 f.close()
 
+usave = u.copy()
+vsave = v.copy()
+
 u = u[:, :, 1].T
 v = v[:, :, 1].T
 p = p[:, :, 1].T
@@ -98,14 +101,14 @@ pyplot.colorbar(fig)
 pyplot.savefig("TGvortexContour_p.png", format="png")
 
 
-uc = (u[:, 1:] + u[:, :-1]) / 2
-vc = (v[1:, :] + v[:-1, :]) / 2
+uc = (u[1:-1, 2:-1] + u[1:-1, 1:-2]) / 2
+vc = (v[2:-1, 1:-1] + v[1:-2, 1:-1]) / 2
 
 uVor = (u[1:, 1:-1] - u[:-1, 1:-1]) / dy
 vVor = (v[1:-1, 1:] - v[1:-1, :-1]) / dx
 Vor = vVor - uVor
 
-XVor, YVor = numpy.meshgrid(xu[1:-1], yv[1:-1]) 
+XVor, YVor = numpy.meshgrid(xu[1:-1], yv[1:-1])
 
 pyplot.figure()
 pyplot.title("Vorticity and Streamlines @ T=2 sec", fontsize=16)
@@ -113,11 +116,16 @@ pyplot.xlabel("x")
 pyplot.ylabel("y")
 fig = pyplot.contourf(XVor, YVor, Vor, 100)
 pyplot.colorbar(fig)
-pyplot.streamplot(Xp, Yp, uc, vc, density=2)
+pyplot.streamplot(Xp[1:-1, 1:-1], Yp[1:-1, 1:-1], uc, vc, density=2)
 pyplot.xlim(0, 2*numpy.pi)
 pyplot.ylim(0, 2*numpy.pi)
 pyplot.savefig("TGvortexContour_VorStream.png", format="png")
 
+uD = (u[1:-1, 2:-1] - u[1:-1, 1:-2]) / dx
+vD = (v[2:-1, 1:-1] - v[1:-2, 1:-1]) / dy
+Div = uD + vD
+
+print(Div.max(), Div.min())
 
 
 

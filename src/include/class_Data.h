@@ -13,10 +13,13 @@ class Data
 
 		// data included in the class
 		double time;
-		int Nx, Ny, Nz;
+
+		array<array<int, 3>, 4> N;
+
 		Array3D<double> u, v, w, p;
+
+		array<Array3D<double> *, 4> PVar = {&p, &u, &v, &w};
 	
 	private:
 
-		int SetBCvalues(Mesh & mesh);
 };

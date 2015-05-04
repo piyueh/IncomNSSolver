@@ -41,7 +41,7 @@ NSSolver::NSSolver(Mesh &m, Fluid &f, Data &d, Solid &s, string &fName):
 
 	if (tNStep == -1) 
 		throw invalid_argument(
-				string("No Setting of total running time ") + 
+				string("No Setting of total running time steps") + 
 				"steps is detected! Use the keyworld: TargetNStep");
 
 	if (DT == -1) 
@@ -63,9 +63,9 @@ int NSSolver::InitSolver(CD & Dt, CI & CN, CI & tNStep, CI & ON, CI & SN,
 
 	dx2 = dx * dx; dy2 = dy * dy; dz2 = dz * dz;
 
-	Gu.initShape(-1, Nxu, -1, Nyu, -1, Nzu);
-	Gv.initShape(-1, Nxv, -1, Nyv, -1, Nzv);
-	Gw.initShape(-1, Nxw, -1, Nyw, -1, Nzw);
+	Gu.initShape(0, Nxu-1, -1, Nyu, -1, Nzu);
+	Gv.initShape(-1, Nxv, 0, Nyv-1, -1, Nzv);
+	Gw.initShape(-1, Nxw, -1, Nyw, 0, Nzw-1);
 
 	dp.initShape(Nx, Ny, Nz); dp.setZeros();
 	b.initShape(Nx, Ny, Nz); b.setZeros();
@@ -73,7 +73,10 @@ int NSSolver::InitSolver(CD & Dt, CI & CN, CI & tNStep, CI & ON, CI & SN,
 	pSolver.InitLinSys({Nx, Ny, Nz}, {dx, dy, dz});
 	pSolver.setLHS(mesh.get_BCs());
 	pSolver.setRefP(pRefIdx, pRef);
+
+# ifdef BICGSTAB
 	pSolver.setTolerance(ptol);
+# endif
 
 	uBgIdx = (BCs[-1].get_uType() == 1) ? 1 : 0;
 	uEdIdx = (BCs[1].get_uType() == 1) ? Nxu-1 : Nxu;
@@ -81,7 +84,7 @@ int NSSolver::InitSolver(CD & Dt, CI & CN, CI & tNStep, CI & ON, CI & SN,
 	vEdIdx = (BCs[2].get_vType() == 1) ? Nyv-1 : Nyv;
 	wBgIdx = (BCs[-3].get_wType() == 1) ? 1 : 0;
 	wEdIdx = (BCs[3].get_wType() == 1) ? Nzw-1 : Nzw;
-	
+
 	InitLambda();
 
 	return 0;
@@ -97,54 +100,35 @@ int NSSolver::solve()
 	Map<VectorXd> dp_Eigen(dp.data(), dp.size());
 	Map<VectorXd> b_Eigen(b.data(), b.size());
 
+	updateGhost();
+
 	for(int n=currentN; n<targetNStep; ++n)
 	{
 		t0 = clock();
 
-		updateGhost();
+
 		PredictStep(dt/3.);
-		for(int j=0; j<Nxu; ++j) {
-			for(int k=0; k<Nzu; ++k)
-				u(Nxu-1, j, k) = u(Nxu-2, j, k);
-		}
-		cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(dt/3.);
-		for(int j=0; j<Nxu; ++j) {
-			for(int k=0; k<Nzu; ++k)
-				u(Nxu-1, j, k) -= dt * (dp(Nx-1, j, k) - dp(Nx-2, j, k)) / 3.;
-		}
-
 		updateGhost();
+
+
 		PredictStep(15.*dt/16., -5./9.);
-		for(int j=0; j<Nxu; ++j) {
-			for(int k=0; k<Nzu; ++k)
-				u(Nxu-1, j, k) = u(Nxu-2, j, k);
-		}
-		cyln.updVelocity(u, v, w);
+		//cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(15.*dt/16);
-		for(int j=0; j<Nxu; ++j) {
-			for(int k=0; k<Nzu; ++k)
-				u(Nxu-1, j, k) -= 15 * dt * (dp(Nx-1, j, k) - dp(Nx-2, j, k)) / 16;
-		}
-
 		updateGhost();
+
+
 		PredictStep(8.*dt/15., -153./128.);
-		for(int j=0; j<Nxu; ++j) {
-			for(int k=0; k<Nzu; ++k)
-				u(Nxu-1, j, k) = u(Nxu-2, j, k);
-		}
-		cyln.updVelocity(u, v, w);
+		//cyln.updVelocity(u, v, w);
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(8.*dt/15.);
-		for(int j=0; j<Nxu; ++j) {
-			for(int k=0; k<Nzu; ++k)
-				u(Nxu-1, j, k) -= 8 * dt * (dp(Nx-1, j, k) - dp(Nx-2, j, k)) / 15;
-		}
+		updateGhost();
+
 		
 		t = clock() - t0;
 
@@ -167,37 +151,13 @@ int NSSolver::solve()
 
 int NSSolver::updateGhost()
 {
-	BCs[-3].updGhost(Nx, Ny, 0, p, dz);
-	BCs[-3].updGhost(Nxu, Nyu, 1, u, dz);
-	BCs[-3].updGhost(Nxv, Nyv, 2, v, dz);
-	BCs[-3].updGhost(Nxw, Nyw, 3, w, dz);
+	BCs[-3].updGhost(data.N, data.PVar, {dx, dy, dz});
+	BCs[-2].updGhost(data.N, data.PVar, {dx, dy, dz});
+	BCs[-1].updGhost(data.N, data.PVar, {dx, dy, dz});
 
-	BCs[-2].updGhost(Nx, Nz, 0, p, dy);
-	BCs[-2].updGhost(Nxu, Nzu, 1, u, dy);
-	BCs[-2].updGhost(Nxv, Nzv, 2, v, dy);
-	BCs[-2].updGhost(Nxw, Nzw, 3, w, dy);
-
-	BCs[-1].updGhost(Ny, Nz, 0, p, dx);
-	BCs[-1].updGhost(Nyu, Nzu, 1, u, dx);
-	BCs[-1].updGhost(Nyv, Nzv, 2, v, dx);
-	BCs[-1].updGhost(Nyw, Nzw, 3, w, dx);
-
-
-	BCs[1].updGhost(Ny, Nz, 0, p, dx);
-	BCs[1].updGhost(Nyu, Nzu, 1, u, dx);
-	BCs[1].updGhost(Nyv, Nzv, 2, v, dx);
-	BCs[1].updGhost(Nyw, Nzw, 3, w, dx);
-
-	BCs[2].updGhost(Nx, Nz, 0, p, dy);
-	BCs[2].updGhost(Nxu, Nzu, 1, u, dy);
-	BCs[2].updGhost(Nxv, Nzv, 2, v, dy);
-	BCs[2].updGhost(Nxw, Nzw, 3, w, dy);
-
-	BCs[3].updGhost(Nx, Ny, 0, p, dz);
-	BCs[3].updGhost(Nxu, Nyu, 1, u, dz);
-	BCs[3].updGhost(Nxv, Nyv, 2, v, dz);
-	BCs[3].updGhost(Nxw, Nyw, 3, w, dz);
-
+	BCs[1].updGhost(data.N, data.PVar, {dx, dy, dz});
+	BCs[2].updGhost(data.N, data.PVar, {dx, dy, dz});
+	BCs[3].updGhost(data.N, data.PVar, {dx, dy, dz});
 
 	return 0;
 }
@@ -205,14 +165,14 @@ int NSSolver::updateGhost()
 
 int NSSolver::PredictStep(CD & DT)
 {
-	tripleLoop(1, Nxu-1, 0, Nyu, 0, Nzu, updGu);
-	tripleLoop(0, Nxv, 1, Nyv-1, 0, Nzv, updGv);
-	tripleLoop(0, Nxw, 0, Nyw, 1, Nzw-1, updGw);
+	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, updGu);
+	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, updGv);
+	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, updGw);
 
 
-	tripleLoop(1, Nxu-1, 0, Nyu, 0, Nzu, DT, preU);
-	tripleLoop(0, Nxv, 1, Nyv-1, 0, Nzv, DT, preV);
-	tripleLoop(0, Nxw, 0, Nyw, 1, Nzw-1, DT, preW);
+	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, DT, preU);
+	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, DT, preV);
+	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, DT, preW);
 
 	return 0;
 }
@@ -221,14 +181,14 @@ int NSSolver::PredictStep(CD & DT)
 int NSSolver::PredictStep(CD & DT, CD & coef)
 {
 
-	tripleLoop(1, Nxu-1, 0, Nyu, 0, Nzu, coef, updGu2);
-	tripleLoop(0, Nxv, 1, Nyv-1, 0, Nzv, coef, updGv2);
-	tripleLoop(0, Nxw, 0, Nyw, 1, Nzw-1, coef, updGw2);
+	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, coef, updGu2);
+	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, coef, updGv2);
+	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, coef, updGw2);
 
 
-	tripleLoop(1, Nxu-1, 0, Nyu, 0, Nzu, DT, preU);
-	tripleLoop(0, Nxv, 1, Nyv-1, 0, Nzv, DT, preV);
-	tripleLoop(0, Nxw, 0, Nyw, 1, Nzw-1, DT, preW);
+	tripleLoop(uBgIdx, uEdIdx, 0, Nyu, 0, Nzu, DT, preU);
+	tripleLoop(0, Nxv, vBgIdx, vEdIdx, 0, Nzv, DT, preV);
+	tripleLoop(0, Nxw, 0, Nyw, wBgIdx, wEdIdx, DT, preW);
 
 	return 0;
 }

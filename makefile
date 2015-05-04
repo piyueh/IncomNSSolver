@@ -18,14 +18,14 @@ OBJS = Misc.o Boundary.o Mesh.o Data.o Solid.o PoissonSolver.o NSSolver.o io.o m
 
 .PHONY: clean debug release
 
-debug: CFLAGS = -std=c++11 -g -DCYLINDER
+debug: CFLAGS = -std=c++11 -g -fopenmp -DPARDISO_LDLT
 debug:
 	@if [ ! -e ${OPATH} ]; then mkdir ${OPATH}; fi
 	@if [ ! -e ${BPATH} ]; then mkdir ${BPATH}; fi
 	make ${BPATH}/${BIN} CFLAGS="${CFLAGS}"
 
 release: CFLAGS = -std=c++11 -O3 -fopenmp -march=native -mtune=native -m64 \
-	-DNDEBUG -DEIGEN_NO_DEBUG
+	-DNDEBUG -DEIGEN_NO_DEBUG -DPARDISO_LDLT
 release:
 	echo ${MKLROOT}
 	@if [ ! -e ${OPATH} ]; then mkdir ${OPATH}; fi

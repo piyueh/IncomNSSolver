@@ -21,13 +21,17 @@ class NSSolver
 
 	private:
 
-		// computational parameters
+		/********************************************************************
+		 * computational parameters
+		 ********************************************************************/
 		int currentN, targetNStep, outputN=100, screenN=1;
 		double dt;
 		double pRef;
 		array<int, 3> pRefIdx;
 
-		// fluid properties
+		/********************************************************************
+		 * fluid properties
+		 ********************************************************************/
 		Fluid & fluid;
 		double &nu = fluid.nu, &rho = fluid.rho;
 

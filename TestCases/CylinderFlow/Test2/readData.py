@@ -1,7 +1,7 @@
 import numpy
 from matplotlib import pyplot
 
-f = open("200.txt", "r")
+f = open("Data.txt", "r")
 
 t = float(f.readline())
 
@@ -61,7 +61,7 @@ pyplot.title("Streamlines @ T=" + str(t) + "2 sec", fontsize=18)
 pyplot.xlabel(r"$x / L$", fontsize=18)
 pyplot.ylabel(r"$y / L$", fontsize=18)
 fig = pyplot.streamplot(Xp[1:-1, 1:-1], Yp[1:-1, 1:-1], uc, vc, density=4)
-pyplot.plot(xCirc, yCirc, 'k-', lw=4)
+pyplot.fill(xCirc, yCirc, fc='w', ec='k')
 pyplot.axis("equal")
 pyplot.xlim(0, Lx)
 pyplot.ylim(0, Ly)
@@ -74,7 +74,7 @@ pyplot.ylabel(r"$y / L$", fontsize=18)
 fig = pyplot.contourf(Xu[1:-1, 1:-1], Yu[1:-1, 1:-1], u[1:-1, 1:-1],
                       extend="both", levels=numpy.linspace(-0, 1.5, 100))
 pyplot.colorbar(fig)
-pyplot.plot(xCirc, yCirc, 'k-', lw=4)
+pyplot.fill(xCirc, yCirc, fc='w', ec='k')
 #pyplot.savefig("Lid_uVelocity.png", format="png")
 
 pyplot.figure()
@@ -84,7 +84,7 @@ pyplot.ylabel(r"$y / L$", fontsize=18)
 fig = pyplot.contourf(Xv[1:-1, 1:-1], Yv[1:-1, 1:-1], v[1:-1, 1:-1],
                       extend="both", levels=numpy.linspace(-1, 1, 100))
 pyplot.colorbar(fig)
-pyplot.plot(xCirc, yCirc, 'k-', lw=4)
+pyplot.fill(xCirc, yCirc, fc='w', ec='k')
 #pyplot.savefig("Lid_vVelocity.png", format="png")
 
 pyplot.figure()
@@ -94,7 +94,7 @@ pyplot.ylabel(r"$y / L$", fontsize=18)
 fig = pyplot.contourf(Xp[1:-1, 1:-1], Yp[1:-1, 1:-1], p[1:-1, 1:-1],
                       extend="both", levels=numpy.linspace(-0.5, 0.5, 100))
 pyplot.colorbar(fig)
-pyplot.plot(xCirc, yCirc, 'k-', lw=4)
+pyplot.fill(xCirc, yCirc, fc='w', ec='k')
 #pyplot.savefig("Lid_Pressure.png", format="png")
 
 
@@ -111,7 +111,7 @@ pyplot.ylabel("y")
 fig = pyplot.contourf(XVor, YVor, Vor,
                       extend="both", levels=numpy.linspace(-2, 2, 100))
 #pyplot.scatter(XVor, YVor)
-pyplot.plot(xCirc, yCirc, 'k-', lw=4)
+pyplot.fill(xCirc, yCirc, fc='w', ec='k')
 pyplot.colorbar(fig)
 #pyplot.savefig("TGvortexContour_VorStream.png", format="png")
 

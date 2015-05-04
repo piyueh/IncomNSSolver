@@ -28,8 +28,8 @@ def TaylorGreen(t, Nx=10, Ny=10, Nz=1):
     dx = Lx / Nx
     dy = Ly / Ny
 
-    xp = numpy.linspace(dx/2, Lx-dx/2, Nx)
-    yp = numpy.linspace(dy/2, Ly-dy/2, Ny)
+    xp = numpy.linspace(-dx/2, Lx+dx/2, Nx+2)
+    yp = numpy.linspace(-dy/2, Ly+dy/2, Ny+2)
     Xp, Yp = numpy.meshgrid(xp, yp)
     Xp = Xp.T
     Yp = Yp.T
@@ -49,11 +49,11 @@ def TaylorGreen(t, Nx=10, Ny=10, Nz=1):
     u_e = numpy.zeros((Nx+3, Ny+2, Nz+2))
     v_e = numpy.zeros((Nx+2, Ny+3, Nz+2))
     w_e = numpy.zeros((Nx+2, Ny+2, Nz+3))
-    p_e = numpy.zeros((Nx, Ny, Nz))
+    p_e = numpy.zeros((Nx+2, Ny+2, Nz+2))
 
     u_e[:, :, 1] = u_ext(Xu, Yu, t)
     v_e[:, :, 1] = v_ext(Xv, Yv, t)
-    p_e[:, :, 0] = p_ext(Xp, Yp, t)
+    p_e[:, :, 1] = p_ext(Xp, Yp, t)
 
     return p_e, u_e, v_e, w_e
 
