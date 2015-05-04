@@ -11,22 +11,27 @@ class NSSolver
 
 	public:
 
-		NSSolver(Mesh &m, Fluid &f, Data &d): mesh(m), fluid(f), data(d) {};
-		NSSolver(Mesh &m, Fluid &f, Data &d, string &fn);
+		NSSolver(Mesh &m, Fluid &f, Data &d, Solid &s): 
+							mesh(m), fluid(f), data(d), cyln(s) {};
+		NSSolver(Mesh &m, Fluid &f, Data &d, Solid &s, string &fn);
 
-		int InitSolver(CD &, CI &, CI &, CI &, CaryI3 &, CD &);
+		int InitSolver(CD &, CI &, CI &, CI &, CI &, CaryI3 &, CD &);
 
 		int solve();
 
 	private:
 
-		// computational parameters
-		int targetNStep, outputN=100, screenN=1;
+		/********************************************************************
+		 * computational parameters
+		 ********************************************************************/
+		int currentN, targetNStep, outputN=100, screenN=1;
 		double dt;
 		double pRef;
 		array<int, 3> pRefIdx;
 
-		// fluid properties
+		/********************************************************************
+		 * fluid properties
+		 ********************************************************************/
 		Fluid & fluid;
 		double &nu = fluid.nu, &rho = fluid.rho;
 
@@ -55,6 +60,12 @@ class NSSolver
 
 
 		/********************************************************************
+		 * Cylinder:
+		 ********************************************************************/
+		Solid & cyln;
+
+
+		/********************************************************************
 		 * data of primative variables:
 		 ********************************************************************/
 		Data & data;
@@ -67,7 +78,7 @@ class NSSolver
 		 * Poisson solver:
 		 ********************************************************************/
 		PoissonSolver pSolver;
-		VectorXd b; 
+		Array3D<double> b; 
 		double ptol = 1e-10;
 
 

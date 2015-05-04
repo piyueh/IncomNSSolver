@@ -37,8 +37,9 @@ ostream &operator<<(ostream &os, NSSolver &solver)
 		<< "x" << solver.mesh.get_Lz() << endl;
 	os << "mesh -> Nx x Ny x Nz: " << solver.Nx << "x" << solver.Ny 
 		<< "x" << solver.Nz << endl;
-	os << "Data -> Nx x Ny x Nz: " << solver.data.Nx << "x" << solver.data.Ny 
-		<< "x" << solver.data.Nz << endl;
+	os << "Data -> Nx x Ny x Nz: " << solver.data.N[0][0] 
+		<< "x" << solver.data.N[0][1] 
+		<< "x" << solver.data.N[0][2] << endl;
 	os << "Terget number of time steps: " << solver.targetNStep << endl;
 	os << "Number of output interval: " << solver.outputN << endl;
 	os << "Visvosity: " << solver.nu << endl;
@@ -52,6 +53,8 @@ ostream &operator<<(ostream &os, NSSolver &solver)
 ostream &operator<<(ostream &os, Boundary &BC)
 {
 	os << "Direction: " << BC.dir*BC.sign << endl;
+	os << "Other two directions: " << BC.corDir[0]+1 << " " 
+		                           << BC.corDir[1]+1 << endl;
 
 	os << "Type of pressure BC: " << BC.pType << endl;
 	os << "Type of u BC: " << BC.uType << endl;
@@ -149,3 +152,14 @@ int Data::output(string fileName)
 	return 0;
 }
 
+
+int Solid::output(string fileName)
+{
+	ofstream file(fileName);
+
+	file << uFlag << endl;
+	file << vFlag << endl;
+	file << wFlag << endl;
+
+	return 0;
+}

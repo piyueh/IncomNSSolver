@@ -21,18 +21,15 @@ int main(int argc, char *argv[])
 		}
 	}
 
-
 	Fluid fluid(Files["-f"]);
 	Mesh mesh(Files["-m"]);
-	Data data(Files["-d"]);
-	NSSolver solver(mesh, fluid, data, Files["-c"]);
+	Data data(Files["-d"], mesh);
 
-	if ((data.Nx != mesh.get_Nx()) || (data.Ny != mesh.get_Ny()) || 
-		(data.Nz != mesh.get_Nz()))
-	{
-		cerr << "The mesh setting and the initial value data differ!!" << endl;
-		return 1;
-	}	
+	Solid cylinder({10, 10}, 0.5, mesh);
+
+	cout << mesh << endl;
+
+	NSSolver solver(mesh, fluid, data, cylinder, Files["-c"]);
 
 	cout << solver << endl;
 

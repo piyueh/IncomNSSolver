@@ -21,7 +21,7 @@ int NSSolver::InitLambda()
 
 	updW = [this] (CI & i, CI & j, CI & k) -> void 
 	{ 
-		w(i, j, k) -= (dp(i, j, k) - dp(i, j-1, k)) / dz; 
+		w(i, j, k) -= (dp(i, j, k) - dp(i, j, k-1)) / dz; 
 	};
 
 	updP = [this] (CI & i, CI & j, CI & k, CD & coeff) -> void 
@@ -35,8 +35,7 @@ int NSSolver::InitLambda()
 	 *****************************************************************/
 	DivOnPresPt = [this] (CI & i, CI & j, CI & k) -> void
 	{
-		int tmp = calIdx(i, j, k);
-		b(tmp) = 
+		b(i, j, k) = 
 			(u(i+1, j, k) - u(i, j, k)) / dx + 
 			(v(i, j+1, k) - v(i, j, k)) / dy + 
 			(w(i, j, k+1) - w(i, j, k)) / dz;

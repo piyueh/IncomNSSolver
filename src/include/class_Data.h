@@ -4,7 +4,7 @@ class Data
 	public:
 
 		Data() = default;
-		Data(string &);
+		Data(const string &, Mesh & mesh);
 
 		int InitData(Mesh & mesh);
 
@@ -13,6 +13,13 @@ class Data
 
 		// data included in the class
 		double time;
-		int Nx, Ny, Nz;
+
+		array<array<int, 3>, 4> N;
+
 		Array3D<double> u, v, w, p;
+
+		array<Array3D<double> *, 4> PVar = {&p, &u, &v, &w};
+	
+	private:
+
 };

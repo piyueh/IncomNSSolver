@@ -20,9 +20,11 @@ class PoissonSolver
 
 		int setLHS(map<int, Boundary> &);
 
+# ifdef BICGSTAB
 		int setTolerance(CD &);
+# endif
 
-		pair<int, double> Solve(VectorXd &, Map<VectorXd> &);
+		pair<int, double> Solve(Map<VectorXd> &, Map<VectorXd> &);
 
 		void printA();
 	
@@ -38,8 +40,15 @@ class PoissonSolver
 
 
 		SparseMatrix<double> A;
-		BiCGSTAB<SparseMatrix<double>, IncompleteLUT<double>> cgSolver;
 
+
+# ifdef BICGSTAB
+		BiCGSTAB<SparseMatrix<double>, IncompleteLUT<double>> Solver;
+# endif
+
+# ifdef PARDISO_LDLT
+		PardisoLDLT<SparseMatrix<double>, Upper> Solver;
+# endif
 
 		int InitA();
 		int getIdx(const int & i, const int & j, const int & k); 

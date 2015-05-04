@@ -16,6 +16,10 @@ class Array3D: public vector<T>
 
 		T & operator()(int i, int j, int k)
 		{
+			assert((i>=xbgIdx) && (i<=xedIdx));
+			assert((j>=ybgIdx) && (j<=yedIdx));
+			assert((k>=zbgIdx) && (k<=zedIdx));
+
 			i -= xbgIdx; j -= ybgIdx; k -= zbgIdx;	
 			return *(this->_M_impl._M_start + i*Nyz + j*Nz + k); 
 		}
@@ -47,12 +51,11 @@ class Array3D: public vector<T>
 
 
 		void setConstant(T value){
-			for(auto &i: *this) i = value;}
+			fill(this->begin(), this->end(), value);}
 
 
 		void setZeros() {
-			for(auto &i: *this) i = 0;}
-
+			fill(this->begin(), this->end(), 0);}
 
 		vector<int> shape(){
 			return vector<int> {Nx, Ny, Nz};}

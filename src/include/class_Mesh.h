@@ -22,56 +22,58 @@ class Mesh
 
 		int addBC(CUI dir, CI sign, CPairID p, CPairID u, CPairID v, CPairID w); 
 
-		const int get_Nx() const { return Nx; };
-		const int get_Ny() const { return Ny; };
-		const int get_Nz() const { return Nz; };
+		CI get_Nx() const { return Nx; };
+		CI get_Ny() const { return Ny; };
+		CI get_Nz() const { return Nz; };
 
-		const int get_Nxu() const { return Nxu; };
-		const int get_Nyu() const { return Nyu; };
-		const int get_Nzu() const { return Nzu; };
+		CI get_Nxu() const { return Nxu; };
+		CI get_Nyu() const { return Nyu; };
+		CI get_Nzu() const { return Nzu; };
 
-		const int get_Nxv() const { return Nxv; };
-		const int get_Nyv() const { return Nyv; };
-		const int get_Nzv() const { return Nzv; };
+		CI get_Nxv() const { return Nxv; };
+		CI get_Nyv() const { return Nyv; };
+		CI get_Nzv() const { return Nzv; };
 
-		const int get_Nxw() const { return Nxw; };
-		const int get_Nyw() const { return Nyw; };
-		const int get_Nzw() const { return Nzw; };
+		CI get_Nxw() const { return Nxw; };
+		CI get_Nyw() const { return Nyw; };
+		CI get_Nzw() const { return Nzw; };
 
-		const double get_Lx() const { return Lx; };
-		const double get_Ly() const { return Ly; };
-		const double get_Lz() const { return Lz; };
+		CD get_Lx() const { return Lx; };
+		CD get_Ly() const { return Ly; };
+		CD get_Lz() const { return Lz; };
 
-		const double get_dx() const { return dx; };
-		const double get_dy() const { return dy; };
-		const double get_dz() const { return dz; };
+		CD get_dx() const { return dx; };
+		CD get_dy() const { return dy; };
+		CD get_dz() const { return dz; };
 
 		map<int, Boundary> & get_BCs() { return BCs; }
 
-		const vector<double> & get_xp() const { return xp; }
-		const vector<double> & get_yp() const { return yp; }
-		const vector<double> & get_zp() const { return zp; }
+		const VD & get_xp() const { return xp; }
+		const VD & get_yp() const { return yp; }
+		const VD & get_zp() const { return zp; }
 
-		const vector<double> & get_xu() const { return xu; }
-		const vector<double> & get_yu() const { return yu; }
-		const vector<double> & get_zu() const { return zu; }
+		const VD & get_xu() const { return xu; }
+		const VD & get_yu() const { return yu; }
+		const VD & get_zu() const { return zu; }
 
-		const vector<double> & get_xv() const { return xv; }
-		const vector<double> & get_yv() const { return yv; }
-		const vector<double> & get_zv() const { return zv; }
+		const VD & get_xv() const { return xv; }
+		const VD & get_yv() const { return yv; }
+		const VD & get_zv() const { return zv; }
 
-		const vector<double> & get_xw() const { return xw; }
-		const vector<double> & get_yw() const { return yw; }
-		const vector<double> & get_zw() const { return zw; }
+		const VD & get_xw() const { return xw; }
+		const VD & get_yw() const { return yw; }
+		const VD & get_zw() const { return zw; }
 
 	private:
 
-		int Nx, Ny, Nz;
-		int NCells, Nyz;
+		array<array<int, 3>, 4> N;
 
-		int Nxu, Nyu, Nzu;
-		int Nxv, Nyv, Nzv;
-		int Nxw, Nyw, Nzw;
+		int &Nx = N[0][0], &Ny = N[0][1], &Nz = N[0][2];
+		int &Nxu = N[1][0], &Nyu = N[1][1], &Nzu = N[1][2];
+		int &Nxv = N[2][0], &Nyv = N[2][1], &Nzv = N[2][2];
+		int &Nxw = N[3][0], &Nyw = N[3][1], &Nzw = N[3][2];
+
+		int NCells, Nyz;
 
 		double Lx, Ly, Lz;
 		double dx, dy, dz;

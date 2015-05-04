@@ -22,8 +22,12 @@
 
 using namespace std;
 
-# include <eigen3/Eigen/Dense>
-# include <eigen3/Eigen/Sparse>
+# define EIGEN_USE_MKL_ALL
+# define MKL_BLAS MKL_DOMAIN_BLAS
+
+# include <Eigen/Dense>
+# include <Eigen/Sparse>
+# include <Eigen/PardisoSupport>
 
 using namespace Eigen;
 
@@ -38,15 +42,18 @@ typedef Array3D<double> A3Dd;
 typedef const pair<int, double> CPairID;
 typedef array<int, 3> aryI3;
 typedef array<double, 3> aryD3;
+typedef vector<double> VD;
+
+typedef array<A3Dd *, 4> aA3Dd_ptr_4;
 typedef const array<int, 3> CaryI3;
 typedef const array<double, 3> CaryD3;
-typedef vector<double> VD;
 
 
 # include "class_Fluid.h"
 # include "class_Boundary.h"
 # include "class_Mesh.h"
 # include "class_Data.h"
+# include "class_Solid.h"
 # include "class_PoissonSolver.h"
 # include "class_NSSolver.h"
 

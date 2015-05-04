@@ -20,7 +20,8 @@ class Boundary
 		 * {Nx, Ny, Nz}, Dir, sign, 
 		 * {p BC, Value}, {u BC, Value}, {v BC, Value}, {w BC, Value}
 		 */
-		Boundary(CaryI3, CUI, CI, CPairID, CPairID, CPairID, CPairID);
+		Boundary(array<array<int, 3>, 4> &, CUI, CI, 
+				CPairID, CPairID, CPairID, CPairID);
 
 		Boundary & operator=(const Boundary &);
 
@@ -48,11 +49,13 @@ class Boundary
 		CI & get_wBCcorIdx() const { return wBCcorIdx; }
 
 
-		int updGhost(CI &, CI &, CI &, A3Dd &, CD &);
+		int updDirichBC(array<array<int, 3>, 4> &, aA3Dd_ptr_4 &);
+		int updGhost(array<array<int, 3>, 4> &, aA3Dd_ptr_4 &, CaryD3 &);
 
 	private:
 
 		int dir, sign;
+		array<int, 2> corDir;
 
 		array<int, 4> BCtype, BCIdx, BCcorIdx;
 		array<double, 4> BCvalues;
@@ -68,7 +71,7 @@ class Boundary
 		double & pBCvalue = BCvalues[0], & uBCvalue = BCvalues[1], 
 			   & vBCvalue = BCvalues[2], & wBCvalue = BCvalues[3];
 
-		array<function<void(CI &, CI &, A3Dd &, CD &)>, 4> updOneGh;
+		array<function<void(CI &, CI &, CI &, aA3Dd_ptr_4 &, CaryD3 &)>, 4> updOneGh;
 
 		int InitUpdGh();
 };

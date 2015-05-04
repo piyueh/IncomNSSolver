@@ -1,7 +1,8 @@
 DT 0.001
+CurrentNStep 0
 TargetNStep 2000
 OutputNStep 10000
-ScreenNStep 1
+ScreenNStep 50
 RefPIdx 0 0 0
 RefP 0
 PTOL 1e-15

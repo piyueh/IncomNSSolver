@@ -96,7 +96,7 @@ int Mesh::InitMesh(array<int, 3> N, array<double, 3> L)
 int Mesh::addBC(unsigned int dir, int sign, pair<int, double> p, 
 		pair<int, double> u, pair<int, double> v, pair<int, double> w)
 {
-	BCs[dir*sign] = Boundary({Nx, Ny, Nz}, dir, sign, p, u, v, w);
+	BCs[dir*sign] = Boundary(N, dir, sign, p, u, v, w);
 	return 0;
 }
 

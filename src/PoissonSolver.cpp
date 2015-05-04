@@ -36,7 +36,23 @@ int PoissonSolver::setLHS(map<int, Boundary> & BC)
 				BC[-3].get_pType(), BC[-3].get_pBCvalue());
 	}
 
-	cgSolver.compute(A);
+	Solver.analyzePattern(A);
+
+	if (Solver.info() != Success)
+	{
+		cout << Solver.info() << endl;
+		cerr << "Error during pattern analysis" << endl;
+		throw exception();
+	}
+
+	Solver.factorize(A);
+
+	if (Solver.info() != Success)
+	{
+		cout << Solver.info() << endl;
+		cerr << "Error during factorizing" << endl;
+		throw exception();
+	}
 
 	return 0;
 }
@@ -47,47 +63,52 @@ int PoissonSolver::setRefP(const array<int, 3> & Idx, const double & value)
 	refLoc = getIdx(Idx);
 	refP = value;
 
-	A.coeffRef(refLoc, refLoc) = 1;
-	
-	if ((refLoc - Nyz) >= 0) A.coeffRef(refLoc, refLoc - Nyz) = 0;
-	if ((refLoc + Nyz) < NCells) A.coeffRef(refLoc, refLoc + Nyz) = 0;
-	if ((refLoc - Nz) >= 0) A.coeffRef(refLoc, refLoc - Nz) = 0;
-	if ((refLoc + Nz) < NCells) A.coeffRef(refLoc, refLoc + Nz) = 0;
-	if ((refLoc - 1) >= 0) A.coeffRef(refLoc, refLoc - 1) = 0;
-	if ((refLoc + 1) < NCells) A.coeffRef(refLoc, refLoc + 1) = 0;
-
+	A.coeffRef(refLoc, refLoc) += 1;
 	A.makeCompressed();
 
-	cgSolver.compute(A);
+	Solver.factorize(A);
+
+	if (Solver.info() != Success)
+	{
+		cout << Solver.info() << endl;
+		cerr << "Error during factorizing" << endl;
+		throw exception();
+	}
 
 	return 0;
 }
 
 
+# ifdef BICGSTAB
 int PoissonSolver::setTolerance(CD & tol)
 {
-	cgSolver.setTolerance(tol);
+	Solver.setTolerance(tol);
 	return 0;
 }
+# endif
 
 
-pair<int, double> PoissonSolver::Solve(VectorXd & f, Map<VectorXd> & soln)
+pair<int, double> PoissonSolver::Solve(Map<VectorXd> & f, Map<VectorXd> & soln)
 {
 	assert(f.size() == NCells);
 
-	f[refLoc] = refP;
+	f[refLoc] += refP;
+
+	soln = Solver.solve(f);
 	
-	//soln = cgSolver.solveWithGuess(f, soln);
-	soln = cgSolver.solve(f);
-	
-	if (cgSolver.info() != Success)
+	if (Solver.info() != Success)
 	{
-		cout << cgSolver.info() << endl;
+		cout << Solver.info() << endl;
 		cerr << "Error solving matrix" << endl;
 		throw exception();
 	}
 
+# ifdef BICGSTAB
 	return {cgSolver.iterations(), cgSolver.error()};
+# else
+	return {0, 0};
+# endif
+
 }
 
 
