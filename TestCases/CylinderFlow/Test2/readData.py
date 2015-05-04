@@ -56,46 +56,46 @@ th = numpy.linspace(0, 2 * numpy.pi, 360)
 xCirc = 0.5 * numpy.cos(th) + 10
 yCirc = 0.5 * numpy.sin(th) + 10
 
-pyplot.figure()
-pyplot.title("Streamlines @ T=" + str(t) + "2 sec", fontsize=18)
-pyplot.xlabel(r"$x / L$", fontsize=18)
-pyplot.ylabel(r"$y / L$", fontsize=18)
-fig = pyplot.streamplot(Xp[1:-1, 1:-1], Yp[1:-1, 1:-1], uc, vc, density=4)
+pyplot.figure(figsize=(10, 5))
+pyplot.title("Cylinder Flow, Streamlines @ T=" + str(t) + "sec", fontsize=18)
+pyplot.xlabel(r"$x$", fontsize=18)
+pyplot.ylabel(r"$y$", fontsize=18)
+fig = pyplot.streamplot(Xp[1:-1, 1:-1], Yp[1:-1, 1:-1], uc, vc, density=3)
 pyplot.fill(xCirc, yCirc, fc='w', ec='k')
 pyplot.axis("equal")
 pyplot.xlim(0, Lx)
 pyplot.ylim(0, Ly)
-#pyplot.savefig("Lid_Streamlines.png", format="png")
+pyplot.savefig("Cylinder_Streamlines.png", format="png")
 
-pyplot.figure()
-pyplot.title("u velocity @ T=" + str(t) + "2 sec", fontsize=18)
-pyplot.xlabel(r"$x / L$", fontsize=18)
-pyplot.ylabel(r"$y / L$", fontsize=18)
+pyplot.figure(figsize=(10, 5))
+pyplot.title("Cylinder Flow, u velocity @ T=" + str(t) + "sec", fontsize=18)
+pyplot.xlabel(r"$x$", fontsize=18)
+pyplot.ylabel(r"$y$", fontsize=18)
 fig = pyplot.contourf(Xu[1:-1, 1:-1], Yu[1:-1, 1:-1], u[1:-1, 1:-1],
                       extend="both", levels=numpy.linspace(-0, 1.5, 100))
 pyplot.colorbar(fig)
 pyplot.fill(xCirc, yCirc, fc='w', ec='k')
-#pyplot.savefig("Lid_uVelocity.png", format="png")
+pyplot.savefig("Cylinder_uVelocity.png", format="png")
 
-pyplot.figure()
-pyplot.title("v velocity @ T=" + str(t) + "2 sec", fontsize=18)
-pyplot.xlabel(r"$x / L$", fontsize=18)
-pyplot.ylabel(r"$y / L$", fontsize=18)
+pyplot.figure(figsize=(10, 5))
+pyplot.title("Cylinder Flow, v velocity @ T=" + str(t) + "sec", fontsize=18)
+pyplot.xlabel(r"$x$", fontsize=18)
+pyplot.ylabel(r"$y$", fontsize=18)
 fig = pyplot.contourf(Xv[1:-1, 1:-1], Yv[1:-1, 1:-1], v[1:-1, 1:-1],
                       extend="both", levels=numpy.linspace(-1, 1, 100))
 pyplot.colorbar(fig)
 pyplot.fill(xCirc, yCirc, fc='w', ec='k')
-#pyplot.savefig("Lid_vVelocity.png", format="png")
+pyplot.savefig("Cylinder_vVelocity.png", format="png")
 
-pyplot.figure()
-pyplot.title("Pressure @ T=" + str(t) + "2 sec", fontsize=18)
-pyplot.xlabel(r"$x / L$", fontsize=18)
-pyplot.ylabel(r"$y / L$", fontsize=18)
+pyplot.figure(figsize=(10, 5))
+pyplot.title("Cylinder Flow, Pressure @ T=" + str(t) + "sec", fontsize=18)
+pyplot.xlabel(r"$x$", fontsize=18)
+pyplot.ylabel(r"$y$", fontsize=18)
 fig = pyplot.contourf(Xp[1:-1, 1:-1], Yp[1:-1, 1:-1], p[1:-1, 1:-1],
                       extend="both", levels=numpy.linspace(-0.5, 0.5, 100))
 pyplot.colorbar(fig)
 pyplot.fill(xCirc, yCirc, fc='w', ec='k')
-#pyplot.savefig("Lid_Pressure.png", format="png")
+pyplot.savefig("Cylinder_Pressure.png", format="png")
 
 
 uVor = (u[1:, 1:-1] - u[:-1, 1:-1]) / dy
@@ -104,16 +104,15 @@ Vor = vVor - uVor
 
 XVor, YVor = numpy.meshgrid(xu[1:-1], yv[1:-1])
 
-pyplot.figure()
-pyplot.title("Vorticity @ T=" + str(t) + "2 sec", fontsize=16)
+pyplot.figure(figsize=(10, 5))
+pyplot.title("Cylinder Flow, Vorticity @ T=" + str(t) + "sec", fontsize=16)
 pyplot.xlabel("x")
 pyplot.ylabel("y")
 fig = pyplot.contourf(XVor, YVor, Vor,
                       extend="both", levels=numpy.linspace(-2, 2, 100))
-#pyplot.scatter(XVor, YVor)
 pyplot.fill(xCirc, yCirc, fc='w', ec='k')
 pyplot.colorbar(fig)
-#pyplot.savefig("TGvortexContour_VorStream.png", format="png")
+pyplot.savefig("Cylinder_VorStream.png", format="png")
 
 
 pyplot.show()

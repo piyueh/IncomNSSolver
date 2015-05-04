@@ -25,7 +25,7 @@ debug:
 	make ${BPATH}/${BIN} CFLAGS="${CFLAGS}"
 
 release: CFLAGS = -std=c++11 -O3 -fopenmp -march=native -mtune=native -m64 \
-	-DNDEBUG -DEIGEN_NO_DEBUG -DPARDISO_LDLT
+	-DNDEBUG -DEIGEN_NO_DEBUG -DBICGSTAB #-DPARDISO_LDLT
 release:
 	echo ${MKLROOT}
 	@if [ ! -e ${OPATH} ]; then mkdir ${OPATH}; fi
