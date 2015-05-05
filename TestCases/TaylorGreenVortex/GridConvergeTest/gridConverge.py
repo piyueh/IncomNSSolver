@@ -32,10 +32,6 @@ ErrU = numpy.zeros(0, dtype=numpy.float)
 ErrV = numpy.zeros(0, dtype=numpy.float)
 ErrP = numpy.zeros(0, dtype=numpy.float)
 
-ErrReU = numpy.zeros(0, dtype=numpy.float)
-ErrReV = numpy.zeros(0, dtype=numpy.float)
-ErrReP = numpy.zeros(0, dtype=numpy.float)
-
 for i, n in enumerate(N):
 
     f = open(File[n], "r")
@@ -91,23 +87,9 @@ for i, n in enumerate(N):
     ErrV = numpy.append(ErrV, numpy.abs(v-v_e)[1:-1, 1:-1].max())
     ErrP = numpy.append(ErrP, numpy.abs(p-p_e)[1:-1, 1:-1].max())
 
-    ErrReU = numpy.append(ErrReU, numpy.max(u[1:-1, 1:-1]))
-    ErrReV = numpy.append(ErrReV, numpy.max(v[1:-1, 1:-1]))
-    ErrReP = numpy.append(ErrReP, numpy.max(p[1:-1, 1:-1]))
-
-
-for i, n in enumerate(N):
-    ErrReU[i] = numpy.abs(ErrReU[i] - ErrReU[-1])
-    ErrReV[i] = numpy.abs(ErrReV[i] - ErrReV[-1])
-    ErrReP[i] = numpy.abs(ErrReP[i] - ErrReP[-1])
-
 
 for i, n in enumerate(N):
     print(n, ErrU[i], ErrV[i], ErrP[i])
-
-for i, n in enumerate(N):
-    print(n, ErrReU[i], ErrReV[i], ErrReP[i])
-
 
 DL = numpy.array([Lx / float(n) for n in N])
 
@@ -145,24 +127,5 @@ pyplot.legend(loc=9, ncol=3, mode="expand", numpoints=1)
 pyplot.grid(True)
 pyplot.savefig("GridErrExact.png", format="png")
 
-
-'''
-pyplot.figure()
-pyplot.title(r"$L_2$ norm of absolute error to the finest grid")
-pyplot.loglog(DL[:-1], ErrReU[:-1], "kx", markersize=10, label="ErrRe(u)")
-pyplot.loglog(DL[:-1], ErrReV[:-1], "k^", markersize=10, label="ErrRe(v)")
-pyplot.loglog(numpy.array([DL[0]/(2**n) for n in range(5)]), 
-        numpy.array([ErrReU[0]/(2**n) for n in range(5)]), 
-        "r--", label="1st order")
-pyplot.loglog(numpy.array([DL[0]/(2**n) for n in range(5)]), 
-        numpy.array([ErrReU[0]/(4**n) for n in range(5)]), 
-        "r--", label="2nd order")
-pyplot.loglog(numpy.array([DL[0]/(2**n) for n in range(5)]), 
-        numpy.array([ErrReU[0]/(8**n) for n in range(5)]), 
-        "r--", label="3rd order")
-#pyplot.axis("equal")
-pyplot.legend(loc=0)
-pyplot.grid(True)
-'''
 
 pyplot.show()
