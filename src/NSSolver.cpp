@@ -109,13 +109,18 @@ int NSSolver::solve()
 
 		PredictStep(dt/3.);
 		updatePoissonSource(1);
+# ifdef CYLINDER_FLOW
+		cyln.updVelocity(u, v, w);
+# endif
 		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(dt/3.);
 		updateGhost();
 
 
 		PredictStep(15.*dt/16., -5./9.);
-		//cyln.updVelocity(u, v, w);
+# ifdef CYLINDER_FLOW
+		cyln.updVelocity(u, v, w);
+# endif
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(15.*dt/16);
@@ -123,7 +128,9 @@ int NSSolver::solve()
 
 
 		PredictStep(8.*dt/15., -153./128.);
-		//cyln.updVelocity(u, v, w);
+# ifdef CYLINDER_FLOW
+		cyln.updVelocity(u, v, w);
+# endif
 		updatePoissonSource(1);
 		Itr = pSolver.Solve(b_Eigen, dp_Eigen);
 		updateField(8.*dt/15.);

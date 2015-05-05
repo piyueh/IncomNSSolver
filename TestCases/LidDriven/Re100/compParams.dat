@@ -1,4 +1,5 @@
 DT 0.001
+CurrentNStep 0
 TargetNStep 50000
 OutputNStep 2000
 ScreenNStep 1

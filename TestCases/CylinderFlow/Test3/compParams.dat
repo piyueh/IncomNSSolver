@@ -1,8 +1,0 @@
-DT 0.0005
-CurrentNStep 0
-TargetNStep 200000
-OutputNStep 200
-ScreenNStep 1
-RefPIdx 639 159 0
-RefP 0
-PTOL 1e-15

@@ -104,7 +104,7 @@ pair<int, double> PoissonSolver::Solve(Map<VectorXd> & f, Map<VectorXd> & soln)
 	}
 
 # ifdef BICGSTAB
-	return {cgSolver.iterations(), cgSolver.error()};
+	return {Solver.iterations(), Solver.error()};
 # else
 	return {0, 0};
 # endif

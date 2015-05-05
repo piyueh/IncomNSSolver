@@ -22,12 +22,17 @@
 
 using namespace std;
 
-# define EIGEN_USE_MKL_ALL
-# define MKL_BLAS MKL_DOMAIN_BLAS
+# ifdef PARDISO_LDLT
+	# define EIGEN_USE_MKL_ALL
+	# define MKL_BLAS MKL_DOMAIN_BLAS
+# endif
 
 # include <Eigen/Dense>
 # include <Eigen/Sparse>
-# include <Eigen/PardisoSupport>
+
+# ifdef PARDISO_LDLT
+	# include <Eigen/PardisoSupport>
+# endif
 
 using namespace Eigen;
 
